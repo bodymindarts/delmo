@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  webapp:
+    build: webapp
+    image: webapp
+    ports: ['5000:5000']
+    networks:
+    - az1
+
+networks:
+  az1:
