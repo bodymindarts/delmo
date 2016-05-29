@@ -4,7 +4,6 @@ services:
   webapp:
     build: sinatra
     image: sinatra
-    ports: ['5000:5000']
     networks:
     - az1
 
