@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "luAmtxInjkeqmBJx1AabbPMXgjI=",
+			"path": "github.com/mitchellh/cli",
+			"revision": "8102d0ed5ea2709ade1243798785888175f6e415",
+			"revisionTime": "2015-06-18T19:01:06Z"
+		}
+	],
+	"rootPath": "github.com/bodymindarts/delmo"
+}
