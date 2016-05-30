@@ -13,8 +13,6 @@ func main() {
 }
 
 func Run(args []string) int {
-	args = append([]string{"test"}, args...)
-
 	// Get the command line args. We shortcut "--version" and "-v" to
 	// just show the version.
 	for _, arg := range args {
