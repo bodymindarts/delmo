@@ -8,7 +8,7 @@ import (
 )
 
 type Suite struct {
-	System      string        `yaml:"system"`
+	System      System        `yaml:"system"`
 	Assertions  []Assertion   `yaml:"assertions"`
 	Tests       []interface{} `yaml:"tests"`
 	ComposeFile string
@@ -19,6 +19,11 @@ type Assertion struct {
 	Image    string   `yaml:"image"`
 	Networks []string `yaml:"networks"`
 	Run      string   `yaml:"run"`
+}
+
+type System struct {
+	Name string `yaml:"name"`
+	File string `yaml:"file"`
 }
 
 func Load(path string) (*Suite, error) {
@@ -33,7 +38,7 @@ func Load(path string) (*Suite, error) {
 	}
 
 	dir := filepath.Dir(path)
-	composeFile := filepath.Join(dir, suite.System)
+	composeFile := filepath.Join(dir, suite.System.File)
 	suite.ComposeFile = composeFile
 
 	return &suite, nil

@@ -1,5 +1,7 @@
 ---
-system: docker-compose.yml
+system:
+  name: Webapp
+  file: docker-compose.yml
 
 tests:
 

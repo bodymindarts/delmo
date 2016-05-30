@@ -44,7 +44,7 @@ func (t *TestCommand) Run(args []string) int {
 		t.Ui.Error(fmt.Sprintf("%s", err))
 		return 1
 	}
-	t.Ui.Output(fmt.Sprintf("PATH: %s, suite: %v, dockerCompose: %v", path, suite, dockerCompose))
+	t.Ui.Info(fmt.Sprintf("Starting System %s", suite.System.Name))
 	dockerCompose.Start()
 	time.Sleep(5 * time.Second)
 	dockerCompose.Stop()
