@@ -15,10 +15,10 @@ type Suite struct {
 }
 
 type Assertion struct {
-	Name     string   `yaml:"name"`
-	Image    string   `yaml:"image"`
-	Networks []string `yaml:"networks"`
-	Run      string   `yaml:"run"`
+	Name     string      `yaml:"name"`
+	Image    string      `yaml:"image"`
+	Networks []string    `yaml:"networks"`
+	Run      interface{} `yaml:"run"`
 }
 
 type System struct {

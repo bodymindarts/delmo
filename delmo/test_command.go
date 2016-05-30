@@ -3,7 +3,6 @@ package delmo
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"strings"
 	"time"
 
@@ -46,12 +45,14 @@ func (t *TestCommand) Run(args []string) int {
 	}
 	t.Ui.Info(fmt.Sprintf("Starting System %s", suite.System.Name))
 	system.Start()
-	t.Ui.Info("Waiting 2 seconds")
-	time.Sleep(2 * time.Second)
+	t.Ui.Info("Waiting 5 seconds")
+	time.Sleep(5 * time.Second)
 	t.Ui.Info("Stopping System")
 	system.Stop()
 	t.Ui.Info("Reading output")
-	out, err := ioutil.ReadAll(system.Output())
+
+	out, err := system.Output()
+	err = system.Cleanup()
 	t.Ui.Info(string(out))
 	return 0
 

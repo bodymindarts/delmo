@@ -1,25 +1,11 @@
 package delmo
 
-import (
-	"bytes"
-	"io"
-	"log"
-	"os"
-	"os/exec"
-)
+import "os/exec"
 
 type DockerCompose struct {
 	rawCmd      string
 	composeFile string
 	prefix      string
-	handle      *dockerComposeHandle
-}
-
-type dockerComposeHandle struct {
-	cmd    *exec.Cmd
-	output *bytes.Buffer
-	stopCh chan int
-	doneCh chan struct{}
 }
 
 func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
@@ -35,47 +21,32 @@ func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 	return dc, nil
 }
 
-func (d *DockerCompose) Start() {
-	args := []string{
-		"--file", d.composeFile, "--project-name", d.prefix, "up",
-	}
+func (d *DockerCompose) Start() error {
+	args := d.makeArgs("up", "-d", "--force-recreate")
 	cmd := exec.Command(d.rawCmd, args...)
-	buf := new(bytes.Buffer)
-	d.handle = &dockerComposeHandle{
-		cmd:    cmd,
-		stopCh: make(chan int),
-		doneCh: make(chan struct{}),
-		output: buf,
-	}
-	go d.handle.run()
+	return cmd.Start()
 }
 
-func (d *DockerCompose) Stop() {
-	d.handle.stop()
-}
-func (d *DockerCompose) Output() io.Reader {
-	return d.handle.output
-}
-
-func (h *dockerComposeHandle) run() {
-	h.cmd.Stdout = h.output
-
-	if err := h.cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	select {
-	case <-h.stopCh:
-	}
-
-	h.cmd.Process.Signal(os.Interrupt)
-	h.cmd.Wait()
-	close(h.doneCh)
+func (d *DockerCompose) Stop() error {
+	args := d.makeArgs("stop")
+	cmd := exec.Command(d.rawCmd, args...)
+	return cmd.Start()
 }
 
-func (h *dockerComposeHandle) stop() {
-	h.stopCh <- 1
-	select {
-	case <-h.doneCh:
-	}
+func (d *DockerCompose) Output() ([]byte, error) {
+	args := d.makeArgs("logs")
+	cmd := exec.Command(d.rawCmd, args...)
+	return cmd.Output()
+}
+
+func (d *DockerCompose) Cleanup() error {
+	args := d.makeArgs("rm", "-f", "-v", "-a")
+	cmd := exec.Command(d.rawCmd, args...)
+	return cmd.Run()
+}
+
+func (d *DockerCompose) makeArgs(args ...string) []string {
+	return append([]string{
+		"--file", d.composeFile, "--project-name", d.prefix,
+	}, args...)
 }
