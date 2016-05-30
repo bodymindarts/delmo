@@ -55,7 +55,6 @@ func (d *DockerCompose) Output() io.Reader {
 
 func (h *dockerComposeHandle) run() {
 	h.cmd.Stdout = h.output
-	// h.cmd.Stderr = h.Output
 
 	if err := h.cmd.Start(); err != nil {
 		log.Fatal(err)
@@ -63,7 +62,6 @@ func (h *dockerComposeHandle) run() {
 
 	select {
 	case <-h.stopCh:
-		os.Stdout.Write([]byte("recieved stop signal"))
 	}
 
 	h.cmd.Process.Signal(os.Interrupt)
