@@ -11,6 +11,7 @@ import (
 type DockerCompose struct {
 	rawCmd      string
 	composeFile string
+	prefix      string
 	handle      *dockerComposeHandle
 }
 
@@ -21,13 +22,14 @@ type dockerComposeHandle struct {
 	doneCh chan struct{}
 }
 
-func NewDockerCompose(composeFile string) (*DockerCompose, error) {
+func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 	cmd, err := exec.LookPath("docker-compose")
 	if err != nil {
 		return nil, err
 	}
 	dc := &DockerCompose{
 		rawCmd:      cmd,
+		prefix:      prefix,
 		composeFile: composeFile,
 	}
 	return dc, nil
@@ -35,7 +37,7 @@ func NewDockerCompose(composeFile string) (*DockerCompose, error) {
 
 func (d *DockerCompose) Start() {
 	args := []string{
-		"-f", d.composeFile, "up",
+		"-f", d.composeFile, "-p", d.prefix, "up",
 	}
 	cmd := exec.Command(d.rawCmd, args...)
 	buf := new(bytes.Buffer)

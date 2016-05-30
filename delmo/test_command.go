@@ -39,7 +39,7 @@ func (t *TestCommand) Run(args []string) int {
 		t.Ui.Error(fmt.Sprintf("%v", err))
 		return 1
 	}
-	dockerCompose, err := NewDockerCompose(suite.ComposeFile)
+	dockerCompose, err := NewDockerCompose(suite.ComposeFile, "delmo")
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("%s", err))
 		return 1
