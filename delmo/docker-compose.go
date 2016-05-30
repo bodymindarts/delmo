@@ -37,7 +37,7 @@ func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 
 func (d *DockerCompose) Start() {
 	args := []string{
-		"-f", d.composeFile, "-p", d.prefix, "up",
+		"--file", d.composeFile, "--project-name", d.prefix, "up",
 	}
 	cmd := exec.Command(d.rawCmd, args...)
 	buf := new(bytes.Buffer)
