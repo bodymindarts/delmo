@@ -13,10 +13,7 @@ func main() {
 }
 
 func Run(args []string) int {
-	// default command
-	if len(args) == 0 {
-		args = []string{"test"}
-	}
+	args = append([]string{"test"}, args...)
 
 	// Get the command line args. We shortcut "--version" and "-v" to
 	// just show the version.
