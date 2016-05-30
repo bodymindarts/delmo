@@ -18,6 +18,7 @@ type dockerComposeHandle struct {
 	cmd    *exec.Cmd
 	output *bytes.Buffer
 	stopCh chan int
+	doneCh chan struct{}
 }
 
 func NewDockerCompose(composeFile string) (*DockerCompose, error) {
@@ -41,6 +42,7 @@ func (d *DockerCompose) Start() {
 	d.handle = &dockerComposeHandle{
 		cmd:    cmd,
 		stopCh: make(chan int),
+		doneCh: make(chan struct{}),
 		output: buf,
 	}
 	go d.handle.run()
@@ -65,8 +67,13 @@ func (h *dockerComposeHandle) run() {
 	}
 
 	h.cmd.Process.Signal(os.Interrupt)
+	h.cmd.Wait()
+	close(h.doneCh)
 }
 
 func (h *dockerComposeHandle) stop() {
 	h.stopCh <- 1
+	select {
+	case <-h.doneCh:
+	}
 }
