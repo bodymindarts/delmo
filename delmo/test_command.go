@@ -46,8 +46,11 @@ func (t *TestCommand) Run(args []string) int {
 	}
 	t.Ui.Info(fmt.Sprintf("Starting System %s", suite.System.Name))
 	dockerCompose.Start()
-	time.Sleep(5 * time.Second)
+	t.Ui.Info("Waiting 2 seconds")
+	time.Sleep(2 * time.Second)
+	t.Ui.Info("Stopping System")
 	dockerCompose.Stop()
+	t.Ui.Info("Reading output")
 	out, err := ioutil.ReadAll(dockerCompose.Output())
 	t.Ui.Info(string(out))
 	return 0
