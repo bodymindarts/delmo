@@ -16,7 +16,7 @@ type DockerCompose struct {
 
 type dockerComposeHandle struct {
 	cmd    *exec.Cmd
-	Output *bytes.Buffer
+	output *bytes.Buffer
 	stopCh chan int
 }
 
@@ -41,7 +41,7 @@ func (d *DockerCompose) Start() {
 	d.handle = &dockerComposeHandle{
 		cmd:    cmd,
 		stopCh: make(chan int),
-		Output: buf,
+		output: buf,
 	}
 	go d.handle.run()
 }
@@ -50,11 +50,11 @@ func (d *DockerCompose) Stop() {
 	d.handle.stop()
 }
 func (d *DockerCompose) Output() io.Reader {
-	return d.handle.Output
+	return d.handle.output
 }
 
 func (h *dockerComposeHandle) run() {
-	h.cmd.Stdout = h.Output
+	h.cmd.Stdout = h.output
 	// h.cmd.Stderr = h.Output
 
 	if err := h.cmd.Start(); err != nil {
