@@ -1,0 +1,10 @@
+---
+system: docker-compose.yml
+
+tests:
+
+assertions:
+- name: webapp_is_available
+  image: webapp
+  networks:
+  - az1
