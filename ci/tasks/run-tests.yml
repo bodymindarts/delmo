@@ -6,7 +6,8 @@ image_resource:
 
 inputs:
 - name: delmo
-  path: delmo/src/github.com/bodymindarts/delmo/ci
+  path: delmo/src/github.com/bodymindarts/delmo
+- name: delmo-ci
 
 run:
   path: delmo-ci/ci/tasks/run-tests.sh
