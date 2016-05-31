@@ -6,8 +6,7 @@ image_resource:
 
 inputs:
 - name: delmo
-  path: delmo/src/github.com/dingotiles/dingo-postgresql-broker
-- name: delmo-ci
+  path: delmo/src/github.com/bodymindarts/delmo/ci
 
 run:
   path: delmo-ci/ci/tasks/run-tests.sh
