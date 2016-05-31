@@ -1,0 +1,72 @@
+---
+groups:
+- name: delmo
+  jobs: [test-master, test-all]
+- name: ci-image
+  jobs: [build-task-image]
+
+jobs:
+- name: build-task-image
+  serial: true
+  plan:
+    - {get: pipeline-ci-image, trigger: true}
+    - put: docker-image-ci
+      params:
+        build: pipeline-ci-image/ci/ci_image
+- name: test-master
+  plan:
+  - aggregate:
+    - {get: delmo, trigger: true}
+    - get: delmo-ci
+  - task: run-tests
+    file: delmo-ci/ci/tasks/run-tests.yml
+
+- name: test-all
+  plan:
+  - aggregate:
+    - {get: delmo-all, trigger: true}
+  - task: run-tests-all
+    file: delmo-all/ci/tasks/run-tests-all.yml
+
+
+resources:
+- name: pipeline-ci-image
+  type: git
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branch: {{pipeline-branch}}
+    paths: [ci/ci_image/*]
+
+- name: docker-image-ci
+  type: docker-image
+  source:
+    email: {{docker-hub-email}}
+    username: {{docker-hub-username}}
+    password: {{docker-hub-password}}
+    repository: bodymindarts/delmo-pipeline
+
+- name: delmo-ci
+  type: git
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branch: {{pipeline-branch}}
+
+- name: delmo
+  type: git
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branch: {{pipeline-branch}}
+
+- name: delmo-all
+  type: git-multibranch
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branches: '.*'
+    ignore_branches: 'master'
+
+
+resource_types:
+- name: git-multibranch
+  type: docker-image
+  source:
+    repository: cfcommunity/git-multibranch-resource

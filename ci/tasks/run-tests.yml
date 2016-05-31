@@ -1,0 +1,13 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: dingotiles/dingo-postgresql-broker-pipeline}
+
+inputs:
+- name: broker
+  path: broker/src/github.com/dingotiles/dingo-postgresql-broker
+- name: broker-ci
+
+run:
+  path: broker-ci/ci/tasks/run-tests.sh

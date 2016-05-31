@@ -1,0 +1,12 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: bodymindarts/delmo-pipeline}
+
+inputs:
+- name: delmo-all
+  path: delmo/src/github.com/dingotiles/dingo-postgresql-broker
+
+run:
+  path: delmo/src/github.com/dingotiles/dingo-postgresql-broker/ci/tasks/run-tests.sh
