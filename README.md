@@ -1,2 +1,3 @@
 # delmo
-Delmo is a framework to test node failure in distributed systems
+DelMo is a framework to test node failure in distributed systems.
+
