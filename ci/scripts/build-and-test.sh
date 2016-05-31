@@ -2,7 +2,7 @@
 
 set -e -x
 
-export GOPATH=$PWD/broker:$PWD/broker/src/github.com/dingotiles/dingo-postgresql-broker/Godeps/_workspace
+export GOPATH=$PWD/broker
 export PATH=$GOPATH/bin:$PATH
 
 cd $PWD/broker/src/github.com/dingotiles/dingo-postgresql-broker
