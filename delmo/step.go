@@ -3,7 +3,7 @@ package delmo
 import "fmt"
 
 type Step interface {
-	Execute(Runtime) error
+	Execute(Runtime, TaskReporter) error
 	Description() string
 }
 
@@ -17,7 +17,7 @@ func NewStopStep(config StepConfig) Step {
 	}
 }
 
-func (s *StopStep) Execute(runtime Runtime) error {
+func (s *StopStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	return runtime.StopServices(s.services...)
 }
 
@@ -35,7 +35,7 @@ func NewStartStep(config StepConfig) Step {
 	}
 }
 
-func (s *StartStep) Execute(runtime Runtime) error {
+func (s *StartStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	return runtime.StartServices(s.services...)
 }
 
@@ -53,7 +53,7 @@ func NewAssertStep(task Task) Step {
 	}
 }
 
-func (s *AssertStep) Execute(runtime Runtime) error {
+func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	_, err := s.task.Execute()
 	return err
 }

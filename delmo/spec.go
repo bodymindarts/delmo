@@ -1,16 +1,19 @@
 package delmo
 
 type Spec struct {
-	config SpecConfig
-	steps  []Step
-	tasks  Tasks
+	name        string
+	config      SpecConfig
+	steps       []Step
+	taskFactory *TaskFactory
 }
 
-func NewSpec(config SpecConfig, tasks Tasks) (*Spec, error) {
+func NewSpec(name string, config SpecConfig, taskFactory *TaskFactory) (*Spec, error) {
 	spec := &Spec{
-		config: config,
+		name:        name,
+		config:      config,
+		taskFactory: taskFactory,
 	}
-	spec.steps = initSteps(config, tasks)
+	spec.steps = initSteps(config, taskFactory)
 	return spec, nil
 }
 
@@ -24,7 +27,7 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 
 	for _, step := range s.steps {
 		reporter.ExecutingStep(step)
-		err = step.Execute(runtime)
+		err = step.Execute(runtime, reporter)
 		if err != nil {
 			reporter.StepExecutionFailed(step, err)
 			break
@@ -41,7 +44,7 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 	return nil
 }
 
-func initSteps(stepConfigs []StepConfig, tasks Tasks) []Step {
+func initSteps(stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -52,7 +55,7 @@ func initSteps(stepConfigs []StepConfig, tasks Tasks) []Step {
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				task, _ := tasks[taskName]
+				task := taskFactory.Task(taskName)
 				steps = append(steps, NewAssertStep(task))
 			}
 		}

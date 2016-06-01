@@ -13,6 +13,8 @@ tasks:
 tests:
 - name: webapp_fails
   spec:
+  # - ready: [webapp_is_available]
   - stop: [webapp]
-    assert: [webapp_is_available]
+    # failing: [webapp_is_available]
   - start: [webapp]
+    assert: [webapp_is_available]

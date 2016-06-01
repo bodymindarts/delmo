@@ -7,9 +7,9 @@ import (
 )
 
 type Suite struct {
-	config *SuiteConfig
-	system *System
-	tasks  Tasks
+	config      *SuiteConfig
+	system      *System
+	taskFactory *TaskFactory
 }
 
 func NewSuite(config *SuiteConfig) (*Suite, error) {
@@ -17,11 +17,11 @@ func NewSuite(config *SuiteConfig) (*Suite, error) {
 		config: config,
 		system: NewSystem(config.System),
 	}
-	tasks, err := NewTasks(config.Tasks)
+	taskFactory, err := NewTaskFactory(config.Tasks)
 	if err != nil {
 		return nil, err
 	}
-	suite.tasks = tasks
+	suite.taskFactory = taskFactory
 	return suite, nil
 }
 
@@ -32,7 +32,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 	succeeded := []*TestReport{}
 
 	for _, test := range s.config.Tests {
-		runner := NewTestRunner(test, s.tasks)
+		runner := NewTestRunner(test, s.taskFactory)
 		runtime, err := s.system.NewRuntime(test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))

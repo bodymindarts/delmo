@@ -17,6 +17,9 @@ type Listener interface {
 	Warn(string)
 }
 
+type TaskReporter interface {
+}
+
 type OutputFetcher func() ([]byte, error)
 
 func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Listener) *TestReport {
