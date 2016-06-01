@@ -31,7 +31,9 @@ func (s *Suite) Run(ui cli.Ui) int {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))
 			continue
 		}
-		report := runner.RunTest(runtime)
+
+		ui.Info(fmt.Sprintf("Running test %s", test.Name))
+		report := runner.RunTest(runtime, ui)
 		if report.Success {
 			succeeded = append(succeeded, report)
 		} else {
