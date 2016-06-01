@@ -44,7 +44,7 @@ func (r *TestReport) RuntimeStopped() {
 }
 
 func (r *TestReport) ExecutingStep(step Step) {
-	r.reportInfo(fmt.Sprintf("Executing: %s", step.Description()))
+	r.reportInfo(fmt.Sprintf("Executing step -  %s", step.Description()))
 }
 
 func (r *TestReport) StepExecutionFailed(step Step, err error) {
