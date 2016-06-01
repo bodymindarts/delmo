@@ -3,6 +3,13 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "OVtXv0QJb3EhBBKz/Nb1QAo9Hqk=",
+			"path": "github.com/fsouza/go-dockerclient",
+			"revision": "d750ee8aff39bca4ccf0b362db4f04510145d678",
+			"revisionTime": "2015-11-30T16:25:58Z",
+			"tree": true
+		},
+		{
 			"path": "github.com/mitchellh/cli",
 			"revision": "8102d0ed5ea2709ade1243798785888175f6e415",
 			"revisionTime": "2015-06-18T19:01:06Z",
