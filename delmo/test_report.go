@@ -58,7 +58,7 @@ func (r *TestReport) ExecutingStep(step Step) {
 }
 
 func (r *TestReport) StepExecutionFailed(step Step, err error) {
-	r.Fail(fmt.Sprintf("FAIL! Could not execute step %s, REASON: %s", step.Description(), err), err)
+	r.Fail(fmt.Sprintf("FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err), err)
 }
 
 func (r *TestReport) Output() string {
