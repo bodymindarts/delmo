@@ -13,7 +13,7 @@ func NewSpec(config SpecConfig) (*Spec, error) {
 	return spec, nil
 }
 
-func (s *Spec) Execute(runtime Runtime) error {
+func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 	var err error
 	for _, step := range s.steps {
 		err = step.Execute(runtime)

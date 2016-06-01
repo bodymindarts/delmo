@@ -1,13 +1,9 @@
 package delmo
 
-import (
-	"errors"
-	"fmt"
-)
-
 type TestRunner struct {
 	testConfig TestConfig
 	runtime    Runtime
+	report     *TestReport
 	spec       *Spec
 }
 
@@ -19,28 +15,11 @@ func NewTestRunner(testConfig TestConfig) *TestRunner {
 	}
 }
 
-func (tr *TestRunner) RunTest(runtime Runtime) error {
+func (tr *TestRunner) RunTest(runtime Runtime) *TestReport {
 	tr.runtime = runtime
+	tr.report = NewTestReport()
 
-	err := runtime.StartAll()
-	if err != nil {
-		return errors.New(fmt.Sprintf("Couldn't start runtime\n%s", err))
-	}
+	tr.spec.Execute(runtime, tr.report)
 
-	tr.spec.Execute(runtime)
-
-	err = runtime.StopAll()
-	if err != nil {
-		return errors.New(fmt.Sprintf("Couldn't stop runtime\n%s", err))
-	}
-
-	return errors.New("whoops")
-}
-
-func (tr *TestRunner) Output() ([]byte, error) {
-	return tr.runtime.Output()
-}
-
-func (tr *TestRunner) Cleanup() error {
-	return tr.runtime.Cleanup()
+	return tr.report
 }

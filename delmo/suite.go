@@ -18,8 +18,11 @@ func NewSuite(config *SuiteConfig) *Suite {
 	}
 }
 
-func (s *Suite) Run(ui cli.Ui) (int, error) {
+func (s *Suite) Run(ui cli.Ui) int {
 	ui.Info(fmt.Sprintf("Running Test Suite for System %s", s.config.System.Name))
+
+	failed := []*TestReport{}
+	succeeded := []*TestReport{}
 
 	for _, test := range s.config.Tests {
 		runner := NewTestRunner(test)
@@ -28,18 +31,26 @@ func (s *Suite) Run(ui cli.Ui) (int, error) {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))
 			continue
 		}
-		err = runner.RunTest(runtime)
-		if err != nil {
-			ui.Error(fmt.Sprintf("Test %s failed! %s", test.Name, err))
+		report := runner.RunTest(runtime)
+		if report.Success {
+			succeeded = append(succeeded, report)
+		} else {
+			failed = append(succeeded, report)
 		}
-		outputTest(ui, test.Name, runner)
-		runner.Cleanup()
+		outputReport(ui, report)
 	}
 
-	return 0, nil
+	outputSummary(ui, failed, succeeded)
+	if len(failed) != 0 {
+		return 1
+	}
+	return 0
 }
 
-func outputTest(ui cli.Ui, name string, runner *TestRunner) {
-	runnerOut, _ := runner.Output()
-	ui.Output(fmt.Sprintf("Output for %s:\n%s", name, runnerOut))
+func outputReport(ui cli.Ui, report *TestReport) {
+	ui.Output(report.Output())
+}
+
+func outputSummary(ui cli.Ui, failed []*TestReport, succeeded []*TestReport) {
+	ui.Output("SUMMARY")
 }

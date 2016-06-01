@@ -39,7 +39,7 @@ func (t *TestCommand) Run(args []string) int {
 		return 1
 	}
 	suite := NewSuite(config)
-	result, _ := suite.Run(t.Ui)
+	result := suite.Run(t.Ui)
 	return result
 
 }
