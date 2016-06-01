@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/mitchellh/cli"
 )
@@ -30,31 +29,18 @@ func (t *TestCommand) Run(args []string) int {
 	var path string
 	flags.StringVar(&path, "f", "delmo.yml", "")
 	if err := flags.Parse(args); err != nil {
+		t.Ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
 		return 1
 	}
 
-	suite, err := Load(path)
+	config, err := LoadConfig(path)
 	if err != nil {
-		t.Ui.Error(fmt.Sprintf("%v", err))
+		t.Ui.Error(fmt.Sprintf("Error reading file %s\n%s", path, err))
 		return 1
 	}
-	system, err := NewDockerCompose(suite.ComposeFile, "delmo")
-	if err != nil {
-		t.Ui.Error(fmt.Sprintf("%s", err))
-		return 1
-	}
-	t.Ui.Info(fmt.Sprintf("Starting System %s", suite.System.Name))
-	system.Start()
-	t.Ui.Info("Waiting 5 seconds")
-	time.Sleep(5 * time.Second)
-	t.Ui.Info("Stopping System")
-	system.Stop()
-	t.Ui.Info("Reading output")
-
-	out, err := system.Output()
-	err = system.Cleanup()
-	t.Ui.Info(string(out))
-	return 0
+	suite := NewSuite(config)
+	result, _ := suite.Run(t.Ui)
+	return result
 
 }
 
