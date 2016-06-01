@@ -15,9 +15,10 @@ type SuiteConfig struct {
 }
 
 type SystemConfig struct {
-	Name     string `yaml:"name"`
-	File     string `yaml:"file"`
-	Services map[string]ServiceConfig
+	Name             string `yaml:"name"`
+	File             string `yaml:"file"`
+	CompleteFilePath string
+	Services         map[string]ServiceConfig
 }
 
 type TestConfig struct {
@@ -57,6 +58,7 @@ func LoadConfig(path string) (*SuiteConfig, error) {
 
 func loadComposeConfig(path string, systemConfig *SystemConfig) error {
 	composePath := fmt.Sprintf("%s/%s", filepath.Dir(path), systemConfig.File)
+	systemConfig.CompleteFilePath = composePath
 	bytes, err := ioutil.ReadFile(composePath)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Error loading file '%s'\n%s", composePath, err))

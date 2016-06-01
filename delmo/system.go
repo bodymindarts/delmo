@@ -9,9 +9,5 @@ func NewSystem(config SystemConfig) *System {
 }
 
 func (s *System) NewRuntime(name string) (Runtime, error) {
-	runtime, err := NewDockerCompose(s.config.File, name)
-	if err != nil {
-		return nil, err
-	}
-	return runtime, nil
+	return NewDockerCompose(s.config.CompleteFilePath, name)
 }
