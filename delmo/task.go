@@ -23,6 +23,7 @@ type TaskFactory struct {
 type Task struct {
 	context string
 	client  *docker.Client
+	Name    string
 	config  TaskConfig
 }
 
@@ -41,10 +42,12 @@ func NewTaskFactory(configs []TaskConfig) (*TaskFactory, error) {
 }
 
 func (t *TaskFactory) Task(context, taskName string) Task {
+	config := t.configs[taskName]
 	return Task{
+		config:  config,
 		context: context,
-		config:  t.configs[taskName],
 		client:  dockerClient,
+		Name:    config.Name,
 	}
 }
 

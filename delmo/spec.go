@@ -32,7 +32,6 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 			reporter.StepExecutionFailed(step, err)
 			break
 		}
-		reporter.StepExecutionSucceeded(step)
 	}
 
 	err = runtime.StopAll()

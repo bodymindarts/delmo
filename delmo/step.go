@@ -59,5 +59,5 @@ func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
 }
 
 func (s *AssertStep) Description() string {
-	return fmt.Sprintf("Assert: %v", s.task)
+	return fmt.Sprintf("Assert: %s", s.task.Name)
 }
