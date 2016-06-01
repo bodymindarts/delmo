@@ -48,7 +48,8 @@ tests:
 version: '2'
 services:
   redis:
-    image: redis`
+    image: redis
+    build: redis`
 
 	tmpDir, configFile := writeFiles("TestSuite_Load", config, compose, t)
 	defer os.Remove(tmpDir)
@@ -64,7 +65,7 @@ services:
 
 	service, ok := suite.System.Services["redis"]
 	if !ok {
-		t.Errorf("System did not load compose file correctly. Missing service %s", "redis")
+		t.Errorf("Compose file not read correctly. Missing service %s", "redis")
 	}
 	if want, got := "redis", service.Image; want != got {
 		t.Errorf("Image not set correctly. Want: %s, got: %s", want, got)
