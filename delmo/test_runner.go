@@ -26,3 +26,10 @@ func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
 
 	return tr.report
 }
+
+func (tr *TestRunner) Cleanup() error {
+	for _, step := range tr.report.FailedSteps {
+		step.Cleanup()
+	}
+	return tr.runtime.Cleanup()
+}

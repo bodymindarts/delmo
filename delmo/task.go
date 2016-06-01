@@ -3,6 +3,7 @@ package delmo
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -60,42 +61,17 @@ func (t Task) Execute() ([]byte, error) {
 		},
 	}
 	container, err := t.client.CreateContainer(createOptions)
-	// if err != nil {
-	// 	if strings.Contains(err.Error(), "container already exists") {
-	// 		// Get the ID of the existing container so we can delete it
-	// 		containers, err := t.client.ListContainers(docker.ListContainersOptions{
-	// 			// The image might be in use by a stopped container, so check everything
-	// 			All: true,
-	// 			Filters: map[string][]string{
-	// 				"name": []string{createOptions.Name},
-	// 			},
-	// 		})
-	// 		if err != nil {
-	// 			return nil, fmt.Errorf("Failed to query list of containers: %s", err)
-	// 		}
-
-	// 		if len(containers) == 0 {
-	// 			return nil, fmt.Errorf("Failed to get id for container %s", createOptions.Name)
-	// 		}
-
-	// 		for _, container := range containers {
-	// 			err = t.client.RemoveContainer(docker.RemoveContainerOptions{
-	// 				ID:    container.ID,
-	// 				Force: true,
-	// 			})
-	// 			if err != nil {
-	// 				return nil, fmt.Errorf("Failed to purge container %s: %s", container.ID, err)
-	// 			}
-	// 		}
-
-	// 		container, err = t.client.CreateContainer(createOptions)
-	// 		if err != nil {
-	// 			return nil, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
-	// 		}
-	// 	} else {
-	// 		return nil, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
-	// 	}
-	// }
+	if err != nil {
+		if strings.Contains(err.Error(), "container already exists") {
+			t.Cleanup()
+			container, err = t.client.CreateContainer(createOptions)
+			if err != nil {
+				return nil, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
+			}
+		} else {
+			return nil, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
+		}
+	}
 
 	hostConfig := &docker.HostConfig{}
 	err = t.client.StartContainer(container.ID, hostConfig)
@@ -132,6 +108,35 @@ func (t Task) Execute() ([]byte, error) {
 	t.client.RemoveContainer(removeOptions)
 
 	return []byte(""), nil
+}
+
+func (t *Task) Cleanup() error {
+	// Get the ID of the existing container so we can delete it
+	containers, err := t.client.ListContainers(docker.ListContainersOptions{
+		// The image might be in use by a stopped container, so check everything
+		All: true,
+		Filters: map[string][]string{
+			"name": []string{t.containerName()},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to query list of containers: %s", err)
+	}
+
+	if len(containers) == 0 {
+		return nil
+	}
+
+	for _, container := range containers {
+		err = t.client.RemoveContainer(docker.RemoveContainerOptions{
+			ID:    container.ID,
+			Force: true,
+		})
+		if err != nil {
+			return fmt.Errorf("Failed to purge container %s: %s", container.ID, err)
+		}
+	}
+	return nil
 }
 
 func (t *Task) containerName() string {

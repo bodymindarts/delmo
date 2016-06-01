@@ -5,6 +5,7 @@ import "fmt"
 type Step interface {
 	Execute(Runtime, TaskReporter) error
 	Description() string
+	Cleanup() error
 }
 
 type StopStep struct {
@@ -25,6 +26,10 @@ func (s *StopStep) Description() string {
 	return fmt.Sprintf("Stop: %v", s.services)
 }
 
+func (s *StopStep) Cleanup() error {
+	return nil
+}
+
 type StartStep struct {
 	services []string
 }
@@ -41,6 +46,10 @@ func (s *StartStep) Execute(runtime Runtime, reporter TaskReporter) error {
 
 func (s *StartStep) Description() string {
 	return fmt.Sprintf("Start: %v", s.services)
+}
+
+func (s *StartStep) Cleanup() error {
+	return nil
 }
 
 type AssertStep struct {
@@ -60,4 +69,8 @@ func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
 
 func (s *AssertStep) Description() string {
 	return fmt.Sprintf("Assert: %s", s.task.Name)
+}
+
+func (s *AssertStep) Cleanup() error {
+	return s.task.Cleanup()
 }

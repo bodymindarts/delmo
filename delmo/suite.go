@@ -44,6 +44,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 		if report.Success {
 			succeeded = append(succeeded, report)
 			ui.Info(fmt.Sprintf("Test %s Succeeded!", test.Name))
+			runner.Cleanup()
 		} else {
 			failed = append(succeeded, report)
 			ui.Info(fmt.Sprintf("Test %s Failed!\nRuntime Output:\n%s", test.Name, report.Output()))

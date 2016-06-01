@@ -3,11 +3,13 @@ package delmo
 import "fmt"
 
 type TestReport struct {
-	Success   bool
-	Error     error
-	listeners []Listener
-	name      string
-	output    OutputFetcher
+	Success     bool
+	Error       error
+	FailedSteps []Step
+	PassedSteps []Step
+	listeners   []Listener
+	name        string
+	output      OutputFetcher
 }
 
 type Listener interface {
