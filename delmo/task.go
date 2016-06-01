@@ -2,7 +2,6 @@ package delmo
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/fsouza/go-dockerclient"
@@ -52,6 +51,16 @@ func (t *TaskFactory) Task(context, taskName string) Task {
 	}
 }
 
+type ReportWriter struct {
+	reporter TaskReporter
+	taskName string
+}
+
+func (r ReportWriter) Write(p []byte) (int, error) {
+	r.reporter.TaskOutput(r.taskName, string(p))
+	return len(p), nil
+}
+
 func (t Task) Execute(reporter TaskReporter) error {
 	createOptions := docker.CreateContainerOptions{
 		Name: t.containerName(),
@@ -86,10 +95,15 @@ func (t Task) Execute(reporter TaskReporter) error {
 		return err
 	}
 
+	stream := ReportWriter{
+		taskName: t.config.Name,
+		reporter: reporter,
+	}
+
 	logOptions := docker.LogsOptions{
 		Container:    container.ID,
-		OutputStream: os.Stdout,
-		ErrorStream:  os.Stderr,
+		OutputStream: stream,
+		ErrorStream:  stream,
 		Stdout:       true,
 		Stderr:       true,
 	}

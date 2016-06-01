@@ -20,6 +20,7 @@ type Listener interface {
 }
 
 type TaskReporter interface {
+	TaskOutput(taskName, output string)
 }
 
 type OutputFetcher func() ([]byte, error)
@@ -31,6 +32,10 @@ func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Li
 		listeners: listeners,
 		output:    outputFetcher,
 	}
+}
+
+func (r *TestReport) TaskOutput(taskName, output string) {
+	r.reportOutput(fmt.Sprintf("%s -> %s", taskName, output))
 }
 
 func (r *TestReport) StartingRuntime() {
@@ -49,7 +54,7 @@ func (r *TestReport) ErrorStoppingRuntime(err error) {
 }
 
 func (r *TestReport) ExecutingStep(step Step) {
-	r.reportInfo(fmt.Sprintf("Executing -  %s", step.Description()))
+	r.reportInfo(fmt.Sprintf("Executing - %s", step.Description()))
 }
 
 func (r *TestReport) StepExecutionFailed(step Step, err error) {
@@ -76,6 +81,11 @@ func (r *TestReport) reportInfo(msg string) {
 	}
 }
 
+func (r *TestReport) reportOutput(msg string) {
+	for _, l := range r.listeners {
+		l.Output(msg)
+	}
+}
 func (r *TestReport) Fail(msg string, err error) {
 	r.reportError(msg)
 	r.Success = false
