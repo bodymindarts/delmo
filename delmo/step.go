@@ -23,7 +23,7 @@ func (s *StopStep) Execute(runtime Runtime, reporter TaskReporter) error {
 }
 
 func (s *StopStep) Description() string {
-	return fmt.Sprintf("Stop: %v", s.services)
+	return fmt.Sprintf("<Stop: %v>", s.services)
 }
 
 func (s *StopStep) Cleanup() error {
@@ -45,7 +45,7 @@ func (s *StartStep) Execute(runtime Runtime, reporter TaskReporter) error {
 }
 
 func (s *StartStep) Description() string {
-	return fmt.Sprintf("Start: %v", s.services)
+	return fmt.Sprintf("<Start: %v>", s.services)
 }
 
 func (s *StartStep) Cleanup() error {
@@ -67,7 +67,7 @@ func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
 }
 
 func (s *AssertStep) Description() string {
-	return fmt.Sprintf("Assert: %s", s.task.Name)
+	return fmt.Sprintf("<Assert: %s>", s.task.Name)
 }
 
 func (s *AssertStep) Cleanup() error {
