@@ -1,8 +1,8 @@
 package delmo
 
 type Runtime interface {
-	Start() error
-	Stop() error
+	StartAll() error
+	StopAll() error
 	Output() ([]byte, error)
 	Cleanup() error
 }

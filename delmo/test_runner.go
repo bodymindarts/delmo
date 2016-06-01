@@ -22,12 +22,12 @@ func NewTestRunner(testConfig TestConfig) *TestRunner {
 func (tr *TestRunner) RunTest(runtime Runtime) error {
 	tr.runtime = runtime
 
-	err := runtime.Start()
+	err := runtime.StartAll()
 	if err != nil {
 		return errors.New(fmt.Sprintf("Couldn't start runtime\n%s", err))
 	}
 
-	err = runtime.Stop()
+	err = runtime.StopAll()
 	if err != nil {
 		return errors.New(fmt.Sprintf("Couldn't stop runtime\n%s", err))
 	}

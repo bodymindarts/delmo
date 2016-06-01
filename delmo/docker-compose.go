@@ -25,13 +25,13 @@ func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 	return dc, nil
 }
 
-func (d *DockerCompose) Start() error {
+func (d *DockerCompose) StartAll() error {
 	args := d.makeArgs("up", "-d", "--force-recreate")
 	cmd := exec.Command(d.rawCmd, args...)
 	return cmd.Run()
 }
 
-func (d *DockerCompose) Stop() error {
+func (d *DockerCompose) StopAll() error {
 	args := d.makeArgs("stop")
 	cmd := exec.Command(d.rawCmd, args...)
 	return cmd.Run()
