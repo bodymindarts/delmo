@@ -35,6 +35,7 @@ func (tr *TestRunner) RunTest(runtime Runtime) error {
 func (tr *TestRunner) Output() ([]byte, error) {
 	return tr.runtime.Output()
 }
+
 func (tr *TestRunner) Cleanup() error {
 	return tr.runtime.Cleanup()
 }
