@@ -17,7 +17,10 @@ func NewTestRunner(testConfig TestConfig) *TestRunner {
 
 func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
 	tr.runtime = runtime
-	tr.report = NewTestReport(tr.testConfig.Name, listener)
+	outputFetcher := func() ([]byte, error) {
+		return runtime.Output()
+	}
+	tr.report = NewTestReport(tr.testConfig.Name, outputFetcher, listener)
 
 	tr.spec.Execute(runtime, tr.report)
 

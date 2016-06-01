@@ -36,10 +36,11 @@ func (s *Suite) Run(ui cli.Ui) int {
 		report := runner.RunTest(runtime, ui)
 		if report.Success {
 			succeeded = append(succeeded, report)
+			ui.Info(fmt.Sprintf("Test %s Succeeded!", test.Name))
 		} else {
 			failed = append(succeeded, report)
+			ui.Info(fmt.Sprintf("Test %s Failed!\nRuntime Output:\n%s", test.Name, report.Output()))
 		}
-		outputReport(ui, report)
 	}
 
 	outputSummary(ui, failed, succeeded)
@@ -49,10 +50,9 @@ func (s *Suite) Run(ui cli.Ui) int {
 	return 0
 }
 
-func outputReport(ui cli.Ui, report *TestReport) {
-	ui.Output(report.Output())
-}
-
 func outputSummary(ui cli.Ui, failed []*TestReport, succeeded []*TestReport) {
-	ui.Output("SUMMARY")
+	ui.Output(
+		fmt.Sprintf("SUMMARY:\n%d tests failed\n%d tests succeded",
+			len(failed),
+			len(succeeded)))
 }

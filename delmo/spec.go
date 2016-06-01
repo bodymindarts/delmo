@@ -22,10 +22,13 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 	reporter.RuntimeStarted()
 
 	for _, step := range s.steps {
+		reporter.ExecutingStep(step)
 		err = step.Execute(runtime)
 		if err != nil {
-			return err
+			reporter.StepExecutionFailed(step, err)
+			break
 		}
+		reporter.StepExecutionSucceeded(step)
 	}
 
 	err = runtime.StopAll()

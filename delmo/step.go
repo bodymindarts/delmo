@@ -1,7 +1,10 @@
 package delmo
 
+import "fmt"
+
 type Step interface {
 	Execute(Runtime) error
+	Description() string
 }
 
 type StopStep struct {
@@ -18,6 +21,10 @@ func (s *StopStep) Execute(runtime Runtime) error {
 	return runtime.StopServices(s.services...)
 }
 
+func (s *StopStep) Description() string {
+	return fmt.Sprintf("Stop: %v", s.services)
+}
+
 type StartStep struct {
 	services []string
 }
@@ -30,4 +37,8 @@ func NewStartStep(config StepConfig) Step {
 
 func (s *StartStep) Execute(runtime Runtime) error {
 	return runtime.StartServices(s.services...)
+}
+
+func (s *StartStep) Description() string {
+	return fmt.Sprintf("Start: %v", s.services)
 }

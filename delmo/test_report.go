@@ -7,6 +7,7 @@ type TestReport struct {
 	Error     error
 	listeners []Listener
 	name      string
+	output    OutputFetcher
 }
 
 type Listener interface {
@@ -16,16 +17,23 @@ type Listener interface {
 	Warn(string)
 }
 
-func NewTestReport(testName string, listeners ...Listener) *TestReport {
-	return &TestReport{name: testName, listeners: listeners}
+type OutputFetcher func() ([]byte, error)
+
+func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Listener) *TestReport {
+	return &TestReport{
+		Success:   true,
+		name:      testName,
+		listeners: listeners,
+		output:    outputFetcher,
+	}
 }
 
 func (r *TestReport) ErrorStartingRuntime(err error) {
-	r.reportError(fmt.Sprintf("Could not start runtime for %s! %s", r.name, err))
+	r.Fail(fmt.Sprintf("Could not start runtime for %s! %s", r.name, err), err)
 }
 
 func (r *TestReport) ErrorStoppingRuntime(err error) {
-	r.reportError(fmt.Sprintf("Could not stop runtime for %s! %s", r.name, err))
+	r.Fail(fmt.Sprintf("Could not stop runtime for %s! %s", r.name, err), err)
 }
 
 func (r *TestReport) RuntimeStarted() {
@@ -35,8 +43,24 @@ func (r *TestReport) RuntimeStopped() {
 	r.reportInfo(fmt.Sprintf("Runtime for %s stopped", r.name))
 }
 
+func (r *TestReport) ExecutingStep(step Step) {
+	r.reportInfo(fmt.Sprintf("Executing: %s", step.Description()))
+}
+
+func (r *TestReport) StepExecutionFailed(step Step, err error) {
+	r.Fail(fmt.Sprintf("FAIL! Could not execute step %s, REASON: %s", step.Description(), err), err)
+}
+
+func (r *TestReport) StepExecutionSucceeded(step Step) {
+	r.reportInfo(fmt.Sprintf("Step succeeded"))
+}
+
 func (r *TestReport) Output() string {
-	return ""
+	output, err := r.output()
+	if err != nil {
+		return fmt.Sprintf("Couldn't fetch output! %s", err)
+	}
+	return string(output)
 }
 
 func (r *TestReport) reportError(msg string) {
@@ -49,4 +73,10 @@ func (r *TestReport) reportInfo(msg string) {
 	for _, l := range r.listeners {
 		l.Info(msg)
 	}
+}
+
+func (r *TestReport) Fail(msg string, err error) {
+	r.reportError(msg)
+	r.Success = false
+	r.Error = err
 }
