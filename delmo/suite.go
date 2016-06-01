@@ -28,8 +28,18 @@ func (s *Suite) Run(ui cli.Ui) (int, error) {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))
 			continue
 		}
-		runner.RunTest(runtime)
+		err = runner.RunTest(runtime)
+		if err != nil {
+			ui.Error(fmt.Sprintf("Test %s failed! %s", test.Name, err))
+		}
+		outputTest(ui, test.Name, runner)
+		runner.Cleanup()
 	}
 
 	return 0, nil
+}
+
+func outputTest(ui cli.Ui, name string, runner *TestRunner) {
+	runnerOut, _ := runner.Output()
+	ui.Output(fmt.Sprintf("Output for %s:\n%s", name, runnerOut))
 }
