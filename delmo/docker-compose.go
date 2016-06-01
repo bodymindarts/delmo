@@ -1,6 +1,10 @@
 package delmo
 
-import "os/exec"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+)
 
 type DockerCompose struct {
 	rawCmd      string
@@ -9,7 +13,7 @@ type DockerCompose struct {
 }
 
 func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
-	cmd, err := exec.LookPath("docker-compose")
+	cmd, err := assertExecPreconditions()
 	if err != nil {
 		return nil, err
 	}
@@ -49,4 +53,16 @@ func (d *DockerCompose) makeArgs(args ...string) []string {
 	return append([]string{
 		"--file", d.composeFile, "--project-name", d.prefix,
 	}, args...)
+}
+
+func assertExecPreconditions() (string, error) {
+	if host := os.Getenv("DOCKER_HOST"); host == "" {
+		return "", fmt.Errorf("Environment not setup correctly! DOCKER_HOST is not set")
+	}
+
+	cmd, err := exec.LookPath("docker-compose")
+	if err != nil {
+		return "", err
+	}
+	return cmd, nil
 }
