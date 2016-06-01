@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "N5zDlkYc/+g7EwjB3GyHkYfOJAI=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "5bcd134fee4dd1475da17714aac19c0aa0142e2f",
+			"revisionTime": "2016-05-16T23:05:56Z"
+		}
+	],
+	"rootPath": "github.com/mitchellh/cli"
+}

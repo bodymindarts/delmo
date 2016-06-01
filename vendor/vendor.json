@@ -3,10 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "jawoNpi55kN26c5oTARrtedx1bA=",
 			"path": "github.com/mitchellh/cli",
 			"revision": "8102d0ed5ea2709ade1243798785888175f6e415",
-			"revisionTime": "2015-06-18T19:01:06Z"
+			"revisionTime": "2015-06-18T19:01:06Z",
+			"tree": true
 		}
 	],
 	"rootPath": "github.com/bodymindarts/delmo"
