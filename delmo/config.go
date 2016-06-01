@@ -1,12 +1,11 @@
 package delmo
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
 
-	dockerConfig "github.com/docker/libcompose/config"
-	"github.com/docker/libcompose/lookup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -18,9 +17,7 @@ type SuiteConfig struct {
 type SystemConfig struct {
 	Name     string `yaml:"name"`
 	File     string `yaml:"file"`
-	Services map[string]*dockerConfig.ServiceConfig
-	Volumes  map[string]*dockerConfig.VolumeConfig
-	Networks map[string]*dockerConfig.NetworkConfig
+	Services map[string]ServiceConfig
 }
 
 type TestConfig struct {
@@ -35,6 +32,13 @@ type StepConfig struct {
 	Start []string `yaml:"start"`
 }
 
+type ComposeConfig struct {
+	Services map[string]ServiceConfig `yaml:"services"`
+}
+type ServiceConfig struct {
+	Image string `yaml:"image"`
+}
+
 func LoadConfig(path string) (*SuiteConfig, error) {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -42,32 +46,27 @@ func LoadConfig(path string) (*SuiteConfig, error) {
 	}
 
 	var config SuiteConfig
-	yaml.Unmarshal(bytes, &config)
-	err = loadComposeFile(path, &config.System)
+	err = yaml.Unmarshal(bytes, &config)
 	if err != nil {
 		return nil, err
 	}
 
+	err = loadComposeConfig(path, &config.System)
 	return &config, nil
 }
 
-func loadComposeFile(path string, systemConfig *SystemConfig) error {
+func loadComposeConfig(path string, systemConfig *SystemConfig) error {
 	composePath := fmt.Sprintf("%s/%s", filepath.Dir(path), systemConfig.File)
 	bytes, err := ioutil.ReadFile(composePath)
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("Error loading file '%s'\n%s", composePath, err))
 	}
 
-	services, volumes, networks, err := dockerConfig.Merge(
-		dockerConfig.NewServiceConfigs(),
-		&lookup.OsEnvLookup{},
-		&lookup.FileConfigLookup{},
-		"",
-		bytes,
-		&dockerConfig.ParseOptions{},
-	)
-	systemConfig.Services = services
-	systemConfig.Volumes = volumes
-	systemConfig.Networks = networks
-	return err
+	var composeConfig ComposeConfig
+	err = yaml.Unmarshal(bytes, &composeConfig)
+	if err != nil {
+		return err
+	}
+	systemConfig.Services = composeConfig.Services
+	return nil
 }
