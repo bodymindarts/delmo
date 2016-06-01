@@ -23,7 +23,11 @@ func (s *Suite) Run(ui cli.Ui) (int, error) {
 
 	for _, test := range s.config.Tests {
 		runner := NewTestRunner(test)
-		runtime := s.system.NewRuntime(test.Name)
+		runtime, err := s.system.NewRuntime(test.Name)
+		if err != nil {
+			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))
+			continue
+		}
 		runner.RunTest(runtime)
 	}
 

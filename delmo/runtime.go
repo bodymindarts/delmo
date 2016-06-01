@@ -1,4 +1,8 @@
 package delmo
 
-type Runtime struct {
+type Runtime interface {
+	Start() error
+	Stop() error
+	Output() ([]byte, error)
+	Cleanup() error
 }

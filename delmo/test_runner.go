@@ -10,6 +10,6 @@ func NewTestRunner(testConfig TestConfig) *TestRunner {
 	}
 }
 
-func (tr *TestRunner) RunTest(runtime *Runtime) error {
+func (tr *TestRunner) RunTest(runtime Runtime) error {
 	return nil
 }
