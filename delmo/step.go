@@ -42,3 +42,21 @@ func (s *StartStep) Execute(runtime Runtime) error {
 func (s *StartStep) Description() string {
 	return fmt.Sprintf("Start: %v", s.services)
 }
+
+type AssertStep struct {
+	task Task
+}
+
+func NewAssertStep(task Task) Step {
+	return &AssertStep{
+		task: task,
+	}
+}
+
+func (s *AssertStep) Execute(runtime Runtime) error {
+	return runtime.RunTask(s.task)
+}
+
+func (s *AssertStep) Description() string {
+	return fmt.Sprintf("Assert: %v", s.task)
+}

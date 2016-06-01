@@ -38,6 +38,13 @@ system:
   name: test
   file: docker-compose.yml
 
+tasks:
+- name: redis_is_running
+  image: redis
+  run:
+    path: echo
+    args: [hello, world]
+
 tests:
 - name: simple
   spec:

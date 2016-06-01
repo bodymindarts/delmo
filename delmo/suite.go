@@ -9,12 +9,14 @@ import (
 type Suite struct {
 	config *SuiteConfig
 	system *System
+	tasks  Tasks
 }
 
 func NewSuite(config *SuiteConfig) *Suite {
 	return &Suite{
 		config: config,
 		system: NewSystem(config.System),
+		tasks:  NewTasks(config.Tasks),
 	}
 }
 
@@ -25,7 +27,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 	succeeded := []*TestReport{}
 
 	for _, test := range s.config.Tests {
-		runner := NewTestRunner(test)
+		runner := NewTestRunner(test, s.tasks)
 		runtime, err := s.system.NewRuntime(test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))

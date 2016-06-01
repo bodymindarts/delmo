@@ -11,6 +11,7 @@ import (
 
 type SuiteConfig struct {
 	System SystemConfig `yaml:"system"`
+	Tasks  []TaskConfig `yaml:"tasks"`
 	Tests  []TestConfig `yaml:"tests"`
 }
 
@@ -21,6 +22,17 @@ type SystemConfig struct {
 	Services         map[string]ServiceConfig
 }
 
+type TaskConfig struct {
+	Name  string    `yaml:"name"`
+	Image string    `yaml:"image"`
+	Run   RunConfig `yaml:"run"`
+}
+
+type RunConfig struct {
+	Path string   `yaml:"path"`
+	Args []string `yaml:"args"`
+}
+
 type TestConfig struct {
 	Name string     `yaml:"name"`
 	Spec SpecConfig `yaml:"spec"`
@@ -29,8 +41,9 @@ type TestConfig struct {
 type SpecConfig []StepConfig
 
 type StepConfig struct {
-	Stop  []string `yaml:"stop"`
-	Start []string `yaml:"start"`
+	Stop   []string `yaml:"stop"`
+	Start  []string `yaml:"start"`
+	Assert []string `yaml:"assert"`
 }
 
 type ComposeConfig struct {

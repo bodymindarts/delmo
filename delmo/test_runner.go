@@ -7,8 +7,8 @@ type TestRunner struct {
 	spec       *Spec
 }
 
-func NewTestRunner(testConfig TestConfig) *TestRunner {
-	spec, _ := NewSpec(testConfig.Spec)
+func NewTestRunner(testConfig TestConfig, tasks Tasks) *TestRunner {
+	spec, _ := NewSpec(testConfig.Spec, tasks)
 	return &TestRunner{
 		testConfig: testConfig,
 		spec:       spec,

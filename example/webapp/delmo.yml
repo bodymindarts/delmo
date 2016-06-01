@@ -3,17 +3,18 @@ system:
   name: Webapp
   file: docker-compose.yml
 
-# tasks:
-# - name: webapp_is_available
-#   image: webapp
-#   run:
-#     path: echo
-#     args: [hello, world]
+tasks:
+- name: webapp_is_available
+  image: webapp
+  run:
+    path: echo
+    args: [hello, world]
 
 tests:
 - name: webapp_fails
   spec:
-  - {stop: [webapp]}
-  # - {assert: [webapp_is_available]}
-  - {start: [webapp]}
-  # - {assert: [webapp_is_available]}
+  - {ready: [webapp_is_available]}
+  - stop: [webapp]
+    assert: [webapp_is_available]
+  - start: [webapp]
+    assert: [webapp_is_available]

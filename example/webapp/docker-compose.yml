@@ -3,7 +3,7 @@ version: '2'
 services:
   webapp:
     build: sinatra
-    image: sinatra
+    image: webapp
     networks:
     - az1
 
