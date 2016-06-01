@@ -35,7 +35,7 @@ func (t *TestCommand) Run(args []string) int {
 
 	config, err := LoadConfig(path)
 	if err != nil {
-		t.Ui.Error(fmt.Sprintf("Error reading file %s\n%s", path, err))
+		t.Ui.Error(fmt.Sprintf("Error reading configuration\n%s", err))
 		return 1
 	}
 	suite := NewSuite(config)
