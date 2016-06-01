@@ -59,7 +59,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 
 func outputSummary(ui cli.Ui, failed []*TestReport, succeeded []*TestReport) {
 	ui.Output(
-		fmt.Sprintf("SUMMARY:\n%d tests succeeded\n%d tests failed",
+		fmt.Sprintf("\n\nSUMMARY:\n%d tests succeeded\n%d tests failed",
 			len(succeeded),
 			len(failed)))
 }

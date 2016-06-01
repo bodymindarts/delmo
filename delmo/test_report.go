@@ -31,19 +31,19 @@ func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Li
 	}
 }
 
+func (r *TestReport) StartingRuntime() {
+	r.reportInfo(fmt.Sprintf("Starting %s Runtime", r.name))
+}
+func (r *TestReport) StoppingRuntime() {
+	r.reportInfo(fmt.Sprintf("Stopping %s Runtime", r.name))
+}
+
 func (r *TestReport) ErrorStartingRuntime(err error) {
 	r.Fail(fmt.Sprintf("Could not start runtime for %s! %s", r.name, err), err)
 }
 
 func (r *TestReport) ErrorStoppingRuntime(err error) {
 	r.Fail(fmt.Sprintf("Could not stop runtime for %s! %s", r.name, err), err)
-}
-
-func (r *TestReport) RuntimeStarted() {
-	r.reportInfo(fmt.Sprintf("Runtime for %s started", r.name))
-}
-func (r *TestReport) RuntimeStopped() {
-	r.reportInfo(fmt.Sprintf("Runtime for %s stopped", r.name))
 }
 
 func (r *TestReport) ExecutingStep(step Step) {
