@@ -37,6 +37,18 @@ func (d *DockerCompose) StopAll() error {
 	return cmd.Run()
 }
 
+func (d *DockerCompose) StopServices(name ...string) error {
+	args := d.makeArgs("stop", name...)
+	cmd := exec.Command(d.rawCmd, args...)
+	return cmd.Run()
+}
+
+func (d *DockerCompose) StartServices(name ...string) error {
+	args := d.makeArgs("start", name...)
+	cmd := exec.Command(d.rawCmd, args...)
+	return cmd.Run()
+}
+
 func (d *DockerCompose) Output() ([]byte, error) {
 	args := d.makeArgs("logs")
 	cmd := exec.Command(d.rawCmd, args...)
@@ -49,9 +61,9 @@ func (d *DockerCompose) Cleanup() error {
 	return cmd.Run()
 }
 
-func (d *DockerCompose) makeArgs(args ...string) []string {
+func (d *DockerCompose) makeArgs(command string, args ...string) []string {
 	return append([]string{
-		"--file", d.composeFile, "--project-name", d.prefix,
+		"--file", d.composeFile, "--project-name", d.prefix, command,
 	}, args...)
 }
 
