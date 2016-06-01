@@ -41,7 +41,8 @@ system:
 tests:
 - name: simple
   spec:
-  - {stop: [redis]}`
+  - {stop: [redis]}
+  - {start: [redis]}`
 
 	compose := `
 version: '2'
@@ -67,5 +68,8 @@ services:
 	}
 	if want, got := "redis", service.Image; want != got {
 		t.Errorf("Image not set correctly. Want: %s, got: %s", want, got)
+	}
+	if want, got := 2, len(suite.Tests[0].Spec); want != got {
+		t.Errorf("Spec not parsed correctly. Want: %d, got: %d", want, got)
 	}
 }

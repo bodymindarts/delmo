@@ -12,6 +12,7 @@ import (
 
 type SuiteConfig struct {
 	System SystemConfig `yaml:"system"`
+	Tests  []TestConfig `yaml:"tests"`
 }
 
 type SystemConfig struct {
@@ -20,6 +21,18 @@ type SystemConfig struct {
 	Services map[string]*dockerConfig.ServiceConfig
 	Volumes  map[string]*dockerConfig.VolumeConfig
 	Networks map[string]*dockerConfig.NetworkConfig
+}
+
+type TestConfig struct {
+	Name string     `yaml:"name"`
+	Spec SpecConfig `yaml:"spec"`
+}
+
+type SpecConfig []StepConfig
+
+type StepConfig struct {
+	Stop  []string `yaml:"stop"`
+	Start []string `yaml:"start"`
 }
 
 func LoadConfig(path string) (*SuiteConfig, error) {
@@ -45,7 +58,14 @@ func loadComposeFile(path string, systemConfig *SystemConfig) error {
 		return err
 	}
 
-	services, volumes, networks, err := dockerConfig.Merge(dockerConfig.NewServiceConfigs(), &lookup.OsEnvLookup{}, &lookup.FileConfigLookup{}, "", bytes, &dockerConfig.ParseOptions{})
+	services, volumes, networks, err := dockerConfig.Merge(
+		dockerConfig.NewServiceConfigs(),
+		&lookup.OsEnvLookup{},
+		&lookup.FileConfigLookup{},
+		"",
+		bytes,
+		&dockerConfig.ParseOptions{},
+	)
 	systemConfig.Services = services
 	systemConfig.Volumes = volumes
 	systemConfig.Networks = networks
