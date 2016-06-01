@@ -8,11 +8,14 @@ import (
 type TestRunner struct {
 	testConfig TestConfig
 	runtime    Runtime
+	spec       *Spec
 }
 
 func NewTestRunner(testConfig TestConfig) *TestRunner {
+	spec, _ := NewSpec(testConfig.Spec)
 	return &TestRunner{
 		testConfig: testConfig,
+		spec:       spec,
 	}
 }
 
