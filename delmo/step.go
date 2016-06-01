@@ -63,7 +63,15 @@ func NewAssertStep(task Task) Step {
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	return s.task.Execute(reporter)
+	ret, err := s.task.Execute(reporter)
+	if err != nil {
+		return err
+	}
+
+	if ret != 0 {
+		return fmt.Errorf("Task completed but return value was: %d", ret)
+	}
+	return nil
 }
 
 func (s *AssertStep) Description() string {

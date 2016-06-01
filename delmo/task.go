@@ -61,7 +61,7 @@ func (r ReportWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func (t Task) Execute(reporter TaskReporter) error {
+func (t Task) Execute(reporter TaskReporter) (int, error) {
 	createOptions := docker.CreateContainerOptions{
 		Name: t.containerName(),
 		Config: &docker.Config{
@@ -75,10 +75,10 @@ func (t Task) Execute(reporter TaskReporter) error {
 			t.Cleanup()
 			container, err = t.client.CreateContainer(createOptions)
 			if err != nil {
-				return fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
+				return 1, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
 			}
 		} else {
-			return fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
+			return 1, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
 		}
 	}
 
@@ -86,13 +86,13 @@ func (t Task) Execute(reporter TaskReporter) error {
 	err = t.client.StartContainer(container.ID, hostConfig)
 	if err != nil {
 		fmt.Printf("ERROR starting container: %s\n", err)
-		return err
+		return 1, err
 	}
 
-	ret, err := t.client.WaitContainer(container.ID)
+	returnValue, err := t.client.WaitContainer(container.ID)
 	if err != nil {
 		fmt.Printf("ERROR waiting container: %s\n", err)
-		return err
+		return 1, err
 	}
 
 	stream := ReportWriter{
@@ -110,9 +110,8 @@ func (t Task) Execute(reporter TaskReporter) error {
 	err = t.client.Logs(logOptions)
 	if err != nil {
 		fmt.Printf("ERROR logging container: %s\n", err)
-		return err
+		return 1, err
 	}
-	fmt.Printf("Return value for container: %d\n", ret)
 
 	removeOptions := docker.RemoveContainerOptions{
 		ID:            container.ID,
@@ -121,7 +120,7 @@ func (t Task) Execute(reporter TaskReporter) error {
 	}
 	t.client.RemoveContainer(removeOptions)
 
-	return nil
+	return returnValue, nil
 }
 
 func (t *Task) Cleanup() error {
