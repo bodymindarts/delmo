@@ -27,6 +27,8 @@ func (tr *TestRunner) RunTest(runtime Runtime) error {
 		return errors.New(fmt.Sprintf("Couldn't start runtime\n%s", err))
 	}
 
+	tr.spec.Execute(runtime)
+
 	err = runtime.StopAll()
 	if err != nil {
 		return errors.New(fmt.Sprintf("Couldn't stop runtime\n%s", err))

@@ -15,7 +15,7 @@ func NewStopStep(config StepConfig) Step {
 }
 
 func (s *StopStep) Execute(runtime Runtime) error {
-	return nil
+	return runtime.StopServices(s.services...)
 }
 
 type StartStep struct {
@@ -29,5 +29,5 @@ func NewStartStep(config StepConfig) Step {
 }
 
 func (s *StartStep) Execute(runtime Runtime) error {
-	return nil
+	return runtime.StartServices(s.services...)
 }

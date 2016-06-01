@@ -13,6 +13,18 @@ func NewSpec(config SpecConfig) (*Spec, error) {
 	return spec, nil
 }
 
+func (s *Spec) Execute(runtime Runtime) error {
+	var err error
+	for _, step := range s.steps {
+		err = step.Execute(runtime)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func initSteps(stepConfigs []StepConfig) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
