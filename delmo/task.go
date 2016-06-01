@@ -52,7 +52,7 @@ func (t *TaskFactory) Task(context, taskName string) Task {
 	}
 }
 
-func (t Task) Execute() ([]byte, error) {
+func (t Task) Execute(reporter TaskReporter) error {
 	createOptions := docker.CreateContainerOptions{
 		Name: t.containerName(),
 		Config: &docker.Config{
@@ -66,10 +66,10 @@ func (t Task) Execute() ([]byte, error) {
 			t.Cleanup()
 			container, err = t.client.CreateContainer(createOptions)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
+				return fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
 			}
 		} else {
-			return nil, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
+			return fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
 		}
 	}
 
@@ -77,13 +77,13 @@ func (t Task) Execute() ([]byte, error) {
 	err = t.client.StartContainer(container.ID, hostConfig)
 	if err != nil {
 		fmt.Printf("ERROR starting container: %s\n", err)
-		return nil, err
+		return err
 	}
 
 	ret, err := t.client.WaitContainer(container.ID)
 	if err != nil {
 		fmt.Printf("ERROR waiting container: %s\n", err)
-		return nil, err
+		return err
 	}
 
 	logOptions := docker.LogsOptions{
@@ -96,7 +96,7 @@ func (t Task) Execute() ([]byte, error) {
 	err = t.client.Logs(logOptions)
 	if err != nil {
 		fmt.Printf("ERROR logging container: %s\n", err)
-		return nil, err
+		return err
 	}
 	fmt.Printf("Return value for container: %d\n", ret)
 
@@ -107,7 +107,7 @@ func (t Task) Execute() ([]byte, error) {
 	}
 	t.client.RemoveContainer(removeOptions)
 
-	return []byte(""), nil
+	return nil
 }
 
 func (t *Task) Cleanup() error {

@@ -63,8 +63,7 @@ func NewAssertStep(task Task) Step {
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	_, err := s.task.Execute()
-	return err
+	return s.task.Execute(reporter)
 }
 
 func (s *AssertStep) Description() string {
