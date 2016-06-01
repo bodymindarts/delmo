@@ -3,7 +3,6 @@ package delmo
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -22,8 +21,9 @@ type TaskFactory struct {
 }
 
 type Task struct {
-	client *docker.Client
-	config TaskConfig
+	context string
+	client  *docker.Client
+	config  TaskConfig
 }
 
 func NewTaskFactory(configs []TaskConfig) (*TaskFactory, error) {
@@ -40,59 +40,59 @@ func NewTaskFactory(configs []TaskConfig) (*TaskFactory, error) {
 	}, nil
 }
 
-func (t *TaskFactory) Task(name string) Task {
+func (t *TaskFactory) Task(context, taskName string) Task {
 	return Task{
-		config: t.configs["name"],
-		client: dockerClient,
+		context: context,
+		config:  t.configs[taskName],
+		client:  dockerClient,
 	}
 }
 
 func (t Task) Execute() ([]byte, error) {
-	testName := "webapp"
 	createOptions := docker.CreateContainerOptions{
-		Name: fmt.Sprintf("%s_%s", testName, t.config.Name),
+		Name: t.containerName(),
 		Config: &docker.Config{
 			Image: t.config.Image,
 			Cmd:   append([]string{t.config.Run.Path}, t.config.Run.Args...),
 		},
 	}
 	container, err := t.client.CreateContainer(createOptions)
-	if err != nil {
-		if strings.Contains(err.Error(), "container already exists") {
-			// Get the ID of the existing container so we can delete it
-			containers, err := t.client.ListContainers(docker.ListContainersOptions{
-				// The image might be in use by a stopped container, so check everything
-				All: true,
-				Filters: map[string][]string{
-					"name": []string{createOptions.Name},
-				},
-			})
-			if err != nil {
-				return nil, fmt.Errorf("Failed to query list of containers: %s", err)
-			}
+	// if err != nil {
+	// 	if strings.Contains(err.Error(), "container already exists") {
+	// 		// Get the ID of the existing container so we can delete it
+	// 		containers, err := t.client.ListContainers(docker.ListContainersOptions{
+	// 			// The image might be in use by a stopped container, so check everything
+	// 			All: true,
+	// 			Filters: map[string][]string{
+	// 				"name": []string{createOptions.Name},
+	// 			},
+	// 		})
+	// 		if err != nil {
+	// 			return nil, fmt.Errorf("Failed to query list of containers: %s", err)
+	// 		}
 
-			if len(containers) == 0 {
-				return nil, fmt.Errorf("Failed to get id for container %s", createOptions.Name)
-			}
+	// 		if len(containers) == 0 {
+	// 			return nil, fmt.Errorf("Failed to get id for container %s", createOptions.Name)
+	// 		}
 
-			for _, container := range containers {
-				err = t.client.RemoveContainer(docker.RemoveContainerOptions{
-					ID:    container.ID,
-					Force: true,
-				})
-				if err != nil {
-					return nil, fmt.Errorf("Failed to purge container %s: %s", container.ID, err)
-				}
-			}
+	// 		for _, container := range containers {
+	// 			err = t.client.RemoveContainer(docker.RemoveContainerOptions{
+	// 				ID:    container.ID,
+	// 				Force: true,
+	// 			})
+	// 			if err != nil {
+	// 				return nil, fmt.Errorf("Failed to purge container %s: %s", container.ID, err)
+	// 			}
+	// 		}
 
-			container, err = t.client.CreateContainer(createOptions)
-			if err != nil {
-				return nil, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
-			}
-		} else {
-			return nil, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
-		}
-	}
+	// 		container, err = t.client.CreateContainer(createOptions)
+	// 		if err != nil {
+	// 			return nil, fmt.Errorf("Failed to re-create container %s; aborting", createOptions.Name)
+	// 		}
+	// 	} else {
+	// 		return nil, fmt.Errorf("Failed to create container from image %s: %s", t.config.Image, err)
+	// 	}
+	// }
 
 	hostConfig := &docker.HostConfig{}
 	err = t.client.StartContainer(container.ID, hostConfig)
@@ -129,4 +129,8 @@ func (t Task) Execute() ([]byte, error) {
 	t.client.RemoveContainer(removeOptions)
 
 	return []byte(""), nil
+}
+
+func (t *Task) containerName() string {
+	return fmt.Sprintf("%s__%s", t.context, t.config.Name)
 }

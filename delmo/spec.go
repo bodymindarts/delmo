@@ -13,7 +13,7 @@ func NewSpec(name string, config SpecConfig, taskFactory *TaskFactory) (*Spec, e
 		config:      config,
 		taskFactory: taskFactory,
 	}
-	spec.steps = initSteps(config, taskFactory)
+	spec.steps = initSteps(name, config, taskFactory)
 	return spec, nil
 }
 
@@ -44,7 +44,7 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 	return nil
 }
 
-func initSteps(stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
+func initSteps(name string, stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -55,7 +55,7 @@ func initSteps(stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				task := taskFactory.Task(taskName)
+				task := taskFactory.Task(name, taskName)
 				steps = append(steps, NewAssertStep(task))
 			}
 		}
