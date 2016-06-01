@@ -12,12 +12,17 @@ type Suite struct {
 	tasks  Tasks
 }
 
-func NewSuite(config *SuiteConfig) *Suite {
-	return &Suite{
+func NewSuite(config *SuiteConfig) (*Suite, error) {
+	suite := &Suite{
 		config: config,
 		system: NewSystem(config.System),
-		tasks:  NewTasks(config.Tasks),
 	}
+	tasks, err := NewTasks(config.Tasks)
+	if err != nil {
+		return nil, err
+	}
+	suite.tasks = tasks
+	return suite, nil
 }
 
 func (s *Suite) Run(ui cli.Ui) int {

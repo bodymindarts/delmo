@@ -61,10 +61,6 @@ func (d *DockerCompose) Cleanup() error {
 	return cmd.Run()
 }
 
-func (d *DockerCompose) RunTask(task Task) error {
-	return nil
-}
-
 func (d *DockerCompose) makeArgs(command string, args ...string) []string {
 	return append([]string{
 		"--file", d.composeFile, "--project-name", d.prefix, command,

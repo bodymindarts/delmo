@@ -30,15 +30,19 @@ func (t *TestCommand) Run(args []string) int {
 	flags.StringVar(&path, "f", "delmo.yml", "")
 	if err := flags.Parse(args); err != nil {
 		t.Ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
-		return 1
+		return 2
 	}
 
 	config, err := LoadConfig(path)
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("Error reading configuration\n%s", err))
-		return 1
+		return 2
 	}
-	suite := NewSuite(config)
+	suite, err := NewSuite(config)
+	if err != nil {
+		t.Ui.Error(fmt.Sprintf("Could not initialize suite %s"))
+		return 2
+	}
 	result := suite.Run(t.Ui)
 	return result
 

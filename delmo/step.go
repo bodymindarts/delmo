@@ -54,7 +54,8 @@ func NewAssertStep(task Task) Step {
 }
 
 func (s *AssertStep) Execute(runtime Runtime) error {
-	return runtime.RunTask(s.task)
+	_, err := s.task.Execute()
+	return err
 }
 
 func (s *AssertStep) Description() string {

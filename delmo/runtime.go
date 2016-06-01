@@ -7,5 +7,4 @@ type Runtime interface {
 	StartServices(...string) error
 	Output() ([]byte, error)
 	Cleanup() error
-	RunTask(Task) error
 }
