@@ -14,7 +14,13 @@ func NewSpec(config SpecConfig) (*Spec, error) {
 }
 
 func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
-	var err error
+	err := runtime.StartAll()
+	if err != nil {
+		reporter.ErrorStartingRuntime(err)
+		return err
+	}
+	reporter.RuntimeStarted()
+
 	for _, step := range s.steps {
 		err = step.Execute(runtime)
 		if err != nil {
@@ -22,6 +28,12 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 		}
 	}
 
+	err = runtime.StopAll()
+	if err != nil {
+		reporter.ErrorStoppingRuntime(err)
+		return err
+	}
+	reporter.RuntimeStopped()
 	return nil
 }
 
