@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -x
+
 docker-machine create \
     -d amazonec2 \
     --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
