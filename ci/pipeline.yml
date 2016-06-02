@@ -1,7 +1,7 @@
 ---
 groups:
 - name: delmo
-  jobs: [test-master, test-all, integration]
+  jobs: [test-master, test-all, end-to-end]
 - name: ci-image
   jobs: [build-task-image]
 - name: docker-machine
@@ -23,13 +23,13 @@ jobs:
   - task: run-tests-all
     file: delmo-all/ci/tasks/run-tests-all.yml
 
-- name: integration
+- name: end-to-end
   serial: true
   plan:
   - get: delmo-ci
   - {get: delmo, trigger: true, passed: [test-master]}
-  - task: integration-test
-    file: delmo-ci/ci/tasks/integration-test.yml
+  - task: end-to-end-test
+    file: delmo-ci/ci/tasks/end-to-end-test.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
       AWS_SECRET_ACCESS_KEY: {{aws_sercret_access_key}}
