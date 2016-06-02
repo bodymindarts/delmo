@@ -4,8 +4,21 @@ groups:
   jobs: [test-master, test-all]
 - name: ci-image
   jobs: [build-task-image]
+- name: docker-machine
+  jobs: [provision-docker-host]
 
 jobs:
+- name: provision-docker-host
+  serial: true
+  plan:
+  - get: delmo-ci
+  - task: provision-docker-host
+    file: provision-docker-host.yml
+    params:
+      AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+      AWS_SERCRET_ACCESS_KEY: {{aws_sercret_access_key}}
+      AWS_REGION: {{aws_region}}
+
 - name: build-task-image
   serial: true
   plan:

@@ -1,0 +1,16 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: bodymindarts/delmo-pipeline}
+
+inputs:
+- name: delmo-ci
+
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SERCRET_ACCESS_KEY:
+  AWS_REGION:
+
+run:
+  path: delmo-ci/ci/tasks/provision-docker-host.sh
