@@ -13,7 +13,7 @@ echo "Importing ${machine_name}"
 machine-import ${machine_name}.zip
 
 echo "Setting up environment"
-eval $(docker-machine env ${machine_name})
+eval $(docker-machine env "${machine_name}" --shell bash)
 
 echo "Testing example/webapp"
 bin/delmo test -f example/webapp/delmo.yml
