@@ -72,6 +72,7 @@ func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (strin
 	}
 	hostDir := fmt.Sprintf(".delmo/%s", system.Name)
 
+	t.Ui.Info("Preparing host machine")
 	args := []string{
 		"ssh",
 		system.MachineName,
@@ -98,10 +99,12 @@ func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (strin
 		return "", fmt.Errorf("Could not create dir %s\n%s", hostDir, err)
 	}
 
+	t.Ui.Info("Uploading files")
 	dir := filepath.Dir(path)
 	files, err := ioutil.ReadDir(dir)
 	for _, f := range files {
 		file := filepath.Join(dir, f.Name())
+		t.Ui.Info(fmt.Sprintf("file: %s", file))
 		args = []string{
 			"scp",
 			"-r",
