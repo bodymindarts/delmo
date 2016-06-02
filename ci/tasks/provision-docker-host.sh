@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -e
-set -x
-
+echo "creating docker-machine ${machine_name}"
 docker-machine create \
     -d amazonec2 \
     --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
@@ -10,5 +8,8 @@ docker-machine create \
     --amazonec2-region ${AWS_REGION} \
     ${machine_name}
 
+echo "exporting connection info to ${machine_name}"
 machine-export ${machine_name}
-aws s3 cp ${machine_name}.zip s3://${AWS_BUCKET}
+
+echo "uploading info to bucket"
+aws --region ${AWS_REGION} s3 cp ${machine_name}.zip s3://${AWS_BUCKET} 
