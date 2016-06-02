@@ -13,7 +13,7 @@ jobs:
   plan:
   - get: delmo-ci
   - task: provision-docker-host
-    file: provision-docker-host.yml
+    file: delmo-ci/ci/tasks/provision-docker-host.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
       AWS_SERCRET_ACCESS_KEY: {{aws_sercret_access_key}}
