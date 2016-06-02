@@ -17,4 +17,4 @@ params:
   machine_name: delmo-pipeline-machine
 
 run:
-  path: delmo-ci/ci/tasks/provision-docker-host.sh
+  path: delmo-ci/ci/tasks/integration-test.sh
