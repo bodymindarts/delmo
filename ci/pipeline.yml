@@ -1,13 +1,41 @@
 ---
 groups:
 - name: delmo
-  jobs: [test-master, test-all]
+  jobs: [test-master, test-all, integration]
 - name: ci-image
   jobs: [build-task-image]
 - name: docker-machine
   jobs: [provision-docker-host]
 
 jobs:
+- name: test-master
+  plan:
+  - aggregate:
+    - {get: delmo, trigger: true}
+    - get: delmo-ci
+  - task: run-tests
+    file: delmo-ci/ci/tasks/run-tests.yml
+
+- name: test-all
+  plan:
+  - aggregate:
+    - {get: delmo-all, trigger: true}
+  - task: run-tests-all
+    file: delmo-all/ci/tasks/run-tests-all.yml
+
+- name: integration
+  serial: true
+  plan:
+  - get: delmo-ci
+  - {get: delmo, trigger: true, passed: [test-master]}
+  - task: integration-test
+    file: delmo-ci/ci/tasks/integration-test.yml
+    params:
+      AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+      AWS_SECRET_ACCESS_KEY: {{aws_sercret_access_key}}
+      AWS_REGION: {{aws_region}}
+      AWS_BUCKET: {{aws_bucket}}
+
 - name: provision-docker-host
   serial: true
   plan:
@@ -27,21 +55,6 @@ jobs:
     - put: docker-image-ci
       params:
         build: pipeline-ci-image/ci/ci_image
-- name: test-master
-  plan:
-  - aggregate:
-    - {get: delmo, trigger: true}
-    - get: delmo-ci
-  - task: run-tests
-    file: delmo-ci/ci/tasks/run-tests.yml
-
-- name: test-all
-  plan:
-  - aggregate:
-    - {get: delmo-all, trigger: true}
-  - task: run-tests-all
-    file: delmo-all/ci/tasks/run-tests-all.yml
-
 
 resources:
 - name: pipeline-ci-image
