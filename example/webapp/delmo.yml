@@ -2,6 +2,7 @@
 system:
   name: Webapp
   file: docker-compose.yml
+  machine-name: delmo-pipeline-machine
 
 tasks:
 - name: webapp_is_available
