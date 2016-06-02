@@ -7,8 +7,12 @@ type TestRunner struct {
 	spec       *Spec
 }
 
-func NewTestRunner(testConfig TestConfig, taskFactory *TaskFactory) *TestRunner {
-	spec, _ := NewSpec(testConfig.Name, testConfig.Spec, taskFactory)
+func NewTestRunner(testConfig TestConfig, taskFactory *TaskFactory, globals GlobalContext) *TestRunner {
+	context := TestContext{
+		DockerHostSyncDir: globals.DockerHostSyncDir,
+		TestName:          testConfig.Name,
+	}
+	spec, _ := NewSpec(context, testConfig.Spec, taskFactory)
 	return &TestRunner{
 		testConfig: testConfig,
 		spec:       spec,

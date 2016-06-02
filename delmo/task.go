@@ -21,7 +21,7 @@ type TaskFactory struct {
 }
 
 type Task struct {
-	context string
+	context TestContext
 	client  *docker.Client
 	Name    string
 	config  TaskConfig
@@ -41,7 +41,7 @@ func NewTaskFactory(configs []TaskConfig) (*TaskFactory, error) {
 	}, nil
 }
 
-func (t *TaskFactory) Task(context, taskName string) Task {
+func (t *TaskFactory) Task(context TestContext, taskName string) Task {
 	config := t.configs[taskName]
 	return Task{
 		config:  config,
@@ -65,8 +65,9 @@ func (t Task) Execute(reporter TaskReporter) (int, error) {
 	createOptions := docker.CreateContainerOptions{
 		Name: t.containerName(),
 		Config: &docker.Config{
-			Image: t.config.Image,
-			Cmd:   append([]string{t.config.Run.Path}, t.config.Run.Args...),
+			Image:      t.config.Image,
+			Cmd:        append([]string{t.config.Run.Path}, t.config.Run.Args...),
+			WorkingDir: "/delmo",
 		},
 	}
 	container, err := t.client.CreateContainer(createOptions)
@@ -82,16 +83,16 @@ func (t Task) Execute(reporter TaskReporter) (int, error) {
 		}
 	}
 
-	hostConfig := &docker.HostConfig{}
+	hostConfig := &docker.HostConfig{
+		Binds: []string{fmt.Sprintf("%s:%s", "/home/ubuntu/"+t.context.DockerHostSyncDir, "/delmo")},
+	}
 	err = t.client.StartContainer(container.ID, hostConfig)
 	if err != nil {
-		fmt.Printf("ERROR starting container: %s\n", err)
 		return 1, err
 	}
 
 	returnValue, err := t.client.WaitContainer(container.ID)
 	if err != nil {
-		fmt.Printf("ERROR waiting container: %s\n", err)
 		return 1, err
 	}
 
@@ -109,7 +110,6 @@ func (t Task) Execute(reporter TaskReporter) (int, error) {
 	}
 	err = t.client.Logs(logOptions)
 	if err != nil {
-		fmt.Printf("ERROR logging container: %s\n", err)
 		return 1, err
 	}
 
@@ -124,9 +124,7 @@ func (t Task) Execute(reporter TaskReporter) (int, error) {
 }
 
 func (t *Task) Cleanup() error {
-	// Get the ID of the existing container so we can delete it
 	containers, err := t.client.ListContainers(docker.ListContainersOptions{
-		// The image might be in use by a stopped container, so check everything
 		All: true,
 		Filters: map[string][]string{
 			"name": []string{t.containerName()},
@@ -153,5 +151,5 @@ func (t *Task) Cleanup() error {
 }
 
 func (t *Task) containerName() string {
-	return fmt.Sprintf("%s__%s", t.context, t.config.Name)
+	return fmt.Sprintf("%s__%s", t.context.TestName, t.config.Name)
 }

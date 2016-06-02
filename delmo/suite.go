@@ -7,15 +7,17 @@ import (
 )
 
 type Suite struct {
-	config      *SuiteConfig
-	system      *System
-	taskFactory *TaskFactory
+	globalContext GlobalContext
+	config        *SuiteConfig
+	system        *System
+	taskFactory   *TaskFactory
 }
 
-func NewSuite(config *SuiteConfig) (*Suite, error) {
+func NewSuite(config *SuiteConfig, globalContext GlobalContext) (*Suite, error) {
 	suite := &Suite{
-		config: config,
-		system: NewSystem(config.System),
+		globalContext: globalContext,
+		config:        config,
+		system:        NewSystem(config.System),
 	}
 	taskFactory, err := NewTaskFactory(config.Tasks)
 	if err != nil {
@@ -32,7 +34,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 	succeeded := []*TestReport{}
 
 	for _, test := range s.config.Tests {
-		runner := NewTestRunner(test, s.taskFactory)
+		runner := NewTestRunner(test, s.taskFactory, s.globalContext)
 		runtime, err := s.system.NewRuntime(test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))

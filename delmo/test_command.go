@@ -42,13 +42,16 @@ func (t *TestCommand) Run(args []string) int {
 		return 2
 	}
 
-	_, err = t.prepareDockerHost(path, config.System)
+	hostDir, err := t.prepareDockerHost(path, config.System)
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("Cloud not setup docker-machine\n%s", err))
 		return 2
 	}
 
-	suite, err := NewSuite(config)
+	context := GlobalContext{
+		DockerHostSyncDir: hostDir,
+	}
+	suite, err := NewSuite(config, context)
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("Could not initialize suite %s"))
 		return 2

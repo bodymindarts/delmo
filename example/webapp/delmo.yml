@@ -8,8 +8,7 @@ tasks:
 - name: webapp_is_available
   image: webapp
   run:
-    path: echo
-    args: [hello, world]
+    path: scripts/webapp_is_available.sh
 
 tests:
 - name: webapp_fails
@@ -18,4 +17,4 @@ tests:
   - stop: [webapp]
     # failing: [webapp_is_available]
   - start: [webapp]
-    assert: [webapp_is_available]
+  - assert: [webapp_is_available]

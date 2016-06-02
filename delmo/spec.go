@@ -1,19 +1,19 @@
 package delmo
 
 type Spec struct {
-	name        string
+	context     TestContext
 	config      SpecConfig
 	steps       []Step
 	taskFactory *TaskFactory
 }
 
-func NewSpec(name string, config SpecConfig, taskFactory *TaskFactory) (*Spec, error) {
+func NewSpec(context TestContext, config SpecConfig, taskFactory *TaskFactory) (*Spec, error) {
 	spec := &Spec{
-		name:        name,
+		context:     context,
 		config:      config,
 		taskFactory: taskFactory,
 	}
-	spec.steps = initSteps(name, config, taskFactory)
+	spec.steps = initSteps(context, config, taskFactory)
 	return spec, nil
 }
 
@@ -43,7 +43,7 @@ func (s *Spec) Execute(runtime Runtime, reporter *TestReport) error {
 	return nil
 }
 
-func initSteps(name string, stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
+func initSteps(context TestContext, stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -54,7 +54,7 @@ func initSteps(name string, stepConfigs []StepConfig, taskFactory *TaskFactory) 
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				task := taskFactory.Task(name, taskName)
+				task := taskFactory.Task(context, taskName)
 				steps = append(steps, NewAssertStep(task))
 			}
 		}
