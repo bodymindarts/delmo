@@ -3,17 +3,10 @@
 set -e
 set -x
 
-mkdir ~/.aws
-cat > ~/.aws/credentials <<EOF
-[default]
-aws_access_key_id = ${AWS_SERCRET_ACCESS_KEY}
-aws_secret_access_key = ${AWS_SERCRET_ACCESS_KEY}
-EOF
-
-cat ~/.aws/credentials
-
 docker-machine create \
     -d amazonec2 \
+    --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
+    --amazonec2-secret-key ${AWS_SECRET_ACCESS_KEY} \
     --amazonec2-region ${AWS_REGION} \
     ${machine_name}
 

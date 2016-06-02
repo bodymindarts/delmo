@@ -16,7 +16,7 @@ jobs:
     file: delmo-ci/ci/tasks/provision-docker-host.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
-      AWS_SERCRET_ACCESS_KEY: {{aws_sercret_access_key}}
+      AWS_SECRET_ACCESS_KEY: {{aws_sercret_access_key}}
       AWS_REGION: {{aws_region}}
       AWS_BUCKET: {{aws_bucket}}
 
