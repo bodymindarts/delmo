@@ -38,7 +38,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 		runtime, err := s.system.NewRuntime(test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))
-			continue
+			return 1
 		}
 
 		ui.Info(fmt.Sprintf("Running test %s", test.Name))
