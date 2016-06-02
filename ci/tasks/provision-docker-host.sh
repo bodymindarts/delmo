@@ -8,4 +8,4 @@ docker-machine create \
     ${machine_name}
 
 machine-export ${machine_name}
-aws s3 cp ${machine_name} s3://${AWS_BUCKET}
+aws s3 cp ${machine_name}.zip s3://${AWS_BUCKET}
