@@ -1,5 +1,5 @@
 FROM ubuntu
-RUN apt-get install -y ruby rubygems git
+RUN apt-get update && apt-get install -y ruby rubygems && apt-get clean
 RUN gem install bundler
 ADD . /opt/sinatra/
 EXPOSE 5000
