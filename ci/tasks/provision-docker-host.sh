@@ -3,7 +3,8 @@
 set -e
 set -x
 
-cat >> ~/.aws/credentials <<EOF
+mkdir ~/.aws
+cat > ~/.aws/credentials <<EOF
 [default]
 aws_access_key_id = ${AWS_SERCRET_ACCESS_KEY}
 aws_secret_access_key = ${AWS_SERCRET_ACCESS_KEY}
