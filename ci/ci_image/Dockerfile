@@ -15,7 +15,8 @@ ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
 
 # Install docker-machine
 RUN curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine && \
-    chmod +x /usr/local/bin/docker-machine
+    chmod +x /usr/local/bin/docker-machine \
+    && mkdir -p /root/.docker/machine/machines
 
 # Install machine-share
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
