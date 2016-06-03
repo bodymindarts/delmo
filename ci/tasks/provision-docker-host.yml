@@ -2,17 +2,15 @@
 platform: linux
 image_resource:
   type: docker-image
-  source: {repository: bodymindarts/delmo-pipeline}
+  source: {repository: bodymindarts/docker-machine-setup}
 
-inputs:
-- name: delmo-ci
 
 params:
   AWS_ACCESS_KEY_ID:
   AWS_SECRET_ACCESS_KEY:
-  AWS_REGION:
+  AWS_DEFAULT_REGION:
   AWS_BUCKET:
-  machine_name: delmo-pipeline-machine
+  MACHINE_NAME: delmo-pipeline-machine
 
 run:
-  path: delmo-ci/ci/tasks/provision-docker-host.sh
+  path: /setup-aws
