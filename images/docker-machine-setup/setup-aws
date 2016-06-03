@@ -61,12 +61,12 @@ if [ $? == 0 ]; then
   echo "Uploading info to bucket"
   aws --region ${AWS_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
 
-  if [ -z ${OPEN_TCP_PORTS} ]; then
+  if [ ! -z ${OPEN_TCP_PORTS} ]; then
     echo "Opening access to docker machine on tcp ports ${OPEN_TCP_PORTS}"
     aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol tcp --port ${OPEN_TCP_PORTS} --cidr 0.0.0.0/0
   fi
 
-  if [ -z ${OPEN_UDP_PORTS} ]; then
+  if [ ! -z ${OPEN_UDP_PORTS} ]; then
     echo "Opening access to docker machine on udp ports ${OPEN_UDP_PORTS}"
     aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol udp --port ${OPEN_UDP_PORTS} --cidr 0.0.0.0/0
   fi
