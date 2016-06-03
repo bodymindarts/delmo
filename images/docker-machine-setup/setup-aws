@@ -39,9 +39,11 @@ if [ $? == 0 ]; then
 
   echo "deleting pre-existing machine"
   docker-machine rm -y ${MACHINE_NAME}
-  aws --region ${AWS_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip 
+  aws --region ${AWS_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
 fi
 
+echo ${AWS_SECURITY_GROUP}
+AWS_SECURITY_GROUP=${AWS_SECURITY_GROUP:-$MACHINE_NAME}
 
 echo "Creating docker-machine ${MACHINE_NAME}"
 docker-machine create \
@@ -49,12 +51,23 @@ docker-machine create \
     --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
     --amazonec2-secret-key ${AWS_SECRET_ACCESS_KEY} \
     --amazonec2-region ${AWS_REGION} \
+    --amazonec2-security-group ${AWS_SECURITY_GROUP} \
     ${MACHINE_NAME}
 
-if [ $? == 0]; then
+if [ $? == 0 ]; then
   echo "Exporting connection info to ${MACHINE_NAME}"
   machine-export ${MACHINE_NAME}
 
   echo "Uploading info to bucket"
   aws --region ${AWS_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
+
+  if [ -z ${OPEN_TCP_PORTS} ]; then
+    echo "Opening access to docker machine on tcp ports ${OPEN_TCP_PORTS}"
+    aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol tcp --port ${OPEN_TCP_PORTS} --cidr 0.0.0.0/0
+  fi
+
+  if [ -z ${OPEN_UDP_PORTS} ]; then
+    echo "Opening access to docker machine on udp ports ${OPEN_UDP_PORTS}"
+    aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol udp --port ${OPEN_UDP_PORTS} --cidr 0.0.0.0/0
+  fi
 fi
