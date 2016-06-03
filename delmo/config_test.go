@@ -34,7 +34,7 @@ func TestConfig_Load(t *testing.T) {
 	t.Parallel()
 
 	config := `
-system:
+suite:
   name: test
   file: docker-compose.yml
 
