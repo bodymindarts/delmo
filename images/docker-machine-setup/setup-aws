@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x
-
 if [ -z ${MACHINE_NAME} ]; then
   echo "Please set MACHINE_NAME"
   exit 1
@@ -17,8 +15,8 @@ if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
   exit 1
 fi
 
-if [ -z ${AWS_REGION} ]; then
-  echo "Please set AWS_REGION"
+if [ -z ${AWS_DEFAULT_REGION} ]; then
+  echo "Please set AWS_DEFAULT_REGION"
   exit 1
 fi
 
@@ -27,22 +25,8 @@ if [ -z ${AWS_BUCKET} ]; then
   exit 1
 fi
 
-echo "Downloading pre existing configuration"
-aws --region ${AWS_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1
+/delete-aws
 
-if [ $? == 0 ]; then
-  echo "Pre-existing configuration found"
-  echo "Importing ${MACHINE_NAME}"
-  machine-import ${MACHINE_NAME}.zip
-  # The permission isn't set properly on import
-  chmod 0600 /root/.docker/machine/machines/${MACHINE_NAME}/id_rsa
-
-  echo "deleting pre-existing machine"
-  docker-machine rm -y ${MACHINE_NAME}
-  aws --region ${AWS_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
-fi
-
-echo ${AWS_SECURITY_GROUP}
 AWS_SECURITY_GROUP=${AWS_SECURITY_GROUP:-$MACHINE_NAME}
 
 echo "Creating docker-machine ${MACHINE_NAME}"
@@ -50,7 +34,7 @@ docker-machine create \
     -d amazonec2 \
     --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
     --amazonec2-secret-key ${AWS_SECRET_ACCESS_KEY} \
-    --amazonec2-region ${AWS_REGION} \
+    --amazonec2-region ${AWS_DEFAULT_REGION} \
     --amazonec2-security-group ${AWS_SECURITY_GROUP} \
     ${MACHINE_NAME}
 
@@ -59,7 +43,7 @@ if [ $? == 0 ]; then
   machine-export ${MACHINE_NAME}
 
   echo "Uploading info to bucket"
-  aws --region ${AWS_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
+  aws --region ${AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
 
   if [ ! -z ${OPEN_TCP_PORTS} ]; then
     echo "Opening access to docker machine on tcp ports ${OPEN_TCP_PORTS}"

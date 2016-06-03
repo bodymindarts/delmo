@@ -1,0 +1,44 @@
+#!/bin/sh
+
+if [ -z ${MACHINE_NAME} ]; then
+  echo "Please set MACHINE_NAME"
+  exit 1
+fi
+
+if [ -z ${AWS_ACCESS_KEY_ID} ]; then
+  echo "Please set AWS_ACCESS_KEY_ID"
+  exit 1
+fi
+
+if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
+  echo "Please set AWS_SECRET_ACCESS_KEY"
+  exit 1
+fi
+
+if [ -z ${AWS_DEFAULT_REGION} ]; then
+  echo "Please set AWS_REGION"
+  exit 1
+fi
+
+if [ -z ${AWS_BUCKET} ]; then
+  echo "Please set AWS_BUCKET"
+  exit 1
+fi
+
+echo "Downloading pre existing configuration"
+aws --region ${AWS_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1
+
+if [ $? == 0 ]; then
+  echo "Pre-existing configuration found"
+  echo "Importing ${MACHINE_NAME}"
+  machine-import ${MACHINE_NAME}.zip
+  # The permission isn't set properly on import
+  chmod 0600 /root/.docker/machine/machines/${MACHINE_NAME}/id_rsa
+
+  echo "deleting pre-existing machine"
+  docker-machine rm -y ${MACHINE_NAME}
+  aws --region ${AWS_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
+else
+  echo "No machine configuration '${MACHINE_NAME}' found"
+fi
+
