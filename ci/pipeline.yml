@@ -2,8 +2,8 @@
 groups:
 - name: delmo
   jobs: [test-master, test-all, end-to-end]
-- name: ci-image
-  jobs: [build-task-image]
+- name: images
+  jobs: [build-task-image, build-docker-machine-setup]
 - name: docker-machine
   jobs: [provision-docker-host]
 
@@ -32,7 +32,7 @@ jobs:
     file: delmo-ci/ci/tasks/end-to-end-test.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
-      AWS_SECRET_ACCESS_KEY: {{aws_sercret_access_key}}
+      AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
       AWS_REGION: {{aws_region}}
       AWS_BUCKET: {{aws_bucket}}
 
@@ -44,7 +44,7 @@ jobs:
     file: delmo-ci/ci/tasks/provision-docker-host.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
-      AWS_SECRET_ACCESS_KEY: {{aws_sercret_access_key}}
+      AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
       AWS_REGION: {{aws_region}}
       AWS_BUCKET: {{aws_bucket}}
 
@@ -56,21 +56,15 @@ jobs:
       params:
         build: pipeline-ci-image/ci/ci_image
 
-resources:
-- name: pipeline-ci-image
-  type: git
-  source:
-    uri: https://github.com/bodymindarts/delmo
-    branch: {{pipeline-branch}}
-    paths: [ci/ci_image/*]
+- name: build-docker-machine-setup
+  serial: true
+  plan:
+    - {get: docker-machine-setup, trigger: true}
+    - put: docker-machine-setup-image
+      params:
+        build: docker-machine-setup-build/images/docker-machine-setup
 
-- name: docker-image-ci
-  type: docker-image
-  source:
-    email: {{docker-hub-email}}
-    username: {{docker-hub-username}}
-    password: {{docker-hub-password}}
-    repository: bodymindarts/delmo-pipeline
+resources:
 
 - name: delmo-ci
   type: git
@@ -91,6 +85,35 @@ resources:
     branches: '.*'
     ignore_branches: 'master'
 
+- name: pipeline-ci-image
+  type: git
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branch: {{pipeline-branch}}
+    paths: [ci/ci_image/*]
+
+- name: docker-image-ci
+  type: docker-image
+  source:
+    email: {{docker-hub-email}}
+    username: {{docker-hub-username}}
+    password: {{docker-hub-password}}
+    repository: bodymindarts/delmo-pipeline
+
+- name: docker-machine-setup
+  type: git
+  source:
+    uri: https://github.com/bodymindarts/delmo
+    branch: {{pipeline-branch}}
+    paths: [images/docker-machine-setup/*]
+
+- name: docker-machine-setup-image
+  type: docker-image
+  source:
+    email: {{docker-hub-email}}
+    username: {{docker-hub-username}}
+    password: {{docker-hub-password}}
+    repository: bodymindarts/docker-machine-setup
 
 resource_types:
 - name: git-multibranch
