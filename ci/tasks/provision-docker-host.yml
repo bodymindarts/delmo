@@ -10,6 +10,7 @@ params:
   AWS_SECRET_ACCESS_KEY:
   AWS_DEFAULT_REGION:
   AWS_BUCKET:
+  AWS_INSTANCE_TYPE: t2.micro
   MACHINE_NAME: delmo-pipeline-machine
 
 run:
