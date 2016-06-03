@@ -29,20 +29,21 @@ func (t *TestCommand) Run(args []string) int {
 		Usage: func() { t.Help() },
 	}
 
-	var path string
-	flags.StringVar(&path, "f", "delmo.yml", "")
+	var delmoFile, machine string
+	flags.StringVar(&delmoFile, "f", "delmo.yml", "")
+	flags.StringVar(&machine, "m", "", "")
 	if err := flags.Parse(args); err != nil {
 		t.Ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
 		return 2
 	}
 
-	config, err := LoadConfig(path)
+	config, err := LoadConfig(delmoFile)
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("Error reading configuration\n%s", err))
 		return 2
 	}
 
-	hostDir, err := t.prepareDockerHost(path, config.System)
+	hostDir, err := t.prepareDockerHost(delmoFile, machine, config.System.Name)
 	if err != nil {
 		t.Ui.Error(fmt.Sprintf("Cloud not setup docker-machine\n%s", err))
 		return 2
@@ -65,17 +66,26 @@ func (t *TestCommand) Synopsis() string {
 	return "Run some tests"
 }
 
-func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (string, error) {
+func (t *TestCommand) prepareDockerHost(delmoFile, machine, suiteName string) (string, error) {
+	if machine == "" {
+		absPath, err := filepath.Abs(delmoFile)
+		if err != nil {
+			return "", err
+		}
+		delmoDir := filepath.Dir(absPath)
+		return delmoDir, nil
+	}
+
 	rawCmd, err := exec.LookPath("docker-machine")
 	if err != nil {
 		return "", err
 	}
-	hostDir := fmt.Sprintf(".delmo/%s", system.Name)
+	hostDir := fmt.Sprintf(".delmo/%s", suiteName)
 
 	t.Ui.Info("Preparing host machine")
 	args := []string{
 		"ssh",
-		system.MachineName,
+		machine,
 		"rm",
 		"-rf",
 		hostDir,
@@ -88,7 +98,7 @@ func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (strin
 
 	args = []string{
 		"ssh",
-		system.MachineName,
+		machine,
 		"mkdir",
 		"-p",
 		hostDir,
@@ -100,7 +110,7 @@ func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (strin
 	}
 
 	t.Ui.Info("Uploading files")
-	dir := filepath.Dir(path)
+	dir := filepath.Dir(delmoFile)
 	files, err := ioutil.ReadDir(dir)
 	for _, f := range files {
 		file := filepath.Join(dir, f.Name())
@@ -109,14 +119,25 @@ func (t *TestCommand) prepareDockerHost(path string, system SystemConfig) (strin
 			"scp",
 			"-r",
 			file,
-			fmt.Sprintf("%s:%s", system.MachineName, hostDir),
+			fmt.Sprintf("%s:%s", machine, hostDir),
 		}
 		cmd = exec.Command(rawCmd, args...)
-		err = cmd.Run()
+		out, err := cmd.Output()
 		if err != nil {
-			return "", fmt.Errorf("Could not upload file %s\n%s", f.Name(), err)
+			return "", fmt.Errorf("Could not upload file %s\n%s\n%s", f.Name(), out, err)
 		}
 	}
 
-	return hostDir, nil
+	args = []string{
+		"ssh",
+		machine,
+		"pwd",
+	}
+	cmd = exec.Command(rawCmd, args...)
+	hostWD, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("Could not determin home dir on host\n%s", hostDir, err)
+	}
+
+	return filepath.Join(strings.TrimSpace(string(hostWD)), hostDir), nil
 }

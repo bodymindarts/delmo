@@ -20,7 +20,6 @@ type SystemConfig struct {
 	File             string `yaml:"file"`
 	CompleteFilePath string
 	Services         map[string]ServiceConfig
-	MachineName      string `yaml:"machine-name"`
 }
 
 type TaskConfig struct {

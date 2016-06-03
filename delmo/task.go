@@ -84,7 +84,7 @@ func (t Task) Execute(reporter TaskReporter) (int, error) {
 	}
 
 	hostConfig := &docker.HostConfig{
-		Binds: []string{fmt.Sprintf("%s:%s", "/home/ubuntu/"+t.context.DockerHostSyncDir, "/delmo")},
+		Binds: []string{fmt.Sprintf("%s:%s", t.context.DockerHostSyncDir, "/delmo")},
 	}
 	err = t.client.StartContainer(container.ID, hostConfig)
 	if err != nil {
