@@ -37,7 +37,7 @@ func (d *DockerCompose) StartAll() error {
 }
 
 func (d *DockerCompose) StopAll() error {
-	args := d.makeArgs("stop")
+	args := d.makeArgs("down")
 	cmd := exec.Command(d.rawCmd, args...)
 	return cmd.Run()
 }
