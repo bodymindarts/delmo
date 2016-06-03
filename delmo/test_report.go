@@ -49,7 +49,7 @@ func (r *TestReport) StoppingRuntime() {
 }
 
 func (r *TestReport) ErrorStartingRuntime(err error) {
-	r.Fail(fmt.Sprintf("Could not start runtime for %s! %s", r.name, err), err)
+	r.Fail(fmt.Sprintf("Could not start runtime for %s!\n%s", r.name, err), err)
 }
 
 func (r *TestReport) ErrorStoppingRuntime(err error) {

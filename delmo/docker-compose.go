@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type DockerCompose struct {
@@ -28,7 +29,11 @@ func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 func (d *DockerCompose) StartAll() error {
 	args := d.makeArgs("up", "-d", "--force-recreate")
 	cmd := exec.Command(d.rawCmd, args...)
-	return cmd.Run()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s\n%s", strings.TrimSpace(string(out)), err)
+	}
+	return nil
 }
 
 func (d *DockerCompose) StopAll() error {
