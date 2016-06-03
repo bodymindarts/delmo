@@ -16,7 +16,7 @@ if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
 fi
 
 if [ -z ${AWS_DEFAULT_REGION} ]; then
-  echo "Please set AWS_REGION"
+  echo "Please set AWS_DEFAULT_REGION"
   exit 1
 fi
 
@@ -26,7 +26,7 @@ if [ -z ${AWS_BUCKET} ]; then
 fi
 
 echo "Downloading pre existing configuration"
-aws --region ${AWS_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1
+aws --region ${AWS_DEFAULT_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1
 
 if [ $? == 0 ]; then
   echo "Pre-existing configuration found"
@@ -37,7 +37,7 @@ if [ $? == 0 ]; then
 
   echo "deleting pre-existing machine"
   docker-machine rm -y ${MACHINE_NAME}
-  aws --region ${AWS_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
+  aws --region ${AWS_DEFAULT_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
 else
   echo "No machine configuration '${MACHINE_NAME}' found"
 fi
