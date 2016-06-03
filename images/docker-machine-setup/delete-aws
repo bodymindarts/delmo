@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 if [ -z ${MACHINE_NAME} ]; then
   echo "Please set MACHINE_NAME"
   exit 1
@@ -26,22 +28,17 @@ if [ -z ${AWS_BUCKET} ]; then
 fi
 
 echo "Downloading pre existing configuration"
-aws --region ${AWS_DEFAULT_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1
+aws --region ${AWS_DEFAULT_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1 || exit 0
 
-if [ $? == 0 ]; then
-  echo "Pre-existing configuration found"
-  echo "Importing ${MACHINE_NAME}"
-  machine-import ${MACHINE_NAME}.zip
-  # The permission isn't set properly on import
-  chmod 0600 /root/.docker/machine/machines/${MACHINE_NAME}/id_rsa
+echo "Pre-existing configuration found"
+echo "Importing ${MACHINE_NAME}"
+machine-import ${MACHINE_NAME}.zip
+# The permission isn't set properly on import
+chmod 0600 /root/.docker/machine/machines/${MACHINE_NAME}/id_rsa
 
-  echo "deleting pre-existing machine"
-  docker-machine rm -y ${MACHINE_NAME}
+echo "deleting pre-existing machine"
+docker-machine rm -y ${MACHINE_NAME}
 
-  if [ $? == 0 ]; then
-    aws --region ${AWS_DEFAULT_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
-  fi
-else
-  echo "No machine configuration '${MACHINE_NAME}' found"
-fi
+aws --region ${AWS_DEFAULT_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
+exit 1
 
