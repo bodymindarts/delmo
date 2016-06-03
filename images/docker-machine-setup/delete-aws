@@ -40,5 +40,3 @@ echo "deleting pre-existing machine"
 docker-machine rm -y ${MACHINE_NAME}
 
 aws --region ${AWS_DEFAULT_REGION} s3 rm s3://${AWS_BUCKET}/${MACHINE_NAME}.zip
-exit 1
-
