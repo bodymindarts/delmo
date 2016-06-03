@@ -1,6 +1,9 @@
 package delmo
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type TestReport struct {
 	Success     bool
@@ -35,7 +38,7 @@ func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Li
 }
 
 func (r *TestReport) TaskOutput(taskName, output string) {
-	r.reportOutput(fmt.Sprintf("%s -> %s", taskName, output))
+	r.reportOutput(fmt.Sprintf("%s -> %s", taskName, strings.TrimSpace(output)))
 }
 
 func (r *TestReport) StartingRuntime() {
