@@ -10,7 +10,7 @@ import (
 )
 
 type SuiteConfig struct {
-	System SystemConfig `yaml:"system"`
+	System SystemConfig `yaml:"suite"`
 	Tasks  []TaskConfig `yaml:"tasks"`
 	Tests  []TestConfig `yaml:"tests"`
 }
