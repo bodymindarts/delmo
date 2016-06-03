@@ -62,7 +62,7 @@ jobs:
     - {get: docker-machine-setup, trigger: true}
     - put: docker-machine-setup-image
       params:
-        build: docker-machine-setup-build/images/docker-machine-setup
+        build: docker-machine-setup/images/docker-machine-setup
 
 resources:
 
