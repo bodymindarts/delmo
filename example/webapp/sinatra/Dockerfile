@@ -1,5 +1,5 @@
-FROM ubuntu
-RUN apt-get update && apt-get install -y ruby rubygems && apt-get clean
+FROM alpine:3.4
+RUN apk add --update ruby ruby-rdoc ruby-irb  ruby-io-console && rm -rf /var/cache/apk
 RUN gem install bundler
 ADD . /opt/sinatra/
 EXPOSE 5000
