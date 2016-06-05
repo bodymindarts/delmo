@@ -18,4 +18,4 @@ echo "Setting up environment"
 eval $(docker-machine env "${machine_name}" --shell bash)
 
 echo "Testing example/webapp"
-bin/delmo test -f example/webapp/delmo.yml -m ${machine_name}
+bin/delmo -f example/webapp/delmo.yml -m ${machine_name}
