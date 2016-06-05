@@ -1,11 +1,9 @@
-package main
+package delmo
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/bodymindarts/delmo/delmo"
 	"github.com/mitchellh/cli"
+	"os"
 )
 
 func main() {
@@ -33,7 +31,7 @@ func Run(args []string) int {
 
 	commands := map[string]cli.CommandFactory{
 		"test": func() (cli.Command, error) {
-			return &delmo.TestCommand{
+			return &TestCommand{
 				Ui: ui,
 			}, nil
 		},
