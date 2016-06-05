@@ -1,10 +1,10 @@
 package main
 
 type System struct {
-	config SystemConfig
+	config SuiteConfig
 }
 
-func NewSystem(config SystemConfig) *System {
+func NewSystem(config SuiteConfig) *System {
 	return &System{config: config}
 }
 

@@ -8,16 +8,16 @@ import (
 
 type Suite struct {
 	globalContext GlobalContext
-	config        *SuiteConfig
+	config        *Config
 	system        *System
 	taskFactory   *TaskFactory
 }
 
-func NewSuite(config *SuiteConfig, globalContext GlobalContext) (*Suite, error) {
+func NewSuite(config *Config, globalContext GlobalContext) (*Suite, error) {
 	suite := &Suite{
 		globalContext: globalContext,
 		config:        config,
-		system:        NewSystem(config.System),
+		system:        NewSystem(config.Suite),
 	}
 	taskFactory, err := NewTaskFactory(config.Tasks)
 	if err != nil {
@@ -28,7 +28,7 @@ func NewSuite(config *SuiteConfig, globalContext GlobalContext) (*Suite, error) 
 }
 
 func (s *Suite) Run(ui cli.Ui) int {
-	ui.Info(fmt.Sprintf("Running Test Suite for System %s", s.config.System.Name))
+	ui.Info(fmt.Sprintf("Running Test Suite for System %s", s.config.Suite.Name))
 
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}

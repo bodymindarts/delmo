@@ -9,13 +9,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type SuiteConfig struct {
-	System SystemConfig `yaml:"suite"`
-	Tasks  []TaskConfig `yaml:"tasks"`
-	Tests  []TestConfig `yaml:"tests"`
+type Config struct {
+	Suite SuiteConfig  `yaml:"suite"`
+	Tasks []TaskConfig `yaml:"tasks"`
+	Tests []TestConfig `yaml:"tests"`
 }
 
-type SystemConfig struct {
+type SuiteConfig struct {
 	Name             string `yaml:"name"`
 	File             string `yaml:"file"`
 	CompleteFilePath string
@@ -53,23 +53,23 @@ type ServiceConfig struct {
 	Image string `yaml:"image"`
 }
 
-func LoadConfig(path string) (*SuiteConfig, error) {
+func LoadConfig(path string) (*Config, error) {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var config SuiteConfig
+	var config Config
 	err = yaml.Unmarshal(bytes, &config)
 	if err != nil {
 		return nil, err
 	}
 
-	err = loadComposeConfig(path, &config.System)
+	err = loadComposeConfig(path, &config.Suite)
 	return &config, nil
 }
 
-func loadComposeConfig(path string, systemConfig *SystemConfig) error {
+func loadComposeConfig(path string, systemConfig *SuiteConfig) error {
 	composePath := fmt.Sprintf("%s/%s", filepath.Dir(path), systemConfig.File)
 	systemConfig.CompleteFilePath = composePath
 	bytes, err := ioutil.ReadFile(composePath)
