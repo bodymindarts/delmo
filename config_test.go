@@ -66,11 +66,11 @@ services:
 		t.Fatal("Load Suite Failed!", err)
 	}
 
-	if want, got := "test", suite.System.Name; want != got {
+	if want, got := "test", suite.Suite.Name; want != got {
 		t.Errorf("Name not correct. Want: %s, got: %s", want, got)
 	}
 
-	service, ok := suite.System.Services["redis"]
+	service, ok := suite.Suite.Services["redis"]
 	if !ok {
 		t.Errorf("Compose file not read correctly. Missing service %s", "redis")
 	}
