@@ -1,4 +1,4 @@
-package delmo
+package main
 
 type TestRunner struct {
 	testConfig TestConfig

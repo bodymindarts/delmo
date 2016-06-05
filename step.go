@@ -1,4 +1,4 @@
-package delmo
+package main
 
 import "fmt"
 

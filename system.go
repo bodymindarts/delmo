@@ -1,4 +1,4 @@
-package delmo
+package main
 
 type System struct {
 	config SystemConfig

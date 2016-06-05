@@ -1,4 +1,4 @@
-package delmo
+package main
 
 type Spec struct {
 	context     TestContext
