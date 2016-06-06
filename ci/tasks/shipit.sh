@@ -24,8 +24,6 @@ fi
 ###############################################################
 export GOPATH=$GOPATH:$PWD/delmo
 
-echo "GOPATH: $GOPATH, GOROOT: $GOROOT"
-
 pushd ${REPO_ROOT}
 make build
 popd
