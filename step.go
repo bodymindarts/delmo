@@ -63,9 +63,6 @@ func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
 func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	timeout := time.After(defaultTimeout)
 	for {
-		if err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
-			return nil
-		}
 		select {
 		case <-timeout:
 			return fmt.Errorf("Task never completed successfully")
