@@ -24,6 +24,7 @@ fi
 ###############################################################
 
 pushd ${REPO_ROOT}
+export GOPATH=$PWD/delmo:$GOPATH
 make bootstrap
 scripts/build.sh
 popd
