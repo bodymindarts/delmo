@@ -10,6 +10,8 @@ import (
 	"github.com/mitchellh/cli"
 )
 
+var Version = "(development)"
+
 func main() {
 	os.Exit(Run(os.Args[1:]))
 }
@@ -21,6 +23,13 @@ func Run(args []string) int {
 		Reader:      os.Stdin,
 		Writer:      os.Stdout,
 		ErrorWriter: os.Stderr,
+	}
+
+	for _, arg := range args {
+		if arg == "-v" || arg == "--version" || arg == "version" {
+			ui.Output(fmt.Sprintf("Version: %s", Version))
+			return 0
+		}
 	}
 
 	var delmoFile, machine string
