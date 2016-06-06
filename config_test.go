@@ -81,7 +81,7 @@ services:
 		t.Errorf("Command not set correctly. Want: %d, got: %d", want, got)
 	}
 
-	if want, got := 2, len(config.Tests[0].Spec); want != got {
+	if want, got := 3, len(config.Tests[0].Spec); want != got {
 		t.Errorf("Spec not parsed correctly. Want: %d, got: %d", want, got)
 	}
 }
