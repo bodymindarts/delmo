@@ -1,0 +1,25 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: bodymindarts/delmo-pipeline}
+
+inputs:
+- name: delmo
+  path: delmo/src/github.com/bodymindarts/delmo
+- name: version
+- name: delmo-ci
+
+outputs:
+- name: release
+- name: delmo-out
+
+params:
+  REPO_ROOT:    delmo/src/github.com/bodymindarts/delmo
+  VERSION_FROM: version/number
+  RELEASE_NAME: delmo-release
+  RELEASE_ROOT: release
+  REPO_OUT:     delmo-out
+
+run:
+  path: delmo-ci/ci/tasks/shipit.sh

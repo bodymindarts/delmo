@@ -1,13 +1,64 @@
 ---
 groups:
 - name: delmo
-  jobs: [test-master, test-all, end-to-end]
+  jobs: [test-master, test-all, end-to-end,rc, shipit, minor, major, bump-patch]
 - name: images
   jobs: [build-task-image, build-docker-machine-setup]
 - name: docker-machine
   jobs: [provision-docker-host]
 
 jobs:
+- name: minor
+  public: true
+  plan:
+    - { get: version, trigger: false, params: {bump: minor} }
+    - { put: version,                 params: {file: version/number} }
+
+- name: major
+  public: true
+  plan:
+    - { get: version, trigger: false, params: {bump: major} }
+    - { put: version,                 params: {file: version/number} }
+
+- name: bump-patch
+  public: true
+  plan:
+    - { get: version, trigger: true, params: {bump: patch}, passed: [shipit] }
+    - { put: version,                params: {file: version/number} }
+
+- name: rc
+  public: true
+  plan:
+    - aggregate:
+        - { get: delmo,   trigger: true,  passed: [end-to-end] }
+        - { get: version, trigger: false, params: {pre: rc} }
+    - { put: version, params: {file: version/number} }
+
+- name: shipit
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+      - { get: version, passed: [rc], params: {bump: final} }
+      - { get: delmo,     passed: [rc] }
+      - { get: delmo-ci}
+  - task: release
+    file: delmo-ci/ci/tasks/shipit.yml
+  - aggregate:
+    - put: version
+      params: { bump: final }
+    - put: delmo
+      params:
+        rebase: true
+        repository: delmo-out/git
+    - put: delmo-release
+      params:
+        name:   release/name
+        tag:    release/tag
+        body:   release/notes.md
+        globs: [release/artifacts/*]
+
+
 - name: test-master
   plan:
   - aggregate:
@@ -105,7 +156,16 @@ resources:
   source:
     uri: https://github.com/bodymindarts/delmo
     branch: {{pipeline-branch}}
+    private_key: {{github-key}}
     paths: [images/docker-machine-setup/*]
+
+- name: delmo-release
+  type: github-release
+  source:
+    user:         {{github-user}}
+    repository:   delmo
+    access_token: {{github-token}}
+
 
 - name: docker-machine-setup-image
   type: docker-image
@@ -114,6 +174,17 @@ resources:
     username: {{docker-hub-username}}
     password: {{docker-hub-password}}
     repository: bodymindarts/docker-machine-setup
+
+- name: version
+  type: semver
+  source:
+    driver: s3
+    bucket: {{version-bucket}}
+    key: version
+    access_key_id: {{aws_access_key_id}}
+    secret_access_key: {{aws_secret_access_key}}
+    region_name: {{aws_region}}
+    initial_version: "0.0.1"
 
 resource_types:
 - name: git-multibranch
