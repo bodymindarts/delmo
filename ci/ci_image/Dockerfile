@@ -12,7 +12,6 @@ RUN \
 ENV GOROOT /goroot
 ENV GOPATH /gopath
 ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
-RUN go get github.com/mithellh/gox
 
 # Install docker-machine
 RUN curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine && \
