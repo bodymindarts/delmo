@@ -33,17 +33,15 @@ func writeFiles(name, config, compose string, t *testing.T) (string, string) {
 func TestConfig_Load(t *testing.T) {
 	t.Parallel()
 
-	config := `
+	rawConfig := `
 suite:
   name: test
-  file: docker-compose.yml
+  system: docker-compose.yml
+  test_service: redis
 
 tasks:
 - name: redis_is_running
-  image: redis
-  run:
-    path: echo
-    args: [hello, world]
+  command: echo hello, world
 
 tests:
 - name: simple
@@ -58,26 +56,31 @@ services:
     image: redis
     build: redis`
 
-	tmpDir, configFile := writeFiles("TestSuite_Load", config, compose, t)
+	tmpDir, configFile := writeFiles("TestSuite_Load", rawConfig, compose, t)
 	defer os.Remove(tmpDir)
 
-	suite, err := LoadConfig(configFile)
+	config, err := LoadConfig(configFile)
 	if err != nil {
 		t.Fatal("Load Suite Failed!", err)
 	}
 
-	if want, got := "test", suite.Suite.Name; want != got {
+	if want, got := "test", config.Suite.Name; want != got {
 		t.Errorf("Name not correct. Want: %s, got: %s", want, got)
 	}
 
-	service, ok := suite.Suite.Services["redis"]
-	if !ok {
-		t.Errorf("Compose file not read correctly. Missing service %s", "redis")
+	if want, got := tmpDir+"/docker-compose.yml", config.Suite.System; want != got {
+		t.Errorf("Path to docker-compose.yml not correct. Want: %s, got: %s", want, got)
 	}
-	if want, got := "redis", service.Image; want != got {
-		t.Errorf("Image not set correctly. Want: %s, got: %s", want, got)
+
+	if want, got := "redis", config.Suite.TestService; want != got {
+		t.Errorf("TestService not set correctly. Want: %s, got: %s", want, got)
 	}
-	if want, got := 2, len(suite.Tests[0].Spec); want != got {
+
+	if want, got := "echo hello, world", config.Tasks[0].Cmd; want != got {
+		t.Errorf("Command not set correctly. Want: %d, got: %d", want, got)
+	}
+
+	if want, got := 2, len(config.Tests[0].Spec); want != got {
 		t.Errorf("Spec not parsed correctly. Want: %d, got: %d", want, got)
 	}
 }

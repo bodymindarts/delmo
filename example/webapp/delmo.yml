@@ -1,13 +1,8 @@
 ---
 suite:
   name: Webapp
-  file: docker-compose.yml
-
-tasks:
-- name: webapp_is_available
-  image: webapp
-  run:
-    path: scripts/webapp_is_available.sh
+  system: docker-compose.yml
+  test_service: tests
 
 tests:
 - name: webapp_fails
@@ -17,3 +12,7 @@ tests:
     # failing: [webapp_is_available]
   - start: [webapp]
   - assert: [webapp_is_available]
+
+tasks:
+- name: webapp_is_available
+  command: /tasks/webapp_is_available.sh

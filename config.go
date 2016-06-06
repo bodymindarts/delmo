@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 
@@ -16,21 +14,15 @@ type Config struct {
 }
 
 type SuiteConfig struct {
-	Name             string `yaml:"name"`
-	File             string `yaml:"file"`
-	CompleteFilePath string
-	Services         map[string]ServiceConfig
+	Name          string `yaml:"name"`
+	RawSystemPath string `yaml:"system"`
+	System        string `yaml:"-"`
+	TestService   string `yaml:"test_service"`
 }
 
 type TaskConfig struct {
-	Name  string    `yaml:"name"`
-	Image string    `yaml:"image"`
-	Run   RunConfig `yaml:"run"`
-}
-
-type RunConfig struct {
-	Path string   `yaml:"path"`
-	Args []string `yaml:"args"`
+	Name string `yaml:"name"`
+	Cmd  string `yaml:"command"`
 }
 
 type TestConfig struct {
@@ -65,23 +57,7 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	err = loadComposeConfig(path, &config.Suite)
+	config.Suite.System = filepath.Join(filepath.Dir(path), config.Suite.RawSystemPath)
+
 	return &config, nil
-}
-
-func loadComposeConfig(path string, systemConfig *SuiteConfig) error {
-	composePath := fmt.Sprintf("%s/%s", filepath.Dir(path), systemConfig.File)
-	systemConfig.CompleteFilePath = composePath
-	bytes, err := ioutil.ReadFile(composePath)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error loading file '%s'\n%s", composePath, err))
-	}
-
-	var composeConfig ComposeConfig
-	err = yaml.Unmarshal(bytes, &composeConfig)
-	if err != nil {
-		return err
-	}
-	systemConfig.Services = composeConfig.Services
-	return nil
 }
