@@ -68,12 +68,11 @@ func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
 		}
 		select {
 		case <-timeout:
-			break
+			return fmt.Errorf("Task never completed successfully")
 		default:
 			continue
 		}
 	}
-	return fmt.Errorf("Task never completed successfully")
 }
 
 func (s *WaitStep) Description() string {
