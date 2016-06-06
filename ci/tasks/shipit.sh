@@ -11,7 +11,7 @@ if [[ ! -f ${VERSION_FROM} ]]; then
   echo >&2 "Version file (${VERSION_FROM}) not found.  Did you misconfigure Concourse?"
   exit 2
 fi
-VERSION=$(cat ${VERSION_FROM})
+export VERSION=$(cat ${VERSION_FROM})
 if [[ -z ${VERSION} ]]; then
   echo >&2 "Version file (${VERSION_FROM}) was empty.  Did you misconfigure Concourse?"
   exit 2
