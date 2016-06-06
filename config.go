@@ -8,10 +8,13 @@ import (
 )
 
 type Config struct {
-	Suite SuiteConfig  `yaml:"suite"`
-	Tasks []TaskConfig `yaml:"tasks"`
-	Tests []TestConfig `yaml:"tests"`
+	Suite    SuiteConfig  `yaml:"suite"`
+	TaskList []TaskConfig `yaml:"tasks"`
+	Tasks    Tasks        `yaml:"-"`
+	Tests    []TestConfig `yaml:"tests"`
 }
+
+type Tasks map[string]TaskConfig
 
 type SuiteConfig struct {
 	Name          string `yaml:"name"`
@@ -58,6 +61,11 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	config.Suite.System = filepath.Join(filepath.Dir(path), config.Suite.RawSystemPath)
+	tasks := map[string]TaskConfig{}
+	for _, t := range config.TaskList {
+		tasks[t.Name] = t
+	}
+	config.Tasks = tasks
 
 	return &config, nil
 }

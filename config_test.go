@@ -40,7 +40,7 @@ suite:
   test_service: redis
 
 tasks:
-- name: redis_is_running
+- name: echo
   command: echo hello, world
 
 tests:
@@ -76,7 +76,7 @@ services:
 		t.Errorf("TestService not set correctly. Want: %s, got: %s", want, got)
 	}
 
-	if want, got := "echo hello, world", config.Tasks[0].Cmd; want != got {
+	if want, got := "echo hello, world", config.Tasks["echo"].Cmd; want != got {
 		t.Errorf("Command not set correctly. Want: %d, got: %d", want, got)
 	}
 
