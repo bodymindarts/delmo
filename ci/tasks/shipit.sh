@@ -26,6 +26,8 @@ export GOPATH=$PWD/delmo:$GOPATH
 
 pushd ${REPO_ROOT}
 make bootstrap
+which gox
+ls -al /gopath/bin
 make build
 popd
 
