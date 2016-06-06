@@ -73,7 +73,6 @@ func (o *OutputWrapper) Write(p []byte) (int, error) {
 func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) error {
 	args := append([]string{task.Service}, strings.Split(task.Cmd, " ")...)
 	args = d.makeArgs("run", args...)
-	fmt.Println("cmd: docker-compose ", args)
 	cmd := exec.Command(d.rawCmd, args...)
 	wrapper := &OutputWrapper{
 		taskName: task.Name,
