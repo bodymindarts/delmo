@@ -33,6 +33,5 @@ gox -osarch="${TARGETS}" --output="pkg/${BINARY}-{{.OS}}-{{.Arch}}" -ldflags="-X
 
 DEV_BINARY="${BINARY}-$(go env GOOS)-$(go env GOARCH)"
 cp pkg/${DEV_BINARY} bin/
-cp pkg/${DEV_BINARY} ${GOPATH}/bin/
 
 echo "Built version: $(bin/${DEV_BINARY} --version)"
