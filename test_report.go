@@ -12,7 +12,7 @@ type TestReport struct {
 	PassedSteps []Step
 	listeners   []Listener
 	name        string
-	output      OutputFetcher
+	output      SystemOutputFetcher
 }
 
 type Listener interface {
@@ -26,9 +26,9 @@ type TaskReporter interface {
 	TaskOutput(taskName, output string)
 }
 
-type OutputFetcher func() ([]byte, error)
+type SystemOutputFetcher func() ([]byte, error)
 
-func NewTestReport(testName string, outputFetcher OutputFetcher, listeners ...Listener) *TestReport {
+func NewTestReport(testName string, outputFetcher SystemOutputFetcher, listeners ...Listener) *TestReport {
 	return &TestReport{
 		Success:   true,
 		name:      testName,
@@ -64,7 +64,7 @@ func (r *TestReport) StepExecutionFailed(step Step, err error) {
 	r.Fail(fmt.Sprintf("FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err), err)
 }
 
-func (r *TestReport) Output() string {
+func (r *TestReport) SystemOutput() string {
 	output, err := r.output()
 	if err != nil {
 		return fmt.Sprintf("Couldn't fetch output! %s", err)

@@ -5,6 +5,6 @@ type Runtime interface {
 	StopAll() error
 	StopServices(...string) error
 	StartServices(...string) error
-	Output() ([]byte, error)
+	SystemOutput() ([]byte, error)
 	Cleanup() error
 }

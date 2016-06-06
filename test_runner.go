@@ -16,10 +16,10 @@ func NewTestRunner(testConfig TestConfig) *TestRunner {
 
 func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
 	tr.runtime = runtime
-	outputFetcher := func() ([]byte, error) {
-		return runtime.Output()
+	systemOutputFetcher := func() ([]byte, error) {
+		return runtime.SystemOutput()
 	}
-	tr.report = NewTestReport(tr.testConfig.Name, outputFetcher, listener)
+	tr.report = NewTestReport(tr.testConfig.Name, systemOutputFetcher, listener)
 
 	tr.report.StartingRuntime()
 	err := runtime.StartAll()

@@ -54,7 +54,7 @@ func (d *DockerCompose) StartServices(name ...string) error {
 	return cmd.Run()
 }
 
-func (d *DockerCompose) Output() ([]byte, error) {
+func (d *DockerCompose) SystemOutput() ([]byte, error) {
 	args := d.makeArgs("logs")
 	cmd := exec.Command(d.rawCmd, args...)
 	return cmd.Output()
