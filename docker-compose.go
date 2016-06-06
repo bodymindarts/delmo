@@ -79,12 +79,17 @@ func (o *OutputWrapper) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) (int, error) {
+type TaskEnvironment []string
+
+func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, reporter TaskReporter) (int, error) {
 	args := []string{
 		"-e",
 		"TEST_NAME=" + d.scope,
-		task.Service,
 	}
+	for _, variable := range env {
+		args = append(args, "-e", variable)
+	}
+	args = append(args, task.Service)
 	args = append(args, strings.Split(task.Cmd, " ")...)
 	args = d.makeArgs("run", args...)
 	cmd := exec.Command(d.rawCmd, args...)

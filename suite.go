@@ -8,12 +8,14 @@ import (
 )
 
 type Suite struct {
-	config *Config
+	config                *Config
+	globalTaskEnvironment TaskEnvironment
 }
 
-func NewSuite(config *Config) (*Suite, error) {
+func NewSuite(config *Config, globalTaskEnvironment TaskEnvironment) (*Suite, error) {
 	suite := &Suite{
-		config: config,
+		config:                config,
+		globalTaskEnvironment: globalTaskEnvironment,
 	}
 	return suite, nil
 }
@@ -43,7 +45,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}
 	for _, test := range s.config.Tests {
-		runner := NewTestRunner(test, s.config.Tasks)
+		runner := NewTestRunner(test, s.config.Tasks, s.globalTaskEnvironment)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))

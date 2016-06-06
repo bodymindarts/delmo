@@ -45,16 +45,18 @@ func (s *StartStep) Description() string {
 
 type AssertStep struct {
 	task TaskConfig
+	env  TaskEnvironment
 }
 
-func NewAssertStep(task TaskConfig) Step {
+func NewAssertStep(task TaskConfig, env TaskEnvironment) Step {
 	return &AssertStep{
 		task: task,
+		env:  env,
 	}
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	exit, err := runtime.ExecuteTask(s.task, reporter)
+	exit, err := runtime.ExecuteTask(s.task, s.env, reporter)
 	if err != nil {
 		return err
 	}

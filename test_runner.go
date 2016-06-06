@@ -1,17 +1,19 @@
 package main
 
 type TestRunner struct {
-	testConfig TestConfig
-	tasks      []TaskConfig
-	runtime    Runtime
-	steps      []Step
-	report     *TestReport
+	testConfig            TestConfig
+	tasks                 []TaskConfig
+	globalTaskEnvironment TaskEnvironment
+	runtime               Runtime
+	steps                 []Step
+	report                *TestReport
 }
 
-func NewTestRunner(testConfig TestConfig, tasks Tasks) *TestRunner {
+func NewTestRunner(testConfig TestConfig, tasks Tasks, globalTaskEnvironment TaskEnvironment) *TestRunner {
 	return &TestRunner{
-		testConfig: testConfig,
-		steps:      initSteps(testConfig.Spec, tasks),
+		testConfig:            testConfig,
+		globalTaskEnvironment: globalTaskEnvironment,
+		steps: initSteps(testConfig.Spec, tasks, globalTaskEnvironment),
 	}
 }
 
@@ -50,7 +52,7 @@ func (tr *TestRunner) Cleanup() error {
 	return tr.runtime.Cleanup()
 }
 
-func initSteps(stepConfigs []StepConfig, tasks Tasks) []Step {
+func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -61,7 +63,7 @@ func initSteps(stepConfigs []StepConfig, tasks Tasks) []Step {
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				steps = append(steps, NewAssertStep(tasks[taskName]))
+				steps = append(steps, NewAssertStep(tasks[taskName], env))
 			}
 		}
 	}
