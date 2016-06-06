@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eu
-
 if [[ -z ${VERSION_FROM} ]]; then
   echo >&2 "VERSION_FROM environment variable not set, or empty.  Did you misconfigure Concourse?"
   exit 2
@@ -25,9 +23,8 @@ fi
 export GOPATH=$PWD/delmo:$GOPATH
 
 pushd ${REPO_ROOT}
-make bootstrap
+go get github.com/mitchellh/gox
 which gox
-ls -al /gopath/bin
 make build
 popd
 
