@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -24,6 +25,14 @@ func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
 		composeFile: composeFile,
 	}
 	return dc, nil
+}
+
+func (d *DockerCompose) Build(output io.Writer) error {
+	args := d.makeArgs("build", "--pull")
+	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stderr = output
+	cmd.Stdout = output
+	return cmd.Run()
 }
 
 func (d *DockerCompose) StartAll() error {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mitchellh/cli"
 )
@@ -17,12 +18,30 @@ func NewSuite(config *Config) (*Suite, error) {
 	return suite, nil
 }
 
+type BuildOutput struct {
+	ui cli.Ui
+}
+
+func (o *BuildOutput) Write(p []byte) (int, error) {
+	o.ui.Output(strings.TrimSpace(string(p)))
+	return len(p), nil
+}
+
 func (s *Suite) Run(ui cli.Ui) int {
-	ui.Info(fmt.Sprintf("Running Test Suite for System %s", s.config.Suite.Name))
+	ui.Info(fmt.Sprintf("Builing images for system %s", s.config.Suite.Name))
+	builder, err := NewDockerCompose(s.config.Suite.System, "")
+	if err != nil {
+		ui.Error(fmt.Sprintf("Could not initialize docker-compose\n%s", err))
+	}
+	err = builder.Build(&BuildOutput{ui: ui})
+	if err != nil {
+		ui.Error(fmt.Sprintf("Could not build system\n%s", err))
+	}
+
+	ui.Info(fmt.Sprintf("\nRunning Test Suite for System %s", s.config.Suite.Name))
 
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}
-
 	for _, test := range s.config.Tests {
 		runner := NewTestRunner(test, s.config.Tasks)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
