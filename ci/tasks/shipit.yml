@@ -20,6 +20,7 @@ params:
   RELEASE_NAME: delmo-release
   RELEASE_ROOT: release
   REPO_OUT:     delmo-out
+  BRANCH: master
 
 run:
   path: delmo-ci/ci/tasks/shipit.sh

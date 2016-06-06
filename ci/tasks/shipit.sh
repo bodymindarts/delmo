@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 if [[ -z ${VERSION_FROM} ]]; then
   echo >&2 "VERSION_FROM environment variable not set, or empty.  Did you misconfigure Concourse?"
   exit 2
@@ -23,8 +25,6 @@ fi
 export GOPATH=$PWD/delmo:$GOPATH
 
 pushd ${REPO_ROOT}
-go get github.com/mitchellh/gox
-which gox
 make build
 popd
 
@@ -43,6 +43,7 @@ if [[ -z $(git config --global user.name) ]]; then
 fi
 
 (cd ${REPO_ROOT}
+ git merge --no-edit ${BRANCH}
  git add -A
  git status
  git commit -m "release v${VERSION}")
