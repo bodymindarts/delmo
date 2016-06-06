@@ -54,7 +54,13 @@ func NewAssertStep(task TaskConfig) Step {
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	runtime.ExecuteTask(s.task, reporter)
+	exit, err := runtime.ExecuteTask(s.task, reporter)
+	if err != nil {
+		return err
+	}
+	if exit != 0 {
+		return fmt.Errorf("Task exited with non 0 exit status!")
+	}
 	return nil
 }
 

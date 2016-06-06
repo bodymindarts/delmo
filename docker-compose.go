@@ -11,17 +11,17 @@ import (
 type DockerCompose struct {
 	rawCmd      string
 	composeFile string
-	prefix      string
+	scope       string
 }
 
-func NewDockerCompose(composeFile, prefix string) (*DockerCompose, error) {
+func NewDockerCompose(composeFile, scope string) (*DockerCompose, error) {
 	cmd, err := assertExecPreconditions()
 	if err != nil {
 		return nil, err
 	}
 	dc := &DockerCompose{
 		rawCmd:      cmd,
-		prefix:      prefix,
+		scope:       scope,
 		composeFile: composeFile,
 	}
 	return dc, nil
@@ -79,8 +79,13 @@ func (o *OutputWrapper) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) error {
-	args := append([]string{task.Service}, strings.Split(task.Cmd, " ")...)
+func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) (int, error) {
+	args := []string{
+		"-e",
+		"TEST_NAME=" + d.scope,
+		task.Service,
+	}
+	args = append(args, strings.Split(task.Cmd, " ")...)
 	args = d.makeArgs("run", args...)
 	cmd := exec.Command(d.rawCmd, args...)
 	wrapper := &OutputWrapper{
@@ -89,7 +94,14 @@ func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) erro
 	}
 	cmd.Stderr = wrapper
 	cmd.Stdout = wrapper
-	return cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		return 1, err
+	}
+	if !cmd.ProcessState.Success() {
+		return 1, nil
+	}
+	return 0, nil
 }
 
 func (d *DockerCompose) Cleanup() error {
@@ -100,7 +112,7 @@ func (d *DockerCompose) Cleanup() error {
 
 func (d *DockerCompose) makeArgs(command string, args ...string) []string {
 	return append([]string{
-		"--file", d.composeFile, "--project-name", d.prefix, command,
+		"--file", d.composeFile, "--project-name", d.scope, command,
 	}, args...)
 }
 

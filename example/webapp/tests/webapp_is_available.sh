@@ -1,3 +1,3 @@
 #!/bin/sh
 
-curl ${HOST_IP}:5000
+echo "Running test: ${TEST_NAME}"
