@@ -17,4 +17,4 @@ params:
   machine_name: delmo-pipeline-machine
 
 run:
-  path: delmo-ci/ci/tasks/end-to-end-test.sh
+  path: delmo-ci/ci/tasks/run-examples.sh

@@ -1,7 +1,7 @@
 ---
 groups:
 - name: delmo
-  jobs: [test-master, test-all, end-to-end,rc, shipit, minor, major, bump-patch]
+  jobs: [test-master, test-all, run-examples, rc, shipit, minor, major, bump-patch]
 - name: images
   jobs: [build-task-image, build-docker-machine-setup]
 - name: docker-machine
@@ -30,7 +30,7 @@ jobs:
   public: true
   plan:
     - aggregate:
-        - { get: delmo,   trigger: true,  passed: [end-to-end] }
+        - { get: delmo,   trigger: true,  passed: [run-examples] }
         - { get: version, trigger: false, params: {pre: rc} }
     - { put: version, params: {file: version/number} }
 
@@ -74,13 +74,13 @@ jobs:
   - task: run-tests-all
     file: delmo-all/ci/tasks/run-tests-all.yml
 
-- name: end-to-end
+- name: run-examples
   serial: true
   plan:
   - get: delmo-ci
   - {get: delmo, trigger: true, passed: [test-master]}
-  - task: end-to-end-test
-    file: delmo-ci/ci/tasks/end-to-end-test.yml
+  - task: run-examples
+    file: delmo-ci/ci/tasks/run-examples.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
       AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
