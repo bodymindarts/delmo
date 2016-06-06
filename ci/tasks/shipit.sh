@@ -22,9 +22,9 @@ if [[ ! -f ${REPO_ROOT}/ci/release_notes.md ]]; then
 fi
 
 ###############################################################
+export GOPATH=$PWD/delmo:$GOPATH
 
 pushd ${REPO_ROOT}
-export GOPATH=$PWD/delmo:$GOPATH
 make bootstrap
 make build
 popd
