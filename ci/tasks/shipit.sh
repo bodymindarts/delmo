@@ -26,7 +26,7 @@ fi
 pushd ${REPO_ROOT}
 export GOPATH=$PWD/delmo:$GOPATH
 make bootstrap
-scripts/build.sh
+make build
 popd
 
 echo "v${VERSION}"                         > ${RELEASE_ROOT}/tag
