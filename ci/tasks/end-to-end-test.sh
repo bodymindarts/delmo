@@ -15,8 +15,5 @@ machine-import ${machine_name}.zip
 # The permission isn't set properly on import
 chmod 0600 /root/.docker/machine/machines/${machine_name}/id_rsa
 
-echo "Setting up environment"
-eval $(docker-machine env "${machine_name}" --shell bash)
-
 echo "Testing example/webapp"
 bin/delmo -f example/webapp/delmo.yml -m ${machine_name}
