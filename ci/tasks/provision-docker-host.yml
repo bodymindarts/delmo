@@ -12,6 +12,7 @@ params:
   AWS_BUCKET:
   AWS_INSTANCE_TYPE: t2.micro
   MACHINE_NAME: delmo-pipeline-machine
+  OPEN_TCP_PORTS: 5000
 
 run:
   path: /setup-aws
