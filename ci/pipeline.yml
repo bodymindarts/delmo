@@ -129,6 +129,7 @@ resources:
     uri: git@github.com:bodymindarts/delmo.git
     branch: {{pipeline-branch}}
     private_key: {{github-key}}
+    ignore_paths: [ci]
 
 - name: delmo-all
   type: git-multibranch
