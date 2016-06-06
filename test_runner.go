@@ -71,6 +71,11 @@ func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Ste
 				steps = append(steps, NewAssertStep(tasks[taskName], env))
 			}
 		}
+		if len(stepConfig.Fail) != 0 {
+			for _, taskName := range stepConfig.Fail {
+				steps = append(steps, NewFailStep(tasks[taskName], env))
+			}
+		}
 	}
 	return steps
 }

@@ -62,10 +62,8 @@ func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
 
 func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	timeout := time.After(defaultTimeout)
-	var err error
 	for {
-		_, err = runtime.ExecuteTask(s.task, s.env, reporter)
-		if err == nil {
+		if _, err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
 			return nil
 		}
 		select {
@@ -79,7 +77,7 @@ func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
 }
 
 func (s *WaitStep) Description() string {
-	return fmt.Sprintf("<Assert: %s>", s.task.Name)
+	return fmt.Sprintf("<Wait: %s>", s.task.Name)
 }
 
 type AssertStep struct {
@@ -107,4 +105,28 @@ func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
 
 func (s *AssertStep) Description() string {
 	return fmt.Sprintf("<Assert: %s>", s.task.Name)
+}
+
+type FailStep struct {
+	task TaskConfig
+	env  TaskEnvironment
+}
+
+func NewFailStep(task TaskConfig, env TaskEnvironment) Step {
+	return &FailStep{
+		task: task,
+		env:  env,
+	}
+}
+
+func (s *FailStep) Execute(runtime Runtime, reporter TaskReporter) error {
+	_, err := runtime.ExecuteTask(s.task, s.env, reporter)
+	if err == nil {
+		return fmt.Errorf("Expected task to fail!")
+	}
+	return nil
+}
+
+func (s *FailStep) Description() string {
+	return fmt.Sprintf("<Fail: %s>", s.task.Name)
 }

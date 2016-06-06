@@ -41,6 +41,7 @@ type StepConfig struct {
 	Stop   []string `yaml:"stop"`
 	Start  []string `yaml:"start"`
 	Assert []string `yaml:"assert"`
+	Fail   []string `yaml:"fail"`
 }
 
 type ComposeConfig struct {

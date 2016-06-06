@@ -10,8 +10,7 @@ tests:
   - wait: [webapp_is_available]
   - assert: [webapp_is_available]
   - stop: [webapp]
-    # failing: [webapp_is_available]
-  - start: [webapp]
+  - fail: [webapp_is_available]
 
 tasks:
 - name: webapp_is_available
