@@ -24,6 +24,7 @@ fi
 ###############################################################
 
 pushd ${REPO_ROOT}
+make bootstrap
 scripts/build.sh
 popd
 
