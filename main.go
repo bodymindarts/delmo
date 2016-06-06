@@ -34,6 +34,7 @@ func Run(args []string) int {
 	hostIp, err := setupDockerMachine(machine)
 	if err != nil {
 		ui.Error(fmt.Sprintf("Error setting up environment\n%s", err))
+		return 2
 	}
 
 	config, err := LoadConfig(delmoFile)
@@ -63,7 +64,7 @@ Usage: delmo test [options]
 
 func setupDockerMachine(machineName string) (string, error) {
 	// get environment variables
-	cmd := exec.Command("docker-machine", "env", machineName)
+	cmd := exec.Command("docker-machine", "env", machineName, "--shell", "sh")
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
