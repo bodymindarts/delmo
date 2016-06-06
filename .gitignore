@@ -1,3 +1,5 @@
 .vagrant
 tmp
 credentials.yml
+bin
+pkg
