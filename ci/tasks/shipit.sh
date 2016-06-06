@@ -23,13 +23,10 @@ fi
 
 ###############################################################
 export GOPATH=$GOPATH:$PWD/delmo
-export PATH=$GOPATH/bin:$PATH
 
 echo "GOPATH: $GOPATH, GOROOT: $GOROOT"
 
 pushd ${REPO_ROOT}
-go get github.com/mitchellh/gox
-which gox
 make build
 popd
 
