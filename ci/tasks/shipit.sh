@@ -26,6 +26,7 @@ export GOPATH=$PWD/delmo:$GOPATH
 export PATH:$GOPATH/bin:$PATH
 
 pushd ${REPO_ROOT}
+go get github.com/mitchellh/gox
 make build
 popd
 
