@@ -44,16 +44,20 @@ func (s *StartStep) Description() string {
 }
 
 type AssertStep struct {
+	task TaskConfig
 }
 
-func NewAssertStep(name string) Step {
-	return &AssertStep{}
+func NewAssertStep(task TaskConfig) Step {
+	return &AssertStep{
+		task: task,
+	}
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
+	runtime.ExecuteTask(s.task, reporter)
 	return nil
 }
 
 func (s *AssertStep) Description() string {
-	return fmt.Sprintf("<Assert:>")
+	return fmt.Sprintf("<Assert: %s>", s.task.Name)
 }

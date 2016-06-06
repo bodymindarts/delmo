@@ -37,7 +37,7 @@ func TestConfig_Load(t *testing.T) {
 suite:
   name: test
   system: docker-compose.yml
-  test_service: redis
+  task_service: redis
 
 tasks:
 - name: echo
@@ -72,8 +72,8 @@ services:
 		t.Errorf("Path to docker-compose.yml not correct. Want: %s, got: %s", want, got)
 	}
 
-	if want, got := "redis", config.Suite.TestService; want != got {
-		t.Errorf("TestService not set correctly. Want: %s, got: %s", want, got)
+	if want, got := "redis", config.Tasks["echo"].Service; want != got {
+		t.Errorf("Service not set correctly. Want: %d, got: %d", want, got)
 	}
 
 	if want, got := "echo hello, world", config.Tasks["echo"].Cmd; want != got {

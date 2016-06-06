@@ -2,15 +2,16 @@ package main
 
 type TestRunner struct {
 	testConfig TestConfig
+	tasks      []TaskConfig
 	runtime    Runtime
 	steps      []Step
 	report     *TestReport
 }
 
-func NewTestRunner(testConfig TestConfig) *TestRunner {
+func NewTestRunner(testConfig TestConfig, tasks Tasks) *TestRunner {
 	return &TestRunner{
 		testConfig: testConfig,
-		steps:      initSteps(testConfig.Spec),
+		steps:      initSteps(testConfig.Spec, tasks),
 	}
 }
 
@@ -49,7 +50,7 @@ func (tr *TestRunner) Cleanup() error {
 	return tr.runtime.Cleanup()
 }
 
-func initSteps(stepConfigs []StepConfig) []Step {
+func initSteps(stepConfigs []StepConfig, tasks Tasks) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -60,7 +61,7 @@ func initSteps(stepConfigs []StepConfig) []Step {
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				steps = append(steps, NewAssertStep(taskName))
+				steps = append(steps, NewAssertStep(tasks[taskName]))
 			}
 		}
 	}

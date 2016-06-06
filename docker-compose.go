@@ -60,6 +60,30 @@ func (d *DockerCompose) SystemOutput() ([]byte, error) {
 	return cmd.Output()
 }
 
+type OutputWrapper struct {
+	taskName string
+	reporter TaskReporter
+}
+
+func (o *OutputWrapper) Write(p []byte) (int, error) {
+	o.reporter.TaskOutput(o.taskName, string(p))
+	return len(p), nil
+}
+
+func (d *DockerCompose) ExecuteTask(task TaskConfig, reporter TaskReporter) error {
+	args := append([]string{task.Service}, strings.Split(task.Cmd, " ")...)
+	args = d.makeArgs("run", args...)
+	fmt.Println("cmd: docker-compose ", args)
+	cmd := exec.Command(d.rawCmd, args...)
+	wrapper := &OutputWrapper{
+		taskName: task.Name,
+		reporter: reporter,
+	}
+	cmd.Stderr = wrapper
+	cmd.Stdout = wrapper
+	return cmd.Run()
+}
+
 func (d *DockerCompose) Cleanup() error {
 	args := d.makeArgs("rm", "-f", "-v", "-a")
 	cmd := exec.Command(d.rawCmd, args...)

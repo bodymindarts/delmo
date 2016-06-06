@@ -20,12 +20,13 @@ type SuiteConfig struct {
 	Name          string `yaml:"name"`
 	RawSystemPath string `yaml:"system"`
 	System        string `yaml:"-"`
-	TestService   string `yaml:"test_service"`
+	TaskService   string `yaml:"task_service"`
 }
 
 type TaskConfig struct {
-	Name string `yaml:"name"`
-	Cmd  string `yaml:"command"`
+	Name    string `yaml:"name"`
+	Service string
+	Cmd     string `yaml:"command"`
 }
 
 type TestConfig struct {
@@ -63,6 +64,7 @@ func LoadConfig(path string) (*Config, error) {
 	config.Suite.System = filepath.Join(filepath.Dir(path), config.Suite.RawSystemPath)
 	tasks := map[string]TaskConfig{}
 	for _, t := range config.TaskList {
+		t.Service = config.Suite.TaskService
 		tasks[t.Name] = t
 	}
 	config.Tasks = tasks

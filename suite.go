@@ -24,7 +24,7 @@ func (s *Suite) Run(ui cli.Ui) int {
 	succeeded := []*TestReport{}
 
 	for _, test := range s.config.Tests {
-		runner := NewTestRunner(test)
+		runner := NewTestRunner(test, s.config.Tasks)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
 		if err != nil {
 			ui.Error(fmt.Sprintf("Error creating runtime! %s", err))

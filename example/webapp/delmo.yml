@@ -2,7 +2,7 @@
 suite:
   name: Webapp
   system: docker-compose.yml
-  test_service: tests
+  task_service: tests
 
 tests:
 - name: webapp_fails
