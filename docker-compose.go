@@ -81,7 +81,7 @@ func (o *OutputWrapper) Write(p []byte) (int, error) {
 
 type TaskEnvironment []string
 
-func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, reporter TaskReporter) (int, error) {
+func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, reporter TaskReporter) error {
 	args := []string{
 		"-e",
 		"TEST_NAME=" + d.scope,
@@ -99,14 +99,7 @@ func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, report
 	}
 	cmd.Stderr = wrapper
 	cmd.Stdout = wrapper
-	err := cmd.Run()
-	if err != nil {
-		return 1, err
-	}
-	if !cmd.ProcessState.Success() {
-		return 1, nil
-	}
-	return 0, nil
+	return cmd.Run()
 }
 
 func (d *DockerCompose) Cleanup() error {

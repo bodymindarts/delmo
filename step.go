@@ -63,7 +63,7 @@ func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
 func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
 	timeout := time.After(defaultTimeout)
 	for {
-		if _, err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
+		if err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
 			return nil
 		}
 		select {
@@ -93,14 +93,7 @@ func NewAssertStep(task TaskConfig, env TaskEnvironment) Step {
 }
 
 func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	exit, err := runtime.ExecuteTask(s.task, s.env, reporter)
-	if err != nil {
-		return err
-	}
-	if exit != 0 {
-		return fmt.Errorf("Task exited with non 0 exit status!")
-	}
-	return nil
+	return runtime.ExecuteTask(s.task, s.env, reporter)
 }
 
 func (s *AssertStep) Description() string {
@@ -120,8 +113,7 @@ func NewFailStep(task TaskConfig, env TaskEnvironment) Step {
 }
 
 func (s *FailStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	_, err := runtime.ExecuteTask(s.task, s.env, reporter)
-	if err == nil {
+	if err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
 		return fmt.Errorf("Expected task to fail!")
 	}
 	return nil
