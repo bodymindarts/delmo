@@ -27,7 +27,7 @@ func Run(args []string) int {
 
 	for _, arg := range args {
 		if arg == "-v" || arg == "--version" || arg == "version" {
-			ui.Output(fmt.Sprintf("Version: %s", Version))
+			ui.Output(fmt.Sprintf("delmo-v %s", Version))
 			return 0
 		}
 	}
