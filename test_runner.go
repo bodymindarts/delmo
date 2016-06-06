@@ -7,14 +7,10 @@ type TestRunner struct {
 	report     *TestReport
 }
 
-func NewTestRunner(testConfig TestConfig, taskFactory *TaskFactory, globals GlobalContext) *TestRunner {
-	context := TestContext{
-		DockerHostSyncDir: globals.DockerHostSyncDir,
-		TestName:          testConfig.Name,
-	}
+func NewTestRunner(testConfig TestConfig) *TestRunner {
 	return &TestRunner{
 		testConfig: testConfig,
-		steps:      initSteps(context, testConfig.Spec, taskFactory),
+		steps:      initSteps(testConfig.Spec),
 	}
 }
 
@@ -50,13 +46,10 @@ func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
 }
 
 func (tr *TestRunner) Cleanup() error {
-	for _, step := range tr.report.FailedSteps {
-		step.Cleanup()
-	}
 	return tr.runtime.Cleanup()
 }
 
-func initSteps(context TestContext, stepConfigs []StepConfig, taskFactory *TaskFactory) []Step {
+func initSteps(stepConfigs []StepConfig) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
 		if len(stepConfig.Start) != 0 {
@@ -67,8 +60,7 @@ func initSteps(context TestContext, stepConfigs []StepConfig, taskFactory *TaskF
 		}
 		if len(stepConfig.Assert) != 0 {
 			for _, taskName := range stepConfig.Assert {
-				task := taskFactory.Task(context, taskName)
-				steps = append(steps, NewAssertStep(task))
+				steps = append(steps, NewAssertStep(taskName))
 			}
 		}
 	}

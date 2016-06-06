@@ -39,16 +39,16 @@ func Run(args []string) int {
 		return 2
 	}
 
-	hostDir, err := prepareDockerHost(ui, delmoFile, machine, config.Suite.Name)
-	if err != nil {
-		ui.Error(fmt.Sprintf("Cloud not setup docker-machine\n%s", err))
-		return 2
-	}
+	// hostDir, err := prepareDockerHost(ui, delmoFile, machine, config.Suite.Name)
+	// if err != nil {
+	// 	ui.Error(fmt.Sprintf("Cloud not setup docker-machine\n%s", err))
+	// 	return 2
+	// }
 
-	context := GlobalContext{
-		DockerHostSyncDir: hostDir,
-	}
-	suite, err := NewSuite(config, context)
+	// context := GlobalContext{
+	// 	DockerHostSyncDir: hostDir,
+	// }
+	suite, err := NewSuite(config)
 	if err != nil {
 		ui.Error(fmt.Sprintf("Could not initialize suite %s"))
 		return 2
