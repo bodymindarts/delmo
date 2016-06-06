@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 
 echo "Building binary"
 export GOPATH=$PWD/delmo:$GOPATH
