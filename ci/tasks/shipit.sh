@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -x
 
 if [[ -z ${VERSION_FROM} ]]; then
   echo >&2 "VERSION_FROM environment variable not set, or empty.  Did you misconfigure Concourse?"
