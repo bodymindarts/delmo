@@ -37,6 +37,7 @@ type TestConfig struct {
 type SpecConfig []StepConfig
 
 type StepConfig struct {
+	Wait   []string `yaml:"wait"`
 	Stop   []string `yaml:"stop"`
 	Start  []string `yaml:"start"`
 	Assert []string `yaml:"assert"`

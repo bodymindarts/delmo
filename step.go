@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+const defaultTimeout = time.Second * 30
 
 type Step interface {
 	Execute(Runtime, TaskReporter) error
@@ -41,6 +46,40 @@ func (s *StartStep) Execute(runtime Runtime, reporter TaskReporter) error {
 
 func (s *StartStep) Description() string {
 	return fmt.Sprintf("<Start: %v>", s.services)
+}
+
+type WaitStep struct {
+	task TaskConfig
+	env  TaskEnvironment
+}
+
+func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
+	return &WaitStep{
+		task: task,
+		env:  env,
+	}
+}
+
+func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
+	timeout := time.After(defaultTimeout)
+	var err error
+	for {
+		_, err = runtime.ExecuteTask(s.task, s.env, reporter)
+		if err == nil {
+			return nil
+		}
+		select {
+		case <-timeout:
+			break
+		default:
+			continue
+		}
+	}
+	return fmt.Errorf("Task never completed successfully")
+}
+
+func (s *WaitStep) Description() string {
+	return fmt.Sprintf("<Assert: %s>", s.task.Name)
 }
 
 type AssertStep struct {
