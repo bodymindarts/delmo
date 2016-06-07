@@ -51,17 +51,18 @@ jobs:
       params:
         rebase: true
         repository: delmo-out/git
-    - put: delmo-release
-      params:
-        name:   release/name
-        tag:    release/tag
-        body:   release/notes.md
-        globs: [release/artifacts/*]
-  - put: delmo-concourse-image
-    params:
-      build: delmo-out/git/images/delmo-concourse
-      tag: version/number
-      tag_as_latest: true
+    - do:
+      - put: delmo-release
+        params:
+          name:   release/name
+          tag:    release/tag
+          body:   release/notes.md
+          globs: [release/artifacts/*]
+      - put: delmo-concourse-image
+        params:
+          build: delmo-out/git/images/delmo-concourse
+          tag: version/number
+          tag_as_latest: true
 
 
 - name: test-master
