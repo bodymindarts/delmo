@@ -34,10 +34,12 @@ func (s *Suite) Run(ui cli.Ui) int {
 	builder, err := NewDockerCompose(s.config.Suite.System, "")
 	if err != nil {
 		ui.Error(fmt.Sprintf("Could not initialize docker-compose\n%s", err))
+		return 1
 	}
 	err = builder.Build(&BuildOutput{ui: ui})
 	if err != nil {
 		ui.Error(fmt.Sprintf("Could not build system\n%s", err))
+		return 1
 	}
 
 	ui.Info(fmt.Sprintf("\nRunning Test Suite for System %s", s.config.Suite.Name))
