@@ -33,6 +33,8 @@ echo "==> Building..."
 gox -osarch="${TARGETS}" --output="pkg/${BINARY}-{{.OS}}-{{.Arch}}" -ldflags="-X main.Version=${VERSION}" ./...
 
 DEV_BINARY="${BINARY}-$(go env GOOS)-$(go env GOARCH)"
+MAIN_GOPATH=${GOPATH%%:*}
 cp pkg/${DEV_BINARY} bin/
+cp pkg/${DEV_BINARY} ${MAIN_GOPATH}/bin/
 
 echo "Built version: $(bin/${DEV_BINARY} --version)"
