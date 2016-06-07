@@ -52,7 +52,8 @@ func Run(args []string) int {
 		return 2
 	}
 
-	globalTaskEnvironment := []string{fmt.Sprintf("HOST_IP=%s", hostIp)}
+	globalTaskEnvironment := []string{fmt.Sprintf("DOCKER_HOST_IP=%s", hostIp)}
+	os.Setenv("DOCKER_HOST_IP", hostIp)
 	suite, err := NewSuite(config, globalTaskEnvironment)
 	if err != nil {
 		ui.Error(fmt.Sprintf("Could not initialize suite %s"))

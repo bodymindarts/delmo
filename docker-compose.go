@@ -84,7 +84,7 @@ type TaskEnvironment []string
 func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, reporter TaskReporter) error {
 	args := []string{
 		"-e",
-		"TEST_NAME=" + d.scope,
+		"DELMO_TEST_NAME=" + d.scope,
 	}
 	for _, variable := range env {
 		args = append(args, "-e", variable)

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "Running test: ${TEST_NAME}, host: ${HOST_IP}"
-curl -s ${HOST_IP}:5000
+echo "Running test: ${DELMO_TEST_NAME}, host: ${DOCKER_HOST_IP}"
+curl -s ${DOCKER_HOST_IP}:5000
