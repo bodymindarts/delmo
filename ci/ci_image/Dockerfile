@@ -1,6 +1,6 @@
 FROM concourse/concourse-ci
 RUN apt-get update && \
-    apt-get install git curl python-pip -y && \
+    apt-get install curl python-pip -y && \
     apt-get clean
 
 # Install Go
