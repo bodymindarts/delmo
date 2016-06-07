@@ -23,6 +23,7 @@ jobs:
 - name: bump-patch
   public: true
   plan:
+    - { get: delmo,   trigger: true,  passed: [shipit] }
     - { get: version, trigger: true, params: {bump: patch}, passed: [shipit] }
     - { put: version,                params: {file: version/number} }
 
