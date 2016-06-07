@@ -4,7 +4,7 @@ set -x
 set -e
 
 echo "Building binary"
-export GOPATH=$PWD/delmo:$GOPATH
+export GOPATH=$GOPATH:$PWD/delmo
 cd delmo/src/github.com/bodymindarts/delmo
 make dev
 BINARY="bin/delmo-$(go env GOOS)-$(go env GOARCH)"
