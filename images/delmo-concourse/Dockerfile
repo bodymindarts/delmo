@@ -22,7 +22,7 @@ RUN curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-com
      && chmod +x /usr/local/bin/docker-compose
 
 # Install delmo
-RUN curl -L https://github.com/bodymindarts/delmo/releases/download/v0.1.0/delmo-linux-amd64 > /usr/local/bin/delmo \
+RUN curl -L https://github.com/bodymindarts/delmo/releases/download/v0.1.1/delmo-linux-amd64 > /usr/local/bin/delmo \
       && chmod +x /usr/local/bin/delmo
 
 ADD entrypoint.sh /
