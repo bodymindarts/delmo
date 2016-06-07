@@ -57,6 +57,11 @@ jobs:
         tag:    release/tag
         body:   release/notes.md
         globs: [release/artifacts/*]
+  - put: delmo-concourse-image
+    params:
+      build: delmo-out/git/images/delmo-concourse
+      tag: version/number
+      tag_as_latest: true
 
 
 - name: test-master
@@ -168,7 +173,6 @@ resources:
     repository:   delmo
     access_token: {{github-token}}
 
-
 - name: docker-machine-setup-image
   type: docker-image
   source:
@@ -176,6 +180,15 @@ resources:
     username: {{docker-hub-username}}
     password: {{docker-hub-password}}
     repository: bodymindarts/docker-machine-setup
+
+- name: delmo-concourse-image
+  type: docker-image
+  source:
+      email: {{docker-hub-email}}
+      username: {{docker-hub-username}}
+      password: {{docker-hub-password}}
+      repository: bodymindarts/delmo-concourse
+
 
 - name: version
   type: semver
