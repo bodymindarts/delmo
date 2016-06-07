@@ -2,7 +2,6 @@
 
 # This script builds the application from source for multiple platforms.
 set -e
-set -x
 
 VERSION=${VERSION:-(development)}
 BINARY=${BINARY:-delmo}
