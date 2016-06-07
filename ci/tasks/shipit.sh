@@ -27,6 +27,7 @@ export GOPATH=$GOPATH:$PWD/delmo
 
 pushd ${REPO_ROOT}
 make build
+sed -i '' "s#delmo/releases/download/v.*/delmo-linux-amd64#delmo/releases/download/v${VERSION}/delmo-linux-amd64#" images/delmo-concourse/Dockerfile
 popd
 
 echo "v${VERSION}"                         > ${RELEASE_ROOT}/tag
