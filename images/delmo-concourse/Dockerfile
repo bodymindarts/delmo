@@ -16,7 +16,7 @@ RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.
     && unzip awscli-bundle.zip \
     && ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
-RUN curl -L https://github.com/bodymindarts/delmo/releases/download/v0.0.3/delmo-linux-amd64 > /usr/local/bin/delmo \
+RUN curl -L https://github.com/bodymindarts/delmo/releases/download/v0.0.4/delmo-linux-amd64 > /usr/local/bin/delmo \
       && chmod +x /usr/local/bin/delmo
 
 ADD entrypoint.sh /
