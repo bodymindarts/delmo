@@ -2,7 +2,7 @@ EXTERNAL_TOOLS=\
 	       github.com/kardianos/govendor \
 	       github.com/mitchellh/gox \
 
-all: test
+all: test dev
 
 dev:
 	@DELMO_DEV=1 sh -c "'$(PWD)/scripts/build.sh'"
