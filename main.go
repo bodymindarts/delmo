@@ -77,7 +77,7 @@ func setupDockerMachine(machineName string) (string, error) {
 	cmd := exec.Command("docker-machine", "env", machineName, "--shell", "sh")
 	output, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Couldn't export environment from docker-machine\n%s", err)
 	}
 	// set each variable of form: export DOCKER_HOST="tcp://192.168.99.100:2376"
 	for _, l := range strings.Split(string(output), "\n") {
@@ -92,7 +92,7 @@ func setupDockerMachine(machineName string) (string, error) {
 	cmd = exec.Command("docker-machine", "ip", machineName)
 	output, err = cmd.Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Couldn't read docker host ip from docker-machine\n%s", err)
 	}
 
 	return strings.TrimSpace(string(output)), nil
