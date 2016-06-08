@@ -36,7 +36,7 @@ func (d *DockerCompose) Pull(output io.Writer) error {
 }
 
 func (d *DockerCompose) Build(output io.Writer, services ...string) error {
-	args := d.makeArgs("build", "--pull")
+	args := d.makeArgs("build", services...)
 	cmd := exec.Command(d.rawCmd, args...)
 	cmd.Stderr = output
 	cmd.Stdout = output
