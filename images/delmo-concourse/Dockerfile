@@ -1,7 +1,7 @@
-FROM debian:jessie
+FROM debian:wheezy
 
 RUN apt-get update && \
-    apt-get install unzip curl -y && \
+    apt-get install -y unzip curl && \
     apt-get clean
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
