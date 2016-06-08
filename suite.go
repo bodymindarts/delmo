@@ -30,7 +30,12 @@ func (o *BuildOutput) Write(p []byte) (int, error) {
 }
 
 func (s *Suite) Run(ui cli.Ui) int {
-	s.initializeSystem(ui)
+	err := s.initializeSystem(ui)
+	if err != nil {
+		ui.Error(fmt.Sprintf("%s", err))
+		return 1
+	}
+
 	ui.Info(fmt.Sprintf("\nRunning Test Suite for System %s", s.config.Suite.Name))
 
 	failed := []*TestReport{}
