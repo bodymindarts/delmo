@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-var Version = "(development)"
+var Version = "(dev)"
 
 func main() {
 	os.Exit(Run(os.Args[1:]))

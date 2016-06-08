@@ -3,7 +3,7 @@
 # This script builds the application from source for multiple platforms.
 set -e
 
-VERSION=${VERSION:-(development)}
+VERSION=${VERSION:-(dev)}
 BINARY=${BINARY:-delmo}
 
 # Get the parent directory of where this script is.
