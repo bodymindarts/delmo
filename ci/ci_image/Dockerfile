@@ -1,4 +1,5 @@
-FROM concourse/concourse-ci
+FROM debian:jessie
+
 RUN apt-get update && \
     apt-get install curl python-pip -y && \
     apt-get clean
