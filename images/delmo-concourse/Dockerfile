@@ -1,10 +1,12 @@
-FROM alpine:3.4
+FROM debian:jessie
 
-RUN apk add --update curl nodejs py-pip \
-      && rm -rf /var/cache/apk
+RUN apt-get update && \
+    apt-get install unzip curl -y && \
+    apt-get clean
 
-# Install machine-share
-RUN npm install -g machine-share
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+     && apt-get install -y nodejs \
+     && npm install -g machine-share
 
 # Install aws cli
 RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" \
