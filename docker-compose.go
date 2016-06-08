@@ -27,7 +27,15 @@ func NewDockerCompose(composeFile, scope string) (*DockerCompose, error) {
 	return dc, nil
 }
 
-func (d *DockerCompose) Build(output io.Writer) error {
+func (d *DockerCompose) Pull(output io.Writer) error {
+	args := d.makeArgs("pull", "--ignore-pull-failures")
+	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stderr = output
+	cmd.Stdout = output
+	return cmd.Run()
+}
+
+func (d *DockerCompose) Build(output io.Writer, services ...string) error {
 	args := d.makeArgs("build", "--pull")
 	cmd := exec.Command(d.rawCmd, args...)
 	cmd.Stderr = output

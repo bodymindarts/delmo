@@ -33,8 +33,10 @@ func Run(args []string) int {
 	}
 
 	var delmoFile, machine string
-	flags.StringVar(&delmoFile, "f", "delmo.yml", "")
-	flags.StringVar(&machine, "m", "default", "")
+	var onlyBuildTask bool
+	flags.StringVar(&delmoFile, "f", "delmo.yml", "Path to the delmo.yml file")
+	flags.StringVar(&machine, "m", "default", "The docker-machine to use")
+	flags.BoolVar(&onlyBuildTask, "only-build-task", false, "Only build the task_image")
 	if err := flags.Parse(args); err != nil {
 		ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
 		return 2
@@ -51,6 +53,8 @@ func Run(args []string) int {
 		ui.Error(fmt.Sprintf("Error reading configuration\n%s", err))
 		return 2
 	}
+
+	config.Suite.OnlyBuildTask = onlyBuildTask
 
 	globalTaskEnvironment := []string{fmt.Sprintf("DOCKER_HOST_IP=%s", hostIp)}
 	os.Setenv("DOCKER_HOST_IP", hostIp)

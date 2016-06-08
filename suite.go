@@ -30,18 +30,7 @@ func (o *BuildOutput) Write(p []byte) (int, error) {
 }
 
 func (s *Suite) Run(ui cli.Ui) int {
-	ui.Info(fmt.Sprintf("Builing images for system %s", s.config.Suite.Name))
-	builder, err := NewDockerCompose(s.config.Suite.System, "")
-	if err != nil {
-		ui.Error(fmt.Sprintf("Could not initialize docker-compose\n%s", err))
-		return 1
-	}
-	err = builder.Build(&BuildOutput{ui: ui})
-	if err != nil {
-		ui.Error(fmt.Sprintf("Could not build system\n%s", err))
-		return 1
-	}
-
+	s.initializeSystem(ui)
 	ui.Info(fmt.Sprintf("\nRunning Test Suite for System %s", s.config.Suite.Name))
 
 	failed := []*TestReport{}
@@ -78,4 +67,30 @@ func outputSummary(ui cli.Ui, failed []*TestReport, succeeded []*TestReport) {
 		fmt.Sprintf("\n\nSUMMARY:\n%d tests succeeded\n%d tests failed",
 			len(succeeded),
 			len(failed)))
+}
+
+func (s *Suite) initializeSystem(ui cli.Ui) error {
+	dc, err := NewDockerCompose(s.config.Suite.System, "")
+	output := &BuildOutput{ui: ui}
+	if err != nil {
+		return fmt.Errorf("Could not initialize docker-compose\n%s", err)
+	}
+
+	ui.Info(fmt.Sprintf("Pulling images for system %s", s.config.Suite.Name))
+	err = dc.Pull(output)
+	if err != nil {
+		return fmt.Errorf(fmt.Sprintf("Error pulling images\n%s", err))
+	}
+
+	ui.Info(fmt.Sprintf("Builing images for system %s", s.config.Suite.Name))
+	if s.config.Suite.OnlyBuildTask {
+		err = dc.Build(output, s.config.Suite.TaskService)
+	} else {
+		err = dc.Build(output)
+	}
+	if err != nil {
+		return fmt.Errorf("Could not build system\n%s", err)
+	}
+
+	return nil
 }

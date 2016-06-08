@@ -21,6 +21,7 @@ type SuiteConfig struct {
 	RawSystemPath string `yaml:"system"`
 	System        string `yaml:"-"`
 	TaskService   string `yaml:"task_service"`
+	OnlyBuildTask bool
 }
 
 type TaskConfig struct {
