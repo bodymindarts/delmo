@@ -1,7 +1,7 @@
 FROM debian:wheezy
 
 RUN apt-get update && \
-    apt-get install -y git unzip curl python-pip && \
+    apt-get install -y git curl python-pip && \
     apt-get clean
 
 RUN pip install docker-compose awscli
