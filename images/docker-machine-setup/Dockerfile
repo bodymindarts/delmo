@@ -1,7 +1,7 @@
 FROM alpine:3.4
 
 RUN apk add --update curl nodejs py-pip \
-      && rm -rf /var/cache/apk
+      && rm -rf /var/cache/apk/*
 
 RUN curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine \
     && chmod +x /usr/local/bin/docker-machine \

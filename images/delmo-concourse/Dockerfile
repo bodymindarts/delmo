@@ -1,7 +1,7 @@
 FROM alpine:3.4
 
 RUN apk add --update curl nodejs py-pip \
-      && rm -rf /var/cache/apk
+      && rm -rf /var/cache/apk/*
 
 RUN pip install awscli docker-compose
 
