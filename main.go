@@ -34,9 +34,9 @@ func Run(args []string) int {
 
 	var delmoFile, machine string
 	var onlyBuildTask bool
-	flags.StringVar(&delmoFile, "f", "delmo.yml", "Path to the delmo.yml file")
-	flags.StringVar(&machine, "m", "default", "The docker-machine to use")
-	flags.BoolVar(&onlyBuildTask, "only-build-task", false, "Only build the task_image")
+	flags.StringVar(&delmoFile, "f", "delmo.yml", "Path to the delmo.yml file.")
+	flags.StringVar(&machine, "m", "default", "The docker-machine to use.")
+	flags.BoolVar(&onlyBuildTask, "only-build-task", false, "Only build the task_image. All othe images must be available to via pull.")
 	if err := flags.Parse(args); err != nil {
 		ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
 		return 2
