@@ -25,7 +25,7 @@ if [ -z ${AWS_BUCKET} ]; then
   exit 1
 fi
 
-/delete-aws || exit 1
+/delete-machine || exit 1
 
 AWS_SECURITY_GROUP=${AWS_SECURITY_GROUP:-$MACHINE_NAME}
 
