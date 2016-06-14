@@ -30,79 +30,17 @@ func NewDockerCompose(composeFile, scope string) (*DockerCompose, error) {
 func (d *DockerCompose) Pull() error {
 	args := d.makeArgs("pull", "--ignore-pull-failures")
 	cmd := exec.Command(d.rawCmd, args...)
-	stdOut, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return err
-	}
-	stdErr, err := cmd.StderrPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating Stderr for Cmd", err)
-		return err
-	}
-
-	outScanner := bufio.NewScanner(stdOut)
-	errScanner := bufio.NewScanner(stdErr)
-	go func() {
-		for outScanner.Scan() {
-			fmt.Println(outScanner.Text())
-		}
-	}()
-	go func() {
-		for errScanner.Scan() {
-			fmt.Fprintln(os.Stderr, errScanner.Text())
-		}
-	}()
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return err
-	}
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return err
-	}
-	return nil
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func (d *DockerCompose) Build(services ...string) error {
 	args := d.makeArgs("build", services...)
 	cmd := exec.Command(d.rawCmd, args...)
-	stdOut, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return err
-	}
-	stdErr, err := cmd.StderrPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating Stderr for Cmd", err)
-		return err
-	}
-
-	outScanner := bufio.NewScanner(stdOut)
-	errScanner := bufio.NewScanner(stdErr)
-	go func() {
-		for outScanner.Scan() {
-			fmt.Println(outScanner.Text())
-		}
-	}()
-	go func() {
-		for errScanner.Scan() {
-			fmt.Fprintln(os.Stderr, errScanner.Text())
-		}
-	}()
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return err
-	}
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return err
-	}
-	return nil
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func (d *DockerCompose) StartAll() error {
