@@ -8,7 +8,7 @@ import (
 const defaultTimeout = time.Second * 30
 
 type Step interface {
-	Execute(Runtime, TaskReporter) error
+	Execute(Runtime, TestOutput) error
 	Description() string
 }
 
@@ -22,7 +22,7 @@ func NewStopStep(config StepConfig) Step {
 	}
 }
 
-func (s *StopStep) Execute(runtime Runtime, reporter TaskReporter) error {
+func (s *StopStep) Execute(runtime Runtime, output TestOutput) error {
 	return runtime.StopServices(s.services...)
 }
 
@@ -40,7 +40,7 @@ func NewStartStep(config StepConfig) Step {
 	}
 }
 
-func (s *StartStep) Execute(runtime Runtime, reporter TaskReporter) error {
+func (s *StartStep) Execute(runtime Runtime, output TestOutput) error {
 	return runtime.StartServices(s.services...)
 }
 
@@ -60,14 +60,16 @@ func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
 	}
 }
 
-func (s *WaitStep) Execute(runtime Runtime, reporter TaskReporter) error {
+func (s *WaitStep) Execute(runtime Runtime, output TestOutput) error {
 	timeout := time.After(defaultTimeout)
+	i := 0
 	for {
 		select {
 		case <-timeout:
 			return fmt.Errorf("Task never completed successfully")
 		default:
-			if err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
+			i++
+			if err := runtime.ExecuteTask(fmt.Sprintf("(%d) %s", i, s.task.Name), s.task, s.env, output); err == nil {
 				return nil
 			}
 		}
@@ -90,8 +92,8 @@ func NewAssertStep(task TaskConfig, env TaskEnvironment) Step {
 	}
 }
 
-func (s *AssertStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	return runtime.ExecuteTask(s.task, s.env, reporter)
+func (s *AssertStep) Execute(runtime Runtime, output TestOutput) error {
+	return runtime.ExecuteTask(s.task.Name, s.task, s.env, output)
 }
 
 func (s *AssertStep) Description() string {
@@ -110,8 +112,8 @@ func NewFailStep(task TaskConfig, env TaskEnvironment) Step {
 	}
 }
 
-func (s *FailStep) Execute(runtime Runtime, reporter TaskReporter) error {
-	if err := runtime.ExecuteTask(s.task, s.env, reporter); err == nil {
+func (s *FailStep) Execute(runtime Runtime, output TestOutput) error {
+	if err := runtime.ExecuteTask(s.task.Name, s.task, s.env, output); err == nil {
 		return fmt.Errorf("Expected task to fail!")
 	}
 	return nil

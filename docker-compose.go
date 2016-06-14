@@ -77,19 +77,9 @@ func (d *DockerCompose) SystemOutput() ([]byte, error) {
 	return cmd.Output()
 }
 
-type OutputWrapper struct {
-	taskName string
-	reporter TaskReporter
-}
-
-func (o *OutputWrapper) Write(p []byte) (int, error) {
-	o.reporter.TaskOutput(o.taskName, string(p))
-	return len(p), nil
-}
-
 type TaskEnvironment []string
 
-func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, reporter TaskReporter) error {
+func (d *DockerCompose) ExecuteTask(prefix string, task TaskConfig, env TaskEnvironment, output TestOutput) error {
 	args := []string{
 		"-e",
 		"DELMO_TEST_NAME=" + d.scope,
@@ -101,6 +91,9 @@ func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, report
 	args = append(args, strings.Split(task.Cmd, " ")...)
 	args = d.makeArgs("run", args...)
 	cmd := exec.Command(d.rawCmd, args...)
+
+	// need to hookup stdin for docker-compose to have correct output
+	cmd.Stdin = os.Stdin
 	stdOut, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
@@ -116,23 +109,15 @@ func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, report
 	errScanner := bufio.NewScanner(stdErr)
 	go func() {
 		for outScanner.Scan() {
-			reporter.TaskOutput(task.Name, outScanner.Text())
+			fmt.Fprintf(output.Stdout, "%s | %s\n", prefix, outScanner.Text())
 		}
 	}()
 	go func() {
 		for errScanner.Scan() {
-			reporter.TaskOutput(task.Name, errScanner.Text())
+			fmt.Fprintf(output.Stderr, "%s | %s\n", task.Name, outScanner.Text())
 		}
 	}()
-	err = cmd.Start()
-	if err != nil {
-		return err
-	}
-	err = cmd.Wait()
-	if err != nil {
-		return err
-	}
-	return err
+	return cmd.Run()
 }
 
 func (d *DockerCompose) Cleanup() error {

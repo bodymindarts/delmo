@@ -1,7 +1,7 @@
 package main
 
 type TestRunner struct {
-	testConfig            TestConfig
+	config                TestConfig
 	tasks                 []TaskConfig
 	globalTaskEnvironment TaskEnvironment
 	runtime               Runtime
@@ -9,20 +9,20 @@ type TestRunner struct {
 	report                *TestReport
 }
 
-func NewTestRunner(testConfig TestConfig, tasks Tasks, globalTaskEnvironment TaskEnvironment) *TestRunner {
+func NewTestRunner(config TestConfig, tasks Tasks, globalTaskEnvironment TaskEnvironment) *TestRunner {
 	return &TestRunner{
-		testConfig:            testConfig,
+		config:                config,
 		globalTaskEnvironment: globalTaskEnvironment,
-		steps: initSteps(testConfig.Spec, tasks, globalTaskEnvironment),
+		steps: initSteps(config.Spec, tasks, globalTaskEnvironment),
 	}
 }
 
-func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
+func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	tr.runtime = runtime
 	systemOutputFetcher := func() ([]byte, error) {
 		return runtime.SystemOutput()
 	}
-	tr.report = NewTestReport(tr.testConfig.Name, systemOutputFetcher, listener)
+	tr.report = NewTestReport(tr.config.Name, systemOutputFetcher, out)
 
 	tr.report.StartingRuntime()
 	err := runtime.StartAll()
@@ -33,7 +33,7 @@ func (tr *TestRunner) RunTest(runtime Runtime, listener Listener) *TestReport {
 
 	for _, step := range tr.steps {
 		tr.report.ExecutingStep(step)
-		err = step.Execute(runtime, tr.report)
+		err = step.Execute(runtime, out)
 		if err != nil {
 			tr.report.StepExecutionFailed(step, err)
 			break

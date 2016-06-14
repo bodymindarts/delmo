@@ -25,10 +25,14 @@ func (s *Suite) Run() int {
 		return 1
 	}
 
-	fmt.Printf("\nRunning Test Suite for System %s", s.config.Suite.Name)
+	fmt.Printf("\nRunning Test Suite for System %s\n", s.config.Suite.Name)
 
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}
+	output := TestOutput{
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
 	for _, test := range s.config.Tests {
 		runner := NewTestRunner(test, s.config.Tasks, s.globalTaskEnvironment)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
@@ -38,7 +42,7 @@ func (s *Suite) Run() int {
 		}
 
 		fmt.Printf("\nRunning test %s\n", test.Name)
-		report := runner.RunTest(runtime, &SystemListener{})
+		report := runner.RunTest(runtime, output)
 		if report.Success {
 			succeeded = append(succeeded, report)
 			runner.Cleanup()

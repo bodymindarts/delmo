@@ -2,47 +2,33 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"strings"
 )
 
 type TestReport struct {
-	Success     bool
-	Error       error
-	FailedSteps []Step
-	PassedSteps []Step
-	listeners   []Listener
-	name        string
-	output      SystemOutputFetcher
+	Success      bool
+	Error        error
+	FailedSteps  []Step
+	PassedSteps  []Step
+	output       TestOutput
+	name         string
+	systemOutput SystemOutputFetcher
 }
 
-type Listener interface {
-	Output(string)
-	Error(string)
-}
-
-type SystemListener struct{}
-
-func (s *SystemListener) Output(output string) {
-	fmt.Println(output)
-}
-
-func (s *SystemListener) Error(output string) {
-	fmt.Fprintln(os.Stderr, output)
-}
-
-type TaskReporter interface {
-	TaskOutput(taskName, output string)
+type TestOutput struct {
+	Stdout io.Writer
+	Stderr io.Writer
 }
 
 type SystemOutputFetcher func() ([]byte, error)
 
-func NewTestReport(testName string, outputFetcher SystemOutputFetcher, listeners ...Listener) *TestReport {
+func NewTestReport(testName string, outputFetcher SystemOutputFetcher, output TestOutput) *TestReport {
 	return &TestReport{
-		Success:   true,
-		name:      testName,
-		listeners: listeners,
-		output:    outputFetcher,
+		Success:      true,
+		name:         testName,
+		output:       output,
+		systemOutput: outputFetcher,
 	}
 }
 
@@ -74,7 +60,7 @@ func (r *TestReport) StepExecutionFailed(step Step, err error) {
 }
 
 func (r *TestReport) SystemOutput() string {
-	output, err := r.output()
+	output, err := r.systemOutput()
 	if err != nil {
 		return fmt.Sprintf("Couldn't fetch output! %s", err)
 	}
@@ -82,15 +68,11 @@ func (r *TestReport) SystemOutput() string {
 }
 
 func (r *TestReport) reportError(msg string) {
-	for _, l := range r.listeners {
-		l.Error(msg)
-	}
+	fmt.Fprintln(r.output.Stderr, msg)
 }
 
 func (r *TestReport) reportOutput(msg string) {
-	for _, l := range r.listeners {
-		l.Output(msg)
-	}
+	fmt.Fprintln(r.output.Stdout, msg)
 }
 func (r *TestReport) Fail(msg string, err error) {
 	r.reportError(msg)
