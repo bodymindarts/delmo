@@ -10,12 +10,6 @@
 			"tree": true
 		},
 		{
-			"path": "github.com/mitchellh/cli",
-			"revision": "8102d0ed5ea2709ade1243798785888175f6e415",
-			"revisionTime": "2015-06-18T19:01:06Z",
-			"tree": true
-		},
-		{
 			"checksumSHA1": "TXfll3dCoaPKSntwHO0yR8eZ4JY=",
 			"path": "gopkg.in/yaml.v2",
 			"revision": "49c95bdc21843256fb6c4e0d370a05f24a0bf213",

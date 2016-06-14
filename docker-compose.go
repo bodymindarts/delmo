@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -27,20 +27,82 @@ func NewDockerCompose(composeFile, scope string) (*DockerCompose, error) {
 	return dc, nil
 }
 
-func (d *DockerCompose) Pull(output io.Writer) error {
+func (d *DockerCompose) Pull() error {
 	args := d.makeArgs("pull", "--ignore-pull-failures")
 	cmd := exec.Command(d.rawCmd, args...)
-	cmd.Stderr = output
-	cmd.Stdout = output
-	return cmd.Run()
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		return err
+	}
+	stdErr, err := cmd.StderrPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating Stderr for Cmd", err)
+		return err
+	}
+
+	outScanner := bufio.NewScanner(stdOut)
+	errScanner := bufio.NewScanner(stdErr)
+	go func() {
+		for outScanner.Scan() {
+			fmt.Println(outScanner.Text())
+		}
+	}()
+	go func() {
+		for errScanner.Scan() {
+			fmt.Fprintln(os.Stderr, errScanner.Text())
+		}
+	}()
+	err = cmd.Start()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+		return err
+	}
+	return nil
 }
 
-func (d *DockerCompose) Build(output io.Writer, services ...string) error {
+func (d *DockerCompose) Build(services ...string) error {
 	args := d.makeArgs("build", services...)
 	cmd := exec.Command(d.rawCmd, args...)
-	cmd.Stderr = output
-	cmd.Stdout = output
-	return cmd.Run()
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		return err
+	}
+	stdErr, err := cmd.StderrPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating Stderr for Cmd", err)
+		return err
+	}
+
+	outScanner := bufio.NewScanner(stdOut)
+	errScanner := bufio.NewScanner(stdErr)
+	go func() {
+		for outScanner.Scan() {
+			fmt.Println(outScanner.Text())
+		}
+	}()
+	go func() {
+		for errScanner.Scan() {
+			fmt.Fprintln(os.Stderr, errScanner.Text())
+		}
+	}()
+	err = cmd.Start()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+		return err
+	}
+	return nil
 }
 
 func (d *DockerCompose) StartAll() error {
@@ -101,13 +163,38 @@ func (d *DockerCompose) ExecuteTask(task TaskConfig, env TaskEnvironment, report
 	args = append(args, strings.Split(task.Cmd, " ")...)
 	args = d.makeArgs("run", args...)
 	cmd := exec.Command(d.rawCmd, args...)
-	wrapper := &OutputWrapper{
-		taskName: task.Name,
-		reporter: reporter,
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		return err
 	}
-	cmd.Stderr = wrapper
-	cmd.Stdout = wrapper
-	return cmd.Run()
+	stdErr, err := cmd.StderrPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating Stderr for Cmd", err)
+		return err
+	}
+
+	outScanner := bufio.NewScanner(stdOut)
+	errScanner := bufio.NewScanner(stdErr)
+	go func() {
+		for outScanner.Scan() {
+			reporter.TaskOutput(task.Name, outScanner.Text())
+		}
+	}()
+	go func() {
+		for errScanner.Scan() {
+			reporter.TaskOutput(task.Name, errScanner.Text())
+		}
+	}()
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 func (d *DockerCompose) Cleanup() error {

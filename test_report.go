@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -17,9 +18,17 @@ type TestReport struct {
 
 type Listener interface {
 	Output(string)
-	Info(string)
 	Error(string)
-	Warn(string)
+}
+
+type SystemListener struct{}
+
+func (s *SystemListener) Output(output string) {
+	fmt.Println(output)
+}
+
+func (s *SystemListener) Error(output string) {
+	fmt.Fprintln(os.Stderr, output)
 }
 
 type TaskReporter interface {
@@ -38,14 +47,14 @@ func NewTestReport(testName string, outputFetcher SystemOutputFetcher, listeners
 }
 
 func (r *TestReport) TaskOutput(taskName, output string) {
-	r.reportOutput(fmt.Sprintf("%s -> %s", taskName, strings.TrimSpace(output)))
+	r.reportOutput(fmt.Sprintf("%s >| %s", taskName, strings.TrimSpace(output)))
 }
 
 func (r *TestReport) StartingRuntime() {
-	r.reportInfo(fmt.Sprintf("Starting %s Runtime", r.name))
+	r.reportOutput(fmt.Sprintf("Starting %s Runtime", r.name))
 }
 func (r *TestReport) StoppingRuntime() {
-	r.reportInfo(fmt.Sprintf("Stopping %s Runtime", r.name))
+	r.reportOutput(fmt.Sprintf("Stopping %s Runtime", r.name))
 }
 
 func (r *TestReport) ErrorStartingRuntime(err error) {
@@ -57,7 +66,7 @@ func (r *TestReport) ErrorStoppingRuntime(err error) {
 }
 
 func (r *TestReport) ExecutingStep(step Step) {
-	r.reportInfo(fmt.Sprintf("Executing - %s", step.Description()))
+	r.reportOutput(fmt.Sprintf("Executing - %s", step.Description()))
 }
 
 func (r *TestReport) StepExecutionFailed(step Step, err error) {
@@ -75,12 +84,6 @@ func (r *TestReport) SystemOutput() string {
 func (r *TestReport) reportError(msg string) {
 	for _, l := range r.listeners {
 		l.Error(msg)
-	}
-}
-
-func (r *TestReport) reportInfo(msg string) {
-	for _, l := range r.listeners {
-		l.Info(msg)
 	}
 }
 

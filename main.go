@@ -6,8 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/mitchellh/cli"
 )
 
 var Version = "(dev)"
@@ -16,18 +14,20 @@ func main() {
 	os.Exit(Run(os.Args[1:]))
 }
 
+var printfStdOut = func(format string, args ...interface{}) {
+	fmt.Fprintf(os.Stdout, format, args...)
+}
+
+var printfStdErr = func(format string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, args...)
+}
+
 func Run(args []string) int {
 	flags := flag.FlagSet{}
 
-	ui := &cli.BasicUi{
-		Reader:      os.Stdin,
-		Writer:      os.Stdout,
-		ErrorWriter: os.Stderr,
-	}
-
 	for _, arg := range args {
 		if arg == "-v" || arg == "--version" || arg == "version" {
-			ui.Output(fmt.Sprintf("delmo-v%s", Version))
+			printfStdOut("delmo-v%s", Version)
 			return 0
 		}
 	}
@@ -38,19 +38,19 @@ func Run(args []string) int {
 	flags.StringVar(&machine, "m", "default", "The docker-machine to use.")
 	flags.BoolVar(&onlyBuildTask, "only-build-task", false, "Only build the task_image. All othe images must be available to via pull.")
 	if err := flags.Parse(args); err != nil {
-		ui.Error(fmt.Sprintf("Error parsing arguments\n%s", err))
+		printfStdErr("Error parsing arguments\n%s", err)
 		return 2
 	}
 
 	hostIp, err := setupDockerMachine(machine)
 	if err != nil {
-		ui.Error(fmt.Sprintf("Error setting up environment\n%s", err))
+		printfStdErr("Error setting up environment\n%s", err)
 		return 2
 	}
 
 	config, err := LoadConfig(delmoFile)
 	if err != nil {
-		ui.Error(fmt.Sprintf("Error reading configuration\n%s", err))
+		printfStdErr("Error reading configuration\n%s", err)
 		return 2
 	}
 
@@ -60,10 +60,10 @@ func Run(args []string) int {
 	os.Setenv("DOCKER_HOST_IP", hostIp)
 	suite, err := NewSuite(config, globalTaskEnvironment)
 	if err != nil {
-		ui.Error(fmt.Sprintf("Could not initialize suite %s"))
+		printfStdErr("Could not initialize suite %s")
 		return 2
 	}
-	result := suite.Run(ui)
+	result := suite.Run()
 	return result
 }
 
