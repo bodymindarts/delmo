@@ -48,7 +48,7 @@ func (s *Suite) Run() int {
 			runner.Cleanup()
 			fmt.Printf("Test %s Succeeded!\n", test.Name)
 		} else {
-			failed = append(succeeded, report)
+			failed = append(failed, report)
 			fmt.Printf("Test %s Failed!\nRuntime Output:\n%s\n", test.Name, report.SystemOutput())
 		}
 	}
