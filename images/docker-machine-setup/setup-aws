@@ -5,37 +5,41 @@ if [ -z ${MACHINE_NAME} ]; then
   exit 1
 fi
 
-if [ -z ${AWS_ACCESS_KEY_ID} ]; then
-  echo "Please set AWS_ACCESS_KEY_ID"
+if [ -z ${MACHINE_EXPORT_AWS_ACCESS_KEY_ID} ]; then
+  echo "Please set MACHINE_EXPORT_AWS_ACCESS_KEY_ID"
   exit 1
 fi
+export AWS_ACCESS_KEY_ID=${MACHINE_EXPORT_AWS_ACCESS_KEY_ID}
 
-if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
-  echo "Please set AWS_SECRET_ACCESS_KEY"
+if [ -z ${MACHINE_EXPORT_AWS_SECRET_ACCESS_KEY} ]; then
+  echo "Please set MACHINE_EXPORT_AWS_SECRET_ACCESS_KEY"
   exit 1
 fi
+export AWS_SECRET_ACCESS_KEY=${MACHINE_EXPORT_AWS_SECRET_ACCESS_KEY}
 
-if [ -z ${AWS_DEFAULT_REGION} ]; then
-  echo "Please set AWS_DEFAULT_REGION"
+if [ -z ${MACHINE_EXPORT_AWS_DEFAULT_REGION} ]; then
+  echo "Please set MACHINE_EXPORT_AWS_DEFAULT_REGION"
   exit 1
 fi
+export AWS_DEFAULT_REGION=${MACHINE_EXPORT_AWS_DEFAULT_REGION}
 
-if [ -z ${AWS_BUCKET} ]; then
-  echo "Please set AWS_BUCKET"
+if [ -z ${MACHINE_EXPORT_AWS_BUCKET} ]; then
+  echo "Please set MACHINE_EXPORT_AWS_BUCKET"
   exit 1
 fi
+export AWS_BUCKET=${MACHINE_EXPORT_AWS_BUCKET}
 
 /delete-machine || exit 1
 
-AWS_SECURITY_GROUP=${AWS_SECURITY_GROUP:-$MACHINE_NAME}
+MACHINE_EXPORT_AWS_SECURITY_GROUP=${MACHINE_EXPORT_AWS_SECURITY_GROUP:-$MACHINE_NAME}
 
 echo "Creating docker-machine ${MACHINE_NAME}"
 docker-machine create \
     -d amazonec2 \
-    --amazonec2-access-key ${AWS_ACCESS_KEY_ID} \
-    --amazonec2-secret-key ${AWS_SECRET_ACCESS_KEY} \
-    --amazonec2-region ${AWS_DEFAULT_REGION} \
-    --amazonec2-security-group ${AWS_SECURITY_GROUP} \
+    --amazonec2-access-key ${MACHINE_EXPORT_AWS_ACCESS_KEY_ID} \
+    --amazonec2-secret-key ${MACHINE_EXPORT_AWS_SECRET_ACCESS_KEY} \
+    --amazonec2-region ${MACHINE_EXPORT_AWS_DEFAULT_REGION} \
+    --amazonec2-security-group ${MACHINE_EXPORT_AWS_SECURITY_GROUP} \
     ${MACHINE_NAME}
 
 if [ $? == 0 ]; then
@@ -43,15 +47,15 @@ if [ $? == 0 ]; then
   machine-export ${MACHINE_NAME}
 
   echo "Uploading info to bucket"
-  aws --region ${AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
+  aws --region ${MACHINE_EXPORT_AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${MACHINE_EXPORT_AWS_BUCKET}
 
   if [ ! -z ${OPEN_TCP_PORTS} ]; then
     echo "Opening access to docker machine on tcp ports ${OPEN_TCP_PORTS}"
-    aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol tcp --port ${OPEN_TCP_PORTS} --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-ingress --group-name ${MACHINE_EXPORT_AWS_SECURITY_GROUP} --protocol tcp --port ${OPEN_TCP_PORTS} --cidr 0.0.0.0/0
   fi
 
   if [ ! -z ${OPEN_UDP_PORTS} ]; then
     echo "Opening access to docker machine on udp ports ${OPEN_UDP_PORTS}"
-    aws ec2 authorize-security-group-ingress --group-name ${AWS_SECURITY_GROUP} --protocol udp --port ${OPEN_UDP_PORTS} --cidr 0.0.0.0/0
+    aws ec2 authorize-security-group-ingress --group-name ${MACHINE_EXPORT_AWS_SECURITY_GROUP} --protocol udp --port ${OPEN_UDP_PORTS} --cidr 0.0.0.0/0
   fi
 fi
