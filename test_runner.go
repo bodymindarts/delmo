@@ -5,15 +5,21 @@ type TestRunner struct {
 	tasks                 []TaskConfig
 	globalTaskEnvironment TaskEnvironment
 	runtime               Runtime
+	beforeSteps           []Step
 	steps                 []Step
-	report                *TestReport
 }
 
 func NewTestRunner(config TestConfig, tasks Tasks, globalTaskEnvironment TaskEnvironment) *TestRunner {
+	beforeSteps := []Step{}
+	for _, taskName := range config.BeforeStartup {
+		beforeSteps = append(beforeSteps, NewExecStep(tasks[taskName], globalTaskEnvironment))
+	}
+
 	return &TestRunner{
 		config:                config,
 		globalTaskEnvironment: globalTaskEnvironment,
-		steps: initSteps(config.Spec, tasks, globalTaskEnvironment),
+		beforeSteps:           beforeSteps,
+		steps:                 initSteps(config.Spec, tasks, globalTaskEnvironment),
 	}
 }
 
@@ -22,31 +28,40 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	systemOutputFetcher := func() ([]byte, error) {
 		return runtime.SystemOutput()
 	}
-	tr.report = NewTestReport(tr.config.Name, systemOutputFetcher, out)
+	report := NewTestReport(tr.config.Name, systemOutputFetcher, out)
 
 	tr.runtime.Cleanup()
-	tr.report.StartingRuntime()
+	for _, step := range tr.beforeSteps {
+		report.ExecutingStep(step)
+		err := step.Execute(runtime, out)
+		if err != nil {
+			report.StepExecutionFailed(step, err)
+			return report
+		}
+	}
+
+	report.StartingRuntime()
 	err := runtime.StartAll()
 	if err != nil {
-		tr.report.ErrorStartingRuntime(err)
-		return tr.report
+		report.ErrorStartingRuntime(err)
+		return report
 	}
 
 	for _, step := range tr.steps {
-		tr.report.ExecutingStep(step)
+		report.ExecutingStep(step)
 		err = step.Execute(runtime, out)
 		if err != nil {
-			tr.report.StepExecutionFailed(step, err)
+			report.StepExecutionFailed(step, err)
 			break
 		}
 	}
 
-	tr.report.StoppingRuntime()
+	report.StoppingRuntime()
 	err = runtime.StopAll()
 	if err != nil {
-		tr.report.ErrorStoppingRuntime(err)
+		report.ErrorStoppingRuntime(err)
 	}
-	return tr.report
+	return report
 }
 
 func (tr *TestRunner) Cleanup() error {
@@ -65,6 +80,11 @@ func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Ste
 		if len(stepConfig.Wait) != 0 {
 			for _, taskName := range stepConfig.Wait {
 				steps = append(steps, NewWaitStep(tasks[taskName], env))
+			}
+		}
+		if len(stepConfig.Exec) != 0 {
+			for _, taskName := range stepConfig.Exec {
+				steps = append(steps, NewExecStep(tasks[taskName], env))
 			}
 		}
 		if len(stepConfig.Assert) != 0 {

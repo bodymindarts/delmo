@@ -31,8 +31,9 @@ type TaskConfig struct {
 }
 
 type TestConfig struct {
-	Name string     `yaml:"name"`
-	Spec SpecConfig `yaml:"spec"`
+	Name          string     `yaml:"name"`
+	BeforeStartup []string   `yaml:"before_startup"`
+	Spec          SpecConfig `yaml:"spec"`
 }
 
 type SpecConfig []StepConfig
@@ -41,6 +42,7 @@ type StepConfig struct {
 	Wait   []string `yaml:"wait"`
 	Stop   []string `yaml:"stop"`
 	Start  []string `yaml:"start"`
+	Exec   []string `yaml:"exec"`
 	Assert []string `yaml:"assert"`
 	Fail   []string `yaml:"fail"`
 }

@@ -6,6 +6,7 @@ suite:
 
 tests:
 - name: webapp_fails
+  before_startup: [hello_world]
   spec:
   - wait: [webapp_is_available]
   - assert: [webapp_is_available]
@@ -15,3 +16,5 @@ tests:
 tasks:
 - name: webapp_is_available
   command: /tasks/webapp_is_available.sh
+- name: hello_world
+  command: echo hello world

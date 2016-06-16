@@ -80,6 +80,26 @@ func (s *WaitStep) Description() string {
 	return fmt.Sprintf("<Wait: %s>", s.task.Name)
 }
 
+type ExecStep struct {
+	task TaskConfig
+	env  TaskEnvironment
+}
+
+func NewExecStep(task TaskConfig, env TaskEnvironment) Step {
+	return &ExecStep{
+		task: task,
+		env:  env,
+	}
+}
+
+func (s *ExecStep) Execute(runtime Runtime, output TestOutput) error {
+	return runtime.ExecuteTask(s.task.Name, s.task, s.env, output)
+}
+
+func (s *ExecStep) Description() string {
+	return fmt.Sprintf("<Exec: %s>", s.task.Name)
+}
+
 type AssertStep struct {
 	task TaskConfig
 	env  TaskEnvironment
