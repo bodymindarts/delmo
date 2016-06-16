@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const defaultTimeout = time.Second * 30
+const defaultTimeout = time.Second * 60
 
 type Step interface {
 	Execute(Runtime, TestOutput) error
