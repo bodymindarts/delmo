@@ -135,6 +135,9 @@ func (d *DockerCompose) Cleanup() error {
 	cmd.Run()
 	args = d.makeArgs("rm", "-f", "-v", "-a")
 	cmd = exec.Command(d.rawCmd, args...)
+	cmd.Run()
+	args = d.makeArgs("down", "--volumes", "--remove-orphans")
+	cmd = exec.Command(d.rawCmd, args...)
 	return cmd.Run()
 }
 
