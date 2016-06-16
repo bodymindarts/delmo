@@ -24,6 +24,7 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	}
 	tr.report = NewTestReport(tr.config.Name, systemOutputFetcher, out)
 
+	tr.runtime.Cleanup()
 	tr.report.StartingRuntime()
 	err := runtime.StartAll()
 	if err != nil {
