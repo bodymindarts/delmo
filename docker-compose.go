@@ -107,15 +107,24 @@ func (d *DockerCompose) ExecuteTask(prefix string, task TaskConfig, env TaskEnvi
 
 	outScanner := bufio.NewScanner(stdOut)
 	errScanner := bufio.NewScanner(stdErr)
+	stdoutCh := make(chan struct{})
+	stderrCh := make(chan struct{})
+	// make sure all output has been streemed before returning control
+	defer func() {
+		<-stdoutCh
+		<-stderrCh
+	}()
 	go func() {
 		for outScanner.Scan() {
 			fmt.Fprintf(output.Stdout, "%s | %s\n", prefix, outScanner.Text())
 		}
+		close(stdoutCh)
 	}()
 	go func() {
 		for errScanner.Scan() {
 			fmt.Fprintf(output.Stderr, "%s | %s\n", task.Name, outScanner.Text())
 		}
+		close(stderrCh)
 	}()
 	return cmd.Run()
 }
