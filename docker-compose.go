@@ -130,8 +130,11 @@ func (d *DockerCompose) ExecuteTask(prefix string, task TaskConfig, env TaskEnvi
 }
 
 func (d *DockerCompose) Cleanup() error {
-	args := d.makeArgs("rm", "-f", "-v", "-a")
+	args := d.makeArgs("kill")
 	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Run()
+	args = d.makeArgs("rm", "-f", "-v", "-a")
+	cmd = exec.Command(d.rawCmd, args...)
 	return cmd.Run()
 }
 
