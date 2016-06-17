@@ -3,13 +3,6 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "OVtXv0QJb3EhBBKz/Nb1QAo9Hqk=",
-			"path": "github.com/fsouza/go-dockerclient",
-			"revision": "d750ee8aff39bca4ccf0b362db4f04510145d678",
-			"revisionTime": "2015-11-30T16:25:58Z",
-			"tree": true
-		},
-		{
 			"checksumSHA1": "TXfll3dCoaPKSntwHO0yR8eZ4JY=",
 			"path": "gopkg.in/yaml.v2",
 			"revision": "49c95bdc21843256fb6c4e0d370a05f24a0bf213",
