@@ -3,9 +3,12 @@ package delmo
 import (
 	"io/ioutil"
 	"path/filepath"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
+
+const defaultTimeout = time.Second * 60
 
 type Config struct {
 	Suite    SuiteConfig  `yaml:"suite"`
@@ -39,13 +42,14 @@ type TestConfig struct {
 type SpecConfig []StepConfig
 
 type StepConfig struct {
-	Start   []string `yaml:"start"`
-	Stop    []string `yaml:"stop"`
-	Destroy []string `yaml:"destroy"`
-	Wait    []string `yaml:"wait"`
-	Exec    []string `yaml:"exec"`
-	Assert  []string `yaml:"assert"`
-	Fail    []string `yaml:"fail"`
+	Start   []string      `yaml:"start"`
+	Stop    []string      `yaml:"stop"`
+	Destroy []string      `yaml:"destroy"`
+	Wait    []string      `yaml:"wait"`
+	Exec    []string      `yaml:"exec"`
+	Assert  []string      `yaml:"assert"`
+	Fail    []string      `yaml:"fail"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 type ComposeConfig struct {
@@ -74,6 +78,17 @@ func LoadConfig(path string) (*Config, error) {
 		tasks[t.Name] = t
 	}
 	config.Tasks = tasks
+
+	for _, t := range config.Tests {
+		for i, s := range t.Spec {
+			if s.Timeout == 0 {
+				s.Timeout = defaultTimeout
+			} else {
+				s.Timeout = s.Timeout * time.Second
+			}
+			t.Spec[i] = s
+		}
+	}
 
 	return &config, nil
 }

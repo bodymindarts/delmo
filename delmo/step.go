@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-const defaultTimeout = time.Second * 60
-
 type Step interface {
 	Execute(Runtime, TestOutput) error
 	Description() string
@@ -67,19 +65,21 @@ func (s *StartStep) Description() string {
 }
 
 type WaitStep struct {
-	task TaskConfig
-	env  TaskEnvironment
+	task    TaskConfig
+	env     TaskEnvironment
+	timeout time.Duration
 }
 
-func NewWaitStep(task TaskConfig, env TaskEnvironment) Step {
+func NewWaitStep(timeout time.Duration, task TaskConfig, env TaskEnvironment) Step {
 	return &WaitStep{
-		task: task,
-		env:  env,
+		task:    task,
+		env:     env,
+		timeout: timeout,
 	}
 }
 
 func (s *WaitStep) Execute(runtime Runtime, output TestOutput) error {
-	timeout := time.After(defaultTimeout)
+	timeout := time.After(s.timeout)
 	i := 0
 	for {
 		select {

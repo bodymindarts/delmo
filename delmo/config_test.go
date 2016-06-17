@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 )
 
 func writeFiles(name, config, compose string, t *testing.T) (string, string) {
@@ -83,5 +84,9 @@ services:
 
 	if want, got := 3, len(config.Tests[0].Spec); want != got {
 		t.Errorf("Spec not parsed correctly. Want: %d, got: %d", want, got)
+	}
+
+	if want, got := 60*time.Second, config.Tests[0].Spec[0].Timeout; want != got {
+		t.Errorf("Timeout not set correctly. Want: %d, got: %d", want, got)
 	}
 }
