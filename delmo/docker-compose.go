@@ -66,7 +66,7 @@ func (d *DockerCompose) StopServices(name ...string) error {
 }
 
 func (d *DockerCompose) StartServices(name ...string) error {
-	args := d.makeArgs("start", name...)
+	args := d.makeArgs("up", append([]string{"-d"}, name...)...)
 	cmd := exec.Command(d.rawCmd, args...)
 	return cmd.Run()
 }
