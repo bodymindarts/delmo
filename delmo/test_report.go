@@ -5,19 +5,14 @@ import "fmt"
 type TestReport struct {
 	Success      bool
 	Error        error
-	FailedSteps  []Step
-	PassedSteps  []Step
-	output       TestOutput
-	name         string
 	systemOutput SystemOutputFetcher
 }
 
 type SystemOutputFetcher func() ([]byte, error)
 
-func NewTestReport(testName string, outputFetcher SystemOutputFetcher) *TestReport {
+func NewTestReport(outputFetcher SystemOutputFetcher) *TestReport {
 	return &TestReport{
 		Success:      true,
-		name:         testName,
 		systemOutput: outputFetcher,
 	}
 }

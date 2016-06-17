@@ -35,7 +35,7 @@ func NewTestRunner(config TestConfig, tasks Tasks, globalTaskEnvironment TaskEnv
 
 func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	tr.runtime = runtime
-	report := NewTestReport(tr.config.Name, runtime.SystemOutput)
+	report := NewTestReport(runtime.SystemOutput)
 
 	tr.runtime.Cleanup()
 	for _, step := range tr.beforeSteps {
