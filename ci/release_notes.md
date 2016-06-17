@@ -1,2 +1,5 @@
+# Features
+- support for `destroy` step
+
 # Changes
-- more output
+- stream more output from docker-compose when starting/stopping services
