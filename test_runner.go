@@ -1,5 +1,15 @@
 package main
 
+import (
+	"fmt"
+	"io"
+)
+
+type TestOutput struct {
+	Stdout io.Writer
+	Stderr io.Writer
+}
+
 type TestRunner struct {
 	config                TestConfig
 	tasks                 []TaskConfig
@@ -25,41 +35,42 @@ func NewTestRunner(config TestConfig, tasks Tasks, globalTaskEnvironment TaskEnv
 
 func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	tr.runtime = runtime
-	systemOutputFetcher := func() ([]byte, error) {
-		return runtime.SystemOutput()
-	}
-	report := NewTestReport(tr.config.Name, systemOutputFetcher, out)
+	report := NewTestReport(tr.config.Name, runtime.SystemOutput)
 
 	tr.runtime.Cleanup()
 	for _, step := range tr.beforeSteps {
-		report.ExecutingStep(step)
+		fmt.Fprintf(out.Stdout, "Executing - %s", step.Description())
 		err := step.Execute(runtime, out)
 		if err != nil {
-			report.StepExecutionFailed(step, err)
+			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err)
+			report.Fail(err)
 			return report
 		}
 	}
 
-	report.StartingRuntime()
+	fmt.Fprintf(out.Stdout, "Starting %s Runtime", tr.config.Name)
 	err := runtime.StartAll()
 	if err != nil {
-		report.ErrorStartingRuntime(err)
+		fmt.Fprintf(out.Stderr, "Could not start runtime for %s! %s", tr.config.Name, err)
+		report.Fail(err)
 		return report
 	}
 
 	for _, step := range tr.steps {
-		report.ExecutingStep(step)
+		fmt.Fprintf(out.Stdout, "Executing - %s", step.Description())
 		err = step.Execute(runtime, out)
 		if err != nil {
-			report.StepExecutionFailed(step, err)
+			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err)
+			report.Fail(err)
 			break
 		}
 	}
 
-	report.StoppingRuntime()
+	fmt.Fprintf(out.Stdout, "Stoppinng %s Runtime", tr.config.Name)
 	err = runtime.StopAll()
 	if err != nil {
-		report.ErrorStoppingRuntime(err)
+		fmt.Fprintf(out.Stderr, "Could not stop runtime for %s! %s", tr.config.Name, err)
+		report.Fail(err)
 	}
 	return report
 }
