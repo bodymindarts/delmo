@@ -22,15 +22,15 @@ func TestTestRunner_RunTest_NoSteps(t *testing.T) {
 	runner.RunTest(runtime, out)
 
 	if want, got := 2, runtime.CleanupCallCount(); want != got {
-		t.Errorf("Cleanup not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'Cleanup()'! Want: %d, got: %d", want, got)
 	}
 
 	if want, got := 1, runtime.StartAllCallCount(); want != got {
-		t.Errorf("StartAll not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'StartAll()'! Want: %d, got: %d", want, got)
 	}
 
 	if want, got := 1, runtime.StopAllCallCount(); want != got {
-		t.Errorf("StopAll not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'StopAll()'! Want: %d, got: %d", want, got)
 	}
 }
 
@@ -122,14 +122,14 @@ func TestTestRunner_NoCleanupOnFailure(t *testing.T) {
 	runner.RunTest(runtime, out)
 
 	if want, got := 1, runtime.StartAllCallCount(); want != got {
-		t.Errorf("StartAll not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'StartAll()'! Want: %d, got: %d", want, got)
 	}
 	if want, got := 1, runtime.StopAllCallCount(); want != got {
-		t.Errorf("StopAll not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'StopAll()'! Want: %d, got: %d", want, got)
 	}
 
 	// Cleanup should only be called once at beginning
 	if want, got := 1, runtime.CleanupCallCount(); want != got {
-		t.Errorf("Cleanup not called correctly! Want: %d, got: %d", want, got)
+		t.Errorf("Wrong number of calls to 'Cleanup()'! Want: %d, got: %d", want, got)
 	}
 }
