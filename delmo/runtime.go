@@ -1,5 +1,6 @@
 package delmo
 
+//go:generate counterfeiter -o fakes/fake_runtime.go . Runtime
 type Runtime interface {
 	StartAll() error
 	StopAll() error

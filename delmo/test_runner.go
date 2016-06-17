@@ -39,44 +39,46 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 
 	tr.runtime.Cleanup()
 	for _, step := range tr.beforeSteps {
-		fmt.Fprintf(out.Stdout, "Executing - %s", step.Description())
+		fmt.Fprintf(out.Stdout, "Executing - %s\n", step.Description())
 		err := step.Execute(runtime, out)
 		if err != nil {
-			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err)
+			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s\n", step.Description(), err)
 			report.Fail(err)
 			return report
 		}
 	}
 
-	fmt.Fprintf(out.Stdout, "Starting %s Runtime", tr.config.Name)
+	fmt.Fprintf(out.Stdout, "Starting '%s' Runtime\n", tr.config.Name)
 	err := runtime.StartAll()
 	if err != nil {
-		fmt.Fprintf(out.Stderr, "Could not start runtime for %s! %s", tr.config.Name, err)
+		fmt.Fprintf(out.Stderr, "Could not start runtime for %s! %s\n", tr.config.Name, err)
 		report.Fail(err)
 		return report
 	}
+	defer func() {
+		if report.Success {
+			runtime.Cleanup()
+		}
+	}()
 
 	for _, step := range tr.steps {
-		fmt.Fprintf(out.Stdout, "Executing - %s", step.Description())
+		fmt.Fprintf(out.Stdout, "Executing - %s\n", step.Description())
 		err = step.Execute(runtime, out)
 		if err != nil {
-			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s", step.Description(), err)
+			fmt.Fprintf(out.Stderr, "FAIL! Step - %s did not complete as expected.\nREASON - %s\n", step.Description(), err)
 			report.Fail(err)
 			break
 		}
 	}
 
-	fmt.Fprintf(out.Stdout, "Stoppinng %s Runtime", tr.config.Name)
+	fmt.Fprintf(out.Stdout, "Stopping %s Runtime\n", tr.config.Name)
 	err = runtime.StopAll()
 	if err != nil {
-		fmt.Fprintf(out.Stderr, "Could not stop runtime for %s! %s", tr.config.Name, err)
+		fmt.Fprintf(out.Stderr, "Could not stop runtime for %s! %s\n", tr.config.Name, err)
 		report.Fail(err)
+		return report
 	}
 	return report
-}
-
-func (tr *TestRunner) Cleanup() error {
-	return tr.runtime.Cleanup()
 }
 
 func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Step {

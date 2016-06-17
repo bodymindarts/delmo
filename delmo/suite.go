@@ -45,7 +45,6 @@ func (s *Suite) Run() int {
 		report := runner.RunTest(runtime, output)
 		if report.Success {
 			succeeded = append(succeeded, report)
-			runner.Cleanup()
 			fmt.Printf("Test %s Succeeded!\n", test.Name)
 		} else {
 			failed = append(failed, report)
