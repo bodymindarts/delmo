@@ -42,6 +42,15 @@ type FakeRuntime struct {
 	startServicesReturns struct {
 		result1 error
 	}
+	DestroyServicesStub        func(delmo.TestOutput, ...string) error
+	destroyServicesMutex       sync.RWMutex
+	destroyServicesArgsForCall []struct {
+		arg1 delmo.TestOutput
+		arg2 []string
+	}
+	destroyServicesReturns struct {
+		result1 error
+	}
 	SystemOutputStub        func() ([]byte, error)
 	systemOutputMutex       sync.RWMutex
 	systemOutputArgsForCall []struct{}
@@ -204,6 +213,40 @@ func (fake *FakeRuntime) StartServicesReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeRuntime) DestroyServices(arg1 delmo.TestOutput, arg2 ...string) error {
+	fake.destroyServicesMutex.Lock()
+	fake.destroyServicesArgsForCall = append(fake.destroyServicesArgsForCall, struct {
+		arg1 delmo.TestOutput
+		arg2 []string
+	}{arg1, arg2})
+	fake.recordInvocation("DestroyServices", []interface{}{arg1, arg2})
+	fake.destroyServicesMutex.Unlock()
+	if fake.DestroyServicesStub != nil {
+		return fake.DestroyServicesStub(arg1, arg2...)
+	} else {
+		return fake.destroyServicesReturns.result1
+	}
+}
+
+func (fake *FakeRuntime) DestroyServicesCallCount() int {
+	fake.destroyServicesMutex.RLock()
+	defer fake.destroyServicesMutex.RUnlock()
+	return len(fake.destroyServicesArgsForCall)
+}
+
+func (fake *FakeRuntime) DestroyServicesArgsForCall(i int) (delmo.TestOutput, []string) {
+	fake.destroyServicesMutex.RLock()
+	defer fake.destroyServicesMutex.RUnlock()
+	return fake.destroyServicesArgsForCall[i].arg1, fake.destroyServicesArgsForCall[i].arg2
+}
+
+func (fake *FakeRuntime) DestroyServicesReturns(result1 error) {
+	fake.DestroyServicesStub = nil
+	fake.destroyServicesReturns = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeRuntime) SystemOutput() ([]byte, error) {
 	fake.systemOutputMutex.Lock()
 	fake.systemOutputArgsForCall = append(fake.systemOutputArgsForCall, struct{}{})
@@ -302,6 +345,8 @@ func (fake *FakeRuntime) Invocations() map[string][][]interface{} {
 	defer fake.stopServicesMutex.RUnlock()
 	fake.startServicesMutex.RLock()
 	defer fake.startServicesMutex.RUnlock()
+	fake.destroyServicesMutex.RLock()
+	defer fake.destroyServicesMutex.RUnlock()
 	fake.systemOutputMutex.RLock()
 	defer fake.systemOutputMutex.RUnlock()
 	fake.executeTaskMutex.RLock()

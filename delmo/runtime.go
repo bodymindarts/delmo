@@ -6,6 +6,7 @@ type Runtime interface {
 	StopAll(TestOutput) error
 	StopServices(TestOutput, ...string) error
 	StartServices(TestOutput, ...string) error
+	DestroyServices(TestOutput, ...string) error
 	SystemOutput() ([]byte, error)
 	ExecuteTask(string, TaskConfig, TaskEnvironment, TestOutput) error
 	Cleanup() error

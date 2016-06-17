@@ -84,11 +84,14 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Step {
 	steps := []Step{}
 	for _, stepConfig := range stepConfigs {
-		if len(stepConfig.Start) != 0 {
-			steps = append(steps, NewStartStep(stepConfig))
-		}
 		if len(stepConfig.Stop) != 0 {
 			steps = append(steps, NewStopStep(stepConfig))
+		}
+		if len(stepConfig.Destroy) != 0 {
+			steps = append(steps, NewDestroyStep(stepConfig))
+		}
+		if len(stepConfig.Start) != 0 {
+			steps = append(steps, NewStartStep(stepConfig))
 		}
 		if len(stepConfig.Wait) != 0 {
 			for _, taskName := range stepConfig.Wait {

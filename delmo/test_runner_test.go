@@ -39,11 +39,12 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 		Name: "test",
 		Spec: SpecConfig{
 			StepConfig{
-				Start:  []string{"service"},
-				Stop:   []string{"service"},
-				Wait:   []string{"fake_task"},
-				Exec:   []string{"fake_task"},
-				Assert: []string{"fake_task"},
+				Start:   []string{"service"},
+				Stop:    []string{"service"},
+				Wait:    []string{"fake_task"},
+				Exec:    []string{"fake_task"},
+				Assert:  []string{"fake_task"},
+				Destroy: []string{"service"},
 			},
 		},
 	}
@@ -68,12 +69,17 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	}
 
 	step++
-	if want, got := "Executing - <Start: [service]>", outputLines[step]; want != got {
+	if want, got := "Executing - <Stop: [service]>", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
 
 	step++
-	if want, got := "Executing - <Stop: [service]>", outputLines[step]; want != got {
+	if want, got := "Executing - <Destroy: [service]>", outputLines[step]; want != got {
+		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
+	}
+
+	step++
+	if want, got := "Executing - <Start: [service]>", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
 
@@ -105,6 +111,9 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	}
 	if want, got := 3, runtime.ExecuteTaskCallCount(); want != got {
 		t.Errorf("Wrong number of calls to 'ExecuteTask()'! Want: %d, got: %d", want, got)
+	}
+	if want, got := 1, runtime.DestroyServicesCallCount(); want != got {
+		t.Errorf("Wrong number of calls to 'DestroyServices()'! Want: %d, got: %d", want, got)
 	}
 }
 

@@ -30,6 +30,24 @@ func (s *StopStep) Description() string {
 	return fmt.Sprintf("<Stop: %v>", s.services)
 }
 
+type DestroyStep struct {
+	services []string
+}
+
+func NewDestroyStep(config StepConfig) Step {
+	return &DestroyStep{
+		services: config.Destroy,
+	}
+}
+
+func (s *DestroyStep) Execute(runtime Runtime, output TestOutput) error {
+	return runtime.DestroyServices(output, s.services...)
+}
+
+func (s *DestroyStep) Description() string {
+	return fmt.Sprintf("<Destroy: %v>", s.services)
+}
+
 type StartStep struct {
 	services []string
 }

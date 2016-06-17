@@ -75,6 +75,19 @@ func (d *DockerCompose) StartServices(output TestOutput, name ...string) error {
 	return cmd.Run()
 }
 
+func (d *DockerCompose) DestroyServices(output TestOutput, name ...string) error {
+	args := d.makeArgs("kill", name...)
+	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
+	cmd.Run()
+	args = d.makeArgs("rm", append([]string{"-f", "-v"}, name...)...)
+	cmd = exec.Command(d.rawCmd, args...)
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
+	return cmd.Run()
+}
+
 func (d *DockerCompose) SystemOutput() ([]byte, error) {
 	args := d.makeArgs("logs")
 	cmd := exec.Command(d.rawCmd, args...)
