@@ -64,7 +64,7 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	t.Logf(b.String())
 	outputLines := strings.Split(b.String(), "\n")
 	step := 0
-	if want, got := "Starting 'test' Runtime", outputLines[step]; want != got {
+	if want, got := "Starting 'test' Runtime...", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
 
@@ -99,7 +99,7 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	}
 
 	step++
-	if want, got := "Stopping test Runtime", outputLines[step]; want != got {
+	if want, got := "Stopping 'test' Runtime...", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
 
