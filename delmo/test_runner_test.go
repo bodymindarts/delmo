@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+	"time"
 
 	. "github.com/bodymindarts/delmo/delmo"
 	"github.com/bodymindarts/delmo/delmo/fakes"
@@ -41,10 +42,15 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 			StepConfig{
 				Start:   []string{"service"},
 				Stop:    []string{"service"},
-				Wait:    []string{"fake_task"},
-				Exec:    []string{"fake_task"},
-				Assert:  []string{"fake_task"},
 				Destroy: []string{"service"},
+			},
+			StepConfig{
+				Wait:    []string{"fake_task"},
+				Timeout: 60 * time.Second,
+			},
+			StepConfig{
+				Exec:   []string{"fake_task"},
+				Assert: []string{"fake_task"},
 			},
 		},
 	}
@@ -84,7 +90,7 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	}
 
 	step++
-	if want, got := "Executing - <Wait: fake_task>", outputLines[step]; want != got {
+	if want, got := "Executing - <Wait: fake_task, Timeout: 60s>", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
 

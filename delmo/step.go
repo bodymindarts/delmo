@@ -95,7 +95,7 @@ func (s *WaitStep) Execute(runtime Runtime, output TestOutput) error {
 }
 
 func (s *WaitStep) Description() string {
-	return fmt.Sprintf("<Wait: %s>", s.task.Name)
+	return fmt.Sprintf("<Wait: %s, Timeout: %ds>", s.task.Name, int(s.timeout.Seconds()))
 }
 
 type ExecStep struct {
