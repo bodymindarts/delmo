@@ -96,6 +96,16 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 	if want, got := "Stopping test Runtime", outputLines[step]; want != got {
 		t.Errorf("Bad step execution line %d!\nWant: '%s', got: '%s'", step, want, got)
 	}
+
+	if want, got := 1, runtime.StartServicesCallCount(); want != got {
+		t.Errorf("Wrong number of calls to 'StartServices()'! Want: %d, got: %d", want, got)
+	}
+	if want, got := 1, runtime.StopServicesCallCount(); want != got {
+		t.Errorf("Wrong number of calls to 'StopServices()'! Want: %d, got: %d", want, got)
+	}
+	if want, got := 3, runtime.ExecuteTaskCallCount(); want != got {
+		t.Errorf("Wrong number of calls to 'ExecuteTask()'! Want: %d, got: %d", want, got)
+	}
 }
 
 func TestTestRunner_NoCleanupOnFailure(t *testing.T) {
