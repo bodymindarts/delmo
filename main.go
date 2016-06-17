@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/bodymindarts/delmo/delmo"
 )
 
 var Version = "(dev)"
@@ -48,7 +50,7 @@ func Run(args []string) int {
 		return 2
 	}
 
-	config, err := LoadConfig(delmoFile)
+	config, err := delmo.LoadConfig(delmoFile)
 	if err != nil {
 		printfStdErr("Error reading configuration\n%s", err)
 		return 2
@@ -58,7 +60,7 @@ func Run(args []string) int {
 
 	globalTaskEnvironment := []string{fmt.Sprintf("DOCKER_HOST_IP=%s", hostIp)}
 	os.Setenv("DOCKER_HOST_IP", hostIp)
-	suite, err := NewSuite(config, globalTaskEnvironment)
+	suite, err := delmo.NewSuite(config, globalTaskEnvironment)
 	if err != nil {
 		printfStdErr("Could not initialize suite %s")
 		return 2

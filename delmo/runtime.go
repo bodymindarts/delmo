@@ -1,4 +1,4 @@
-package main
+package delmo
 
 type Runtime interface {
 	StartAll() error
