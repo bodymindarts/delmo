@@ -49,7 +49,7 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	}
 
 	fmt.Fprintf(out.Stdout, "Starting '%s' Runtime\n", tr.config.Name)
-	err := runtime.StartAll()
+	err := runtime.StartAll(out)
 	if err != nil {
 		fmt.Fprintf(out.Stderr, "Could not start runtime for %s! %s\n", tr.config.Name, err)
 		report.Fail(err)
@@ -72,7 +72,7 @@ func (tr *TestRunner) RunTest(runtime Runtime, out TestOutput) *TestReport {
 	}
 
 	fmt.Fprintf(out.Stdout, "Stopping %s Runtime\n", tr.config.Name)
-	err = runtime.StopAll()
+	err = runtime.StopAll(out)
 	if err != nil {
 		fmt.Fprintf(out.Stderr, "Could not stop runtime for %s! %s\n", tr.config.Name, err)
 		report.Fail(err)

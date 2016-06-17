@@ -43,31 +43,35 @@ func (d *DockerCompose) Build(services ...string) error {
 	return cmd.Run()
 }
 
-func (d *DockerCompose) StartAll() error {
+func (d *DockerCompose) StartAll(output TestOutput) error {
 	args := d.makeArgs("up", "-d", "--force-recreate")
 	cmd := exec.Command(d.rawCmd, args...)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("%s\n%s", strings.TrimSpace(string(out)), err)
-	}
-	return nil
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
-func (d *DockerCompose) StopAll() error {
+func (d *DockerCompose) StopAll(output TestOutput) error {
 	args := d.makeArgs("stop")
 	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
-func (d *DockerCompose) StopServices(name ...string) error {
+func (d *DockerCompose) StopServices(output TestOutput, name ...string) error {
 	args := d.makeArgs("stop", name...)
 	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
 	return cmd.Run()
 }
 
-func (d *DockerCompose) StartServices(name ...string) error {
+func (d *DockerCompose) StartServices(output TestOutput, name ...string) error {
 	args := d.makeArgs("up", append([]string{"-d"}, name...)...)
 	cmd := exec.Command(d.rawCmd, args...)
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
 	return cmd.Run()
 }
 

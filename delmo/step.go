@@ -23,7 +23,7 @@ func NewStopStep(config StepConfig) Step {
 }
 
 func (s *StopStep) Execute(runtime Runtime, output TestOutput) error {
-	return runtime.StopServices(s.services...)
+	return runtime.StopServices(output, s.services...)
 }
 
 func (s *StopStep) Description() string {
@@ -41,7 +41,7 @@ func NewStartStep(config StepConfig) Step {
 }
 
 func (s *StartStep) Execute(runtime Runtime, output TestOutput) error {
-	return runtime.StartServices(s.services...)
+	return runtime.StartServices(output, s.services...)
 }
 
 func (s *StartStep) Description() string {

@@ -8,30 +8,36 @@ import (
 )
 
 type FakeRuntime struct {
-	StartAllStub        func() error
+	StartAllStub        func(delmo.TestOutput) error
 	startAllMutex       sync.RWMutex
-	startAllArgsForCall []struct{}
-	startAllReturns     struct {
+	startAllArgsForCall []struct {
+		arg1 delmo.TestOutput
+	}
+	startAllReturns struct {
 		result1 error
 	}
-	StopAllStub        func() error
+	StopAllStub        func(delmo.TestOutput) error
 	stopAllMutex       sync.RWMutex
-	stopAllArgsForCall []struct{}
-	stopAllReturns     struct {
+	stopAllArgsForCall []struct {
+		arg1 delmo.TestOutput
+	}
+	stopAllReturns struct {
 		result1 error
 	}
-	StopServicesStub        func(...string) error
+	StopServicesStub        func(delmo.TestOutput, ...string) error
 	stopServicesMutex       sync.RWMutex
 	stopServicesArgsForCall []struct {
-		arg1 []string
+		arg1 delmo.TestOutput
+		arg2 []string
 	}
 	stopServicesReturns struct {
 		result1 error
 	}
-	StartServicesStub        func(...string) error
+	StartServicesStub        func(delmo.TestOutput, ...string) error
 	startServicesMutex       sync.RWMutex
 	startServicesArgsForCall []struct {
-		arg1 []string
+		arg1 delmo.TestOutput
+		arg2 []string
 	}
 	startServicesReturns struct {
 		result1 error
@@ -64,13 +70,15 @@ type FakeRuntime struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeRuntime) StartAll() error {
+func (fake *FakeRuntime) StartAll(arg1 delmo.TestOutput) error {
 	fake.startAllMutex.Lock()
-	fake.startAllArgsForCall = append(fake.startAllArgsForCall, struct{}{})
-	fake.recordInvocation("StartAll", []interface{}{})
+	fake.startAllArgsForCall = append(fake.startAllArgsForCall, struct {
+		arg1 delmo.TestOutput
+	}{arg1})
+	fake.recordInvocation("StartAll", []interface{}{arg1})
 	fake.startAllMutex.Unlock()
 	if fake.StartAllStub != nil {
-		return fake.StartAllStub()
+		return fake.StartAllStub(arg1)
 	} else {
 		return fake.startAllReturns.result1
 	}
@@ -82,6 +90,12 @@ func (fake *FakeRuntime) StartAllCallCount() int {
 	return len(fake.startAllArgsForCall)
 }
 
+func (fake *FakeRuntime) StartAllArgsForCall(i int) delmo.TestOutput {
+	fake.startAllMutex.RLock()
+	defer fake.startAllMutex.RUnlock()
+	return fake.startAllArgsForCall[i].arg1
+}
+
 func (fake *FakeRuntime) StartAllReturns(result1 error) {
 	fake.StartAllStub = nil
 	fake.startAllReturns = struct {
@@ -89,13 +103,15 @@ func (fake *FakeRuntime) StartAllReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeRuntime) StopAll() error {
+func (fake *FakeRuntime) StopAll(arg1 delmo.TestOutput) error {
 	fake.stopAllMutex.Lock()
-	fake.stopAllArgsForCall = append(fake.stopAllArgsForCall, struct{}{})
-	fake.recordInvocation("StopAll", []interface{}{})
+	fake.stopAllArgsForCall = append(fake.stopAllArgsForCall, struct {
+		arg1 delmo.TestOutput
+	}{arg1})
+	fake.recordInvocation("StopAll", []interface{}{arg1})
 	fake.stopAllMutex.Unlock()
 	if fake.StopAllStub != nil {
-		return fake.StopAllStub()
+		return fake.StopAllStub(arg1)
 	} else {
 		return fake.stopAllReturns.result1
 	}
@@ -107,6 +123,12 @@ func (fake *FakeRuntime) StopAllCallCount() int {
 	return len(fake.stopAllArgsForCall)
 }
 
+func (fake *FakeRuntime) StopAllArgsForCall(i int) delmo.TestOutput {
+	fake.stopAllMutex.RLock()
+	defer fake.stopAllMutex.RUnlock()
+	return fake.stopAllArgsForCall[i].arg1
+}
+
 func (fake *FakeRuntime) StopAllReturns(result1 error) {
 	fake.StopAllStub = nil
 	fake.stopAllReturns = struct {
@@ -114,15 +136,16 @@ func (fake *FakeRuntime) StopAllReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeRuntime) StopServices(arg1 ...string) error {
+func (fake *FakeRuntime) StopServices(arg1 delmo.TestOutput, arg2 ...string) error {
 	fake.stopServicesMutex.Lock()
 	fake.stopServicesArgsForCall = append(fake.stopServicesArgsForCall, struct {
-		arg1 []string
-	}{arg1})
-	fake.recordInvocation("StopServices", []interface{}{arg1})
+		arg1 delmo.TestOutput
+		arg2 []string
+	}{arg1, arg2})
+	fake.recordInvocation("StopServices", []interface{}{arg1, arg2})
 	fake.stopServicesMutex.Unlock()
 	if fake.StopServicesStub != nil {
-		return fake.StopServicesStub(arg1...)
+		return fake.StopServicesStub(arg1, arg2...)
 	} else {
 		return fake.stopServicesReturns.result1
 	}
@@ -134,10 +157,10 @@ func (fake *FakeRuntime) StopServicesCallCount() int {
 	return len(fake.stopServicesArgsForCall)
 }
 
-func (fake *FakeRuntime) StopServicesArgsForCall(i int) []string {
+func (fake *FakeRuntime) StopServicesArgsForCall(i int) (delmo.TestOutput, []string) {
 	fake.stopServicesMutex.RLock()
 	defer fake.stopServicesMutex.RUnlock()
-	return fake.stopServicesArgsForCall[i].arg1
+	return fake.stopServicesArgsForCall[i].arg1, fake.stopServicesArgsForCall[i].arg2
 }
 
 func (fake *FakeRuntime) StopServicesReturns(result1 error) {
@@ -147,15 +170,16 @@ func (fake *FakeRuntime) StopServicesReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeRuntime) StartServices(arg1 ...string) error {
+func (fake *FakeRuntime) StartServices(arg1 delmo.TestOutput, arg2 ...string) error {
 	fake.startServicesMutex.Lock()
 	fake.startServicesArgsForCall = append(fake.startServicesArgsForCall, struct {
-		arg1 []string
-	}{arg1})
-	fake.recordInvocation("StartServices", []interface{}{arg1})
+		arg1 delmo.TestOutput
+		arg2 []string
+	}{arg1, arg2})
+	fake.recordInvocation("StartServices", []interface{}{arg1, arg2})
 	fake.startServicesMutex.Unlock()
 	if fake.StartServicesStub != nil {
-		return fake.StartServicesStub(arg1...)
+		return fake.StartServicesStub(arg1, arg2...)
 	} else {
 		return fake.startServicesReturns.result1
 	}
@@ -167,10 +191,10 @@ func (fake *FakeRuntime) StartServicesCallCount() int {
 	return len(fake.startServicesArgsForCall)
 }
 
-func (fake *FakeRuntime) StartServicesArgsForCall(i int) []string {
+func (fake *FakeRuntime) StartServicesArgsForCall(i int) (delmo.TestOutput, []string) {
 	fake.startServicesMutex.RLock()
 	defer fake.startServicesMutex.RUnlock()
-	return fake.startServicesArgsForCall[i].arg1
+	return fake.startServicesArgsForCall[i].arg1, fake.startServicesArgsForCall[i].arg2
 }
 
 func (fake *FakeRuntime) StartServicesReturns(result1 error) {
