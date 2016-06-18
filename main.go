@@ -69,15 +69,6 @@ func Run(args []string) int {
 	return result
 }
 
-func Usage() string {
-	helpText := `
-Usage: delmo test [options]
-
-  Run a test :-)
-`
-	return strings.TrimSpace(helpText)
-}
-
 func setupDockerMachine(machineName string) (string, error) {
 	// get environment variables
 	cmd := exec.Command("docker-machine", "env", machineName, "--shell", "sh")
