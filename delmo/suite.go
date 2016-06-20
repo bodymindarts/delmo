@@ -6,12 +6,14 @@ import (
 )
 
 type Suite struct {
+	options               CLIOptions
 	config                *Config
 	globalTaskEnvironment TaskEnvironment
 }
 
-func NewSuite(config *Config, globalTaskEnvironment TaskEnvironment) (*Suite, error) {
+func NewSuite(options CLIOptions, config *Config, globalTaskEnvironment TaskEnvironment) (*Suite, error) {
 	suite := &Suite{
+		options:               options,
 		config:                config,
 		globalTaskEnvironment: globalTaskEnvironment,
 	}
@@ -78,7 +80,7 @@ func (s *Suite) initializeSystem() error {
 	}
 
 	fmt.Printf("Builing images for system %s\n", s.config.Suite.Name)
-	if s.config.Suite.OnlyBuildTask {
+	if s.options.OnlyBuildTask {
 		err = dc.Build(s.config.Suite.TaskService)
 	} else {
 		err = dc.Build()

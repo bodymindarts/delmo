@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,8 +16,6 @@ func main() {
 }
 
 func Run(args []string) int {
-	flags := flag.FlagSet{}
-
 	for _, arg := range args {
 		if arg == "-v" || arg == "--version" || arg == "version" {
 			fmt.Printf("delmo-v%s", Version)
@@ -26,33 +23,23 @@ func Run(args []string) int {
 		}
 	}
 
-	var delmoFile, machine string
-	var onlyBuildTask bool
-	flags.StringVar(&delmoFile, "f", "delmo.yml", "Path to the delmo.yml file.")
-	flags.StringVar(&machine, "m", "default", "The docker-machine to use.")
-	flags.BoolVar(&onlyBuildTask, "only-build-task", false, "Only build the task_image. All other images must be available via docker pull.")
-	if err := flags.Parse(args); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing arguments\n%s", err)
-		return 2
-	}
+	options := delmo.ParseOptions(args)
 
-	hostIp, err := setupDockerMachine(machine)
+	hostIp, err := setupDockerMachine(options.DockerMachine)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error setting up environment\n%s", err)
 		return 2
 	}
 
-	config, err := delmo.LoadConfig(delmoFile)
+	config, err := delmo.LoadConfig(options.DelmoFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading configuration\n%s", err)
 		return 2
 	}
 
-	config.Suite.OnlyBuildTask = onlyBuildTask
-
 	globalTaskEnvironment := []string{fmt.Sprintf("DOCKER_HOST_IP=%s", hostIp)}
 	os.Setenv("DOCKER_HOST_IP", hostIp)
-	suite, err := delmo.NewSuite(config, globalTaskEnvironment)
+	suite, err := delmo.NewSuite(options, config, globalTaskEnvironment)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not initialize suite %s")
 		return 2
