@@ -46,16 +46,16 @@ func (d *DockerCompose) Build(services ...string) error {
 func (d *DockerCompose) StartAll(output TestOutput) error {
 	args := d.makeArgs("up", "-d", "--force-recreate")
 	cmd := exec.Command(d.rawCmd, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
 	return cmd.Run()
 }
 
 func (d *DockerCompose) StopAll(output TestOutput) error {
 	args := d.makeArgs("stop")
 	cmd := exec.Command(d.rawCmd, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = output.Stdout
+	cmd.Stderr = output.Stderr
 	return cmd.Run()
 }
 

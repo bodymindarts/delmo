@@ -13,6 +13,14 @@ tests:
   - stop: [webapp]
   - fail: [webapp_is_available]
 
+- name: webapp_fails_again
+  before_startup: [hello_world]
+  spec:
+  - wait: [webapp_is_available]
+  - assert: [webapp_is_available]
+  - stop: [webapp]
+  - fail: [webapp_is_available]
+
 tasks:
 - name: webapp_is_available
   command: /tasks/webapp_is_available.sh

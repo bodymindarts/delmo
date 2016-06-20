@@ -1,8 +1,10 @@
 package delmo
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"sync"
 )
 
 type Suite struct {
@@ -41,29 +43,49 @@ func (s *Suite) Run() int {
 
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}
-	output := TestOutput{
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-	}
+
+	var wg sync.WaitGroup
 	for _, test := range s.tests {
+		wg.Add(1)
+		fmt.Printf("Running test '%s'...\n", test.Name)
 		runner := NewTestRunner(test, s.config.Tasks, s.globalTaskEnvironment)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error creating runtime! %s\n", err)
-			return 1
+			fmt.Fprintf(os.Stderr, "Error creating runtime for '%s'\n%s\n", test.Name, err)
+			continue
 		}
+		go func() {
+			defer wg.Done()
+			var output TestOutput
+			var outputBytes bytes.Buffer
+			if s.options.ParallelExecution {
+				output.Stdout = &outputBytes
+				output.Stderr = &outputBytes
+			} else {
+				output = TestOutput{
+					Stdout: os.Stdout,
+					Stderr: os.Stderr,
+				}
+			}
 
-		fmt.Printf("\nRunning test %s\n", test.Name)
-		report := runner.RunTest(runtime, output)
-		if report.Success {
-			succeeded = append(succeeded, report)
-			fmt.Printf("Test %s Succeeded!\n", test.Name)
-		} else {
-			failed = append(failed, report)
-			fmt.Printf("Test %s Failed!\n", test.Name)
+			report := runner.RunTest(runtime, output)
+			if report.Success {
+				succeeded = append(succeeded, report)
+				fmt.Printf("Test '%s' completed sucessfully!\n", test.Name)
+			} else {
+				failed = append(failed, report)
+				fmt.Printf("Test '%s' Failed!\n%s\n", test.Name, report.Error)
+				if s.options.ParallelExecution {
+					fmt.Printf("Output from test '%s'\n%s\n", test.Name, outputBytes)
+				}
+			}
+		}()
+		if s.options.ParallelExecution == false {
+			wg.Wait()
 		}
 	}
 
+	wg.Wait()
 	outputSummary(failed, succeeded)
 	if len(failed) != 0 {
 		return 1
