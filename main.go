@@ -41,7 +41,7 @@ func Run(args []string) int {
 	os.Setenv("DOCKER_HOST_IP", hostIp)
 	suite, err := delmo.NewSuite(options, config, globalTaskEnvironment)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize suite %s")
+		fmt.Fprintf(os.Stderr, "Could not initialize suite\n%s", err)
 		return 2
 	}
 	result := suite.Run()

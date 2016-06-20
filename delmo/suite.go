@@ -9,6 +9,7 @@ type Suite struct {
 	options               CLIOptions
 	config                *Config
 	globalTaskEnvironment TaskEnvironment
+	tests                 []TestConfig
 }
 
 func NewSuite(options CLIOptions, config *Config, globalTaskEnvironment TaskEnvironment) (*Suite, error) {
@@ -17,17 +18,26 @@ func NewSuite(options CLIOptions, config *Config, globalTaskEnvironment TaskEnvi
 		config:                config,
 		globalTaskEnvironment: globalTaskEnvironment,
 	}
+	tests, err := suite.testsToRun(options.Tests, config.Tests)
+	if err != nil {
+		return nil, err
+	}
+	suite.tests = tests
 	return suite, nil
 }
 
 func (s *Suite) Run() int {
+	fmt.Printf("Running Test Suite for System %s\n", s.config.Suite.Name)
+	executing := "Tests to execute: "
+	for _, t := range s.tests {
+		executing += t.Name + ", "
+	}
+	fmt.Printf(executing + "\n\n")
 	err := s.initializeSystem()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return 1
 	}
-
-	fmt.Printf("\nRunning Test Suite for System %s\n", s.config.Suite.Name)
 
 	failed := []*TestReport{}
 	succeeded := []*TestReport{}
@@ -35,7 +45,7 @@ func (s *Suite) Run() int {
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}
-	for _, test := range s.config.Tests {
+	for _, test := range s.tests {
 		runner := NewTestRunner(test, s.config.Tasks, s.globalTaskEnvironment)
 		runtime, err := NewDockerCompose(s.config.Suite.System, test.Name)
 		if err != nil {
@@ -90,4 +100,25 @@ func (s *Suite) initializeSystem() error {
 	}
 
 	return nil
+}
+
+func (s *Suite) testsToRun(testNames []string, allTests []TestConfig) ([]TestConfig, error) {
+	if len(testNames) == 0 {
+		return allTests, nil
+	}
+	var tests []TestConfig
+	for _, n := range testNames {
+		found := false
+		for _, t := range allTests {
+			if n == t.Name {
+				tests = append(tests, t)
+				found = true
+				break
+			}
+		}
+		if found == false {
+			return nil, fmt.Errorf("Couldn't find test named: %s", n)
+		}
+	}
+	return tests, nil
 }
