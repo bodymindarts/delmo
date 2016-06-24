@@ -25,10 +25,20 @@ func Run(args []string) int {
 
 	options := delmo.ParseOptions(args)
 
-	hostIp, err := setupDockerMachine(options.DockerMachine)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error setting up environment\n%s", err)
-		return 2
+	var hostIp string
+	var err error
+	if options.Localhost != "" {
+		hostIp = options.Localhost
+		os.Unsetenv("DOCKER_TLS_VERIFY")
+		os.Unsetenv("DOCKER_HOST")
+		os.Unsetenv("DOCKER_CERT_PATH")
+		os.Unsetenv("DOCKER_MACHINE_NAME")
+	} else {
+		hostIp, err = setupDockerMachine(options.DockerMachine)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error setting up environment\n%s", err)
+			return 2
+		}
 	}
 
 	config, err := delmo.LoadConfig(options.DelmoFile)

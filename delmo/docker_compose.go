@@ -165,10 +165,6 @@ func (d *DockerCompose) makeArgs(command string, args ...string) []string {
 }
 
 func assertExecPreconditions() (string, error) {
-	if host := os.Getenv("DOCKER_HOST"); host == "" {
-		return "", fmt.Errorf("Environment not setup correctly! DOCKER_HOST is not set")
-	}
-
 	cmd, err := exec.LookPath("docker-compose")
 	if err != nil {
 		return "", err
