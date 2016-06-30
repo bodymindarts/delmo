@@ -1,6 +1,10 @@
 package delmo
 
-import "flag"
+import (
+	"flag"
+	"fmt"
+	"os"
+)
 
 type CLIOptions struct {
 	DelmoFile         string
@@ -9,16 +13,32 @@ type CLIOptions struct {
 	ParallelExecution bool
 	Localhost         string
 	Tests             []string
+	Help              bool
+	Usage             func()
 }
 
 func ParseOptions(args []string) CLIOptions {
 	flags := flag.NewFlagSet("delmo", flag.ExitOnError)
+	usage := func() {
+		fmt.Fprintf(os.Stderr, `USAGE: delmo [--version] [--help] [options] [test...]
+
+OPTIONS:
+  -f                    path to the spec file (default: "delmo.yml").
+  -m                    docker-machine to run the tests on (default: "default").
+  --only-build-task     only build the task_image. All other images must be available via docker pull.
+  --localhost           IP that will be set to DOCKER_HOST_IP environment variable when not running in a docker-machine.
+  --parallel            execute tests in parallel.
+`)
+	}
+	flags.Usage = usage
 	var options CLIOptions
-	flags.StringVar(&(options.DelmoFile), "f", "delmo.yml", "Path to the delmo config file.")
-	flags.StringVar(&(options.DockerMachine), "m", "default", "The docker-machine to use.")
-	flags.BoolVar(&(options.OnlyBuildTask), "only-build-task", false, "Only build the task_image. All other images must be available via docker pull.")
-	flags.BoolVar(&(options.ParallelExecution), "parallel", false, "Execute tests in parallel.")
-	flags.StringVar(&(options.Localhost), "localhost", "", "Run containers on local machine passing IP as DOCKER_HOST_IP")
+	options.Usage = usage
+	flags.StringVar(&(options.DelmoFile), "f", "delmo.yml", "")
+	flags.StringVar(&(options.DockerMachine), "m", "default", "")
+	flags.BoolVar(&(options.OnlyBuildTask), "only-build-task", false, "")
+	flags.BoolVar(&(options.ParallelExecution), "parallel", false, "")
+	flags.StringVar(&(options.Localhost), "localhost", "", "")
+	flags.BoolVar(&(options.Help), "help", false, "")
 
 	flags.Parse(args)
 

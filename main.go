@@ -17,6 +17,10 @@ func main() {
 
 func Run(args []string) int {
 	for _, arg := range args {
+		if arg == "-h" || arg == "--help" || arg == "help" {
+			args = []string{"--help"}
+		}
+
 		if arg == "-v" || arg == "--version" || arg == "version" {
 			fmt.Printf("delmo-v%s", Version)
 			return 0
@@ -24,6 +28,10 @@ func Run(args []string) int {
 	}
 
 	options := delmo.ParseOptions(args)
+	if options.Help {
+		options.Usage()
+		return 0
+	}
 
 	var hostIp string
 	var err error
@@ -36,14 +44,16 @@ func Run(args []string) int {
 	} else {
 		hostIp, err = setupDockerMachine(options.DockerMachine)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error setting up environment\n%s", err)
+			fmt.Fprintf(os.Stderr, "Error setting up environment\n%s\n\n", err)
+			options.Usage()
 			return 2
 		}
 	}
 
 	config, err := delmo.LoadConfig(options.DelmoFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading configuration\n%s", err)
+		fmt.Fprintf(os.Stderr, "Error reading configuration\n%s\n\n", err)
+		options.Usage()
 		return 2
 	}
 
@@ -51,7 +61,8 @@ func Run(args []string) int {
 	os.Setenv("DOCKER_HOST_IP", hostIp)
 	suite, err := delmo.NewSuite(options, config, globalTaskEnvironment)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize suite\n%s", err)
+		fmt.Fprintf(os.Stderr, "Could not initialize suite\n%s\n\n", err)
+		options.Usage()
 		return 2
 	}
 	result := suite.Run()
