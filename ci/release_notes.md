@@ -1,3 +1,0 @@
-# Improvements
-
-- Add usage output

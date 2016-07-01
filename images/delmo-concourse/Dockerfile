@@ -1,7 +1,7 @@
 FROM alpine:3.4
 
 ENV DOCKER_MACHNE_VERSION=0.7.0 \
-  DELMO_VERSION=0.5.0
+  DELMO_VERSION=0.5.1
 
 RUN apk add --update curl nodejs py-pip \
       && rm -rf /var/cache/apk/*
