@@ -41,7 +41,7 @@ func Run(args []string) int {
 		os.Unsetenv("DOCKER_HOST")
 		os.Unsetenv("DOCKER_CERT_PATH")
 		os.Unsetenv("DOCKER_MACHINE_NAME")
-	} else {
+	} else if options.DockerMachine != "" {
 		hostIp, err = setupDockerMachine(options.DockerMachine)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error setting up environment\n%s\n\n", err)
