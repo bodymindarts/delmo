@@ -56,6 +56,10 @@ func (s *Suite) Run() int {
 		}
 		go func() {
 			defer wg.Done()
+
+			// Capture the name because the test variable will change
+			testName := test.Name
+
 			var output TestOutput
 			var outputBytes bytes.Buffer
 			if s.options.ParallelExecution {
@@ -71,12 +75,12 @@ func (s *Suite) Run() int {
 			report := runner.RunTest(runtime, output)
 			if report.Success {
 				succeeded = append(succeeded, report)
-				fmt.Printf("Test '%s' completed sucessfully!\n", test.Name)
+				fmt.Printf("Test '%s' completed sucessfully!\n", testName)
 			} else {
 				failed = append(failed, report)
-				fmt.Printf("Test '%s' Failed!\n%s\n", test.Name, report.Error)
+				fmt.Printf("Test '%s' Failed!\n%s\n", testName, report.Error)
 				if s.options.ParallelExecution {
-					fmt.Printf("Output from test '%s'\n%s\n", test.Name, outputBytes)
+					fmt.Printf("Output from test '%s'\n%s\n", testName, outputBytes)
 				}
 			}
 		}()
