@@ -17,6 +17,9 @@ tests:
     - webapp_is_available
     - webapp_is_available
   - start: [webapp]
+  - assert:
+    - webapp_is_available
+    - webapp_is_available
   - stop: [webapp1]
   - assert:
     - webapp_is_available
