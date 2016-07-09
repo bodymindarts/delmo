@@ -1,17 +1,21 @@
 version: '2'
 
 services:
+  proxy:
+    build: nginx
+    image: webapp-proxy
+    networks:
+    - az1
   webapp:
     build: sinatra
     image: webapp
-    ports:
-      - "5000:5000"
     networks:
     - az1
   tests:
     build: tests
     image: webapp-tests
-
+    networks:
+    - az1
 
 networks:
   az1:
