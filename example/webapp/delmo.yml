@@ -5,13 +5,33 @@ suite:
   task_service: tests
 
 tests:
+- name: webapp_is_proxied
+  before_startup: [hello_world]
+  spec:
+  - wait: [webapp_is_available]
+  - assert:
+    - webapp_is_available
+    - webapp_is_available
+  - stop: [webapp]
+  - assert:
+    - webapp_is_available
+    - webapp_is_available
+  - start: [webapp]
+  - stop: [webapp1]
+  - assert:
+    - webapp_is_available
+    - webapp_is_available
+
 - name: webapp_fails
   before_startup: [hello_world]
   spec:
   - wait: [webapp_is_available]
-  - assert: [webapp_is_available]
-  - stop: [webapp]
-  - fail: [webapp_is_available]
+  - assert:
+    - webapp_is_available
+    - webapp_is_available
+  - stop: [proxy]
+  - fail:
+    - webapp_is_available
 
 tasks:
 - name: webapp_is_available

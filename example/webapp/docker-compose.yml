@@ -11,6 +11,11 @@ services:
     image: webapp
     networks:
     - az1
+  webapp1:
+    build: sinatra
+    image: webapp
+    networks:
+    - az1
   tests:
     build: tests
     image: webapp-tests
