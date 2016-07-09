@@ -11,6 +11,7 @@ type CLIOptions struct {
 	DockerMachine     string
 	OnlyBuildTask     bool
 	ParallelExecution bool
+	SkipPull          bool
 	Localhost         string
 	Tests             []string
 	Help              bool
@@ -26,6 +27,7 @@ OPTIONS:
   -f                    path to the spec file (default: "delmo.yml").
   -m                    docker-machine to run the tests on (default: "default").
   --only-build-task     only build the task_image. All other images must be available via docker pull.
+  --skip-pull           don't pull the images before building.
   --localhost           IP that will be set to DOCKER_HOST_IP environment variable when not running in a docker-machine.
   --parallel            execute tests in parallel.
 `)
@@ -37,6 +39,7 @@ OPTIONS:
 	flags.StringVar(&(options.DockerMachine), "m", "default", "")
 	flags.BoolVar(&(options.OnlyBuildTask), "only-build-task", false, "")
 	flags.BoolVar(&(options.ParallelExecution), "parallel", false, "")
+	flags.BoolVar(&(options.SkipPull), "skip-pull", false, "")
 	flags.StringVar(&(options.Localhost), "localhost", "", "")
 	flags.BoolVar(&(options.Help), "help", false, "")
 

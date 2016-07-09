@@ -109,10 +109,12 @@ func (s *Suite) initializeSystem() error {
 		return fmt.Errorf("Could not initialize docker-compose\n%s", err)
 	}
 
-	fmt.Printf("Pulling images for system %s\n", s.config.Suite.Name)
-	err = dc.Pull()
-	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Error pulling images\n%s\n", err))
+	if s.options.SkipPull != true {
+		fmt.Printf("Pulling images for system %s\n", s.config.Suite.Name)
+		err = dc.Pull()
+		if err != nil {
+			return fmt.Errorf(fmt.Sprintf("Error pulling images\n%s\n", err))
+		}
 	}
 
 	fmt.Printf("Builing images for system %s\n", s.config.Suite.Name)
