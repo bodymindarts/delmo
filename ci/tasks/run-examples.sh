@@ -7,7 +7,7 @@ echo "Building binary"
 export GOPATH=$GOPATH:$PWD/delmo
 cd delmo/src/github.com/bodymindarts/delmo
 make dev
-BINARY="bin/delmo-$(go env GOOS)-$(go env GOARCH)"
+BINARY="bin/delmo"
 
 echo "Downloading machine info"
 aws --region ${AWS_REGION} s3 cp s3://${AWS_BUCKET}/${machine_name}.zip ./

@@ -10,7 +10,7 @@ Alternatively you can follow the [instructions below](#building-delmo) to build 
 
 ## Example
 
-An example test suite is configures in `example/webapp/delmo.yml` and can be executed from the repo root via:
+An example test suite is configured in `example/webapp/delmo.yml` and can be executed from the repo root via:
 ```
 delmo -f example/webapp/delmo.yml
 ```
@@ -23,8 +23,11 @@ USAGE: delmo [--version] [--help] [options] [test...]
 | Option | meaning |
 |-----|---|
 | `-f` | Path to the spec file (default delmo.yml) |
-| `-m` | The docker-machine to run the tests on. |
-| `--only-build-task` |
+| `-m <machine-name>` | The docker-machine to run the tests on. With this option you can specify the name of a docker host that is managed by `docker-machine`. All tests will then be executed on that machine and additionally the environment variable `DOCKER_HOST_IP` will be available and contain the ip returned by `docker-machine ip <machine>`|
+| `--only-build-task` | Only build the image required for running tasks. Other images will be pulled but not built. Use this when you want to test images downloaded from a registry without any local changes. Omit this when you are making local changes to the images under test that should be picked up. |
+| `--skip-pull` | Skip pulling the images entirely. This is usefull when your don't have network connectivity but all images are already present locally. |
+| `--localhost <your-local-ip>` | Used to set `DOCKER_HOST_IP` when running the tests on a local docker daemon (as opposed to one managed by docker-machine). |
+| `--parallel` | to execute tests in parallel |
 
 ## Building delmo
 
