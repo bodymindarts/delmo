@@ -34,7 +34,7 @@ func (s *Suite) Run() int {
 	for _, t := range s.tests {
 		executing += t.Name + ", "
 	}
-	fmt.Printf(executing + "\n\n")
+	fmt.Printf(executing + "\n")
 	err := s.initializeSystem()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -84,12 +84,18 @@ func (s *Suite) Run() int {
 				}
 			}
 		}()
+
 		if s.options.ParallelExecution == false {
 			wg.Wait()
+			fmt.Println("")
 		}
 	}
 
-	wg.Wait()
+	if s.options.ParallelExecution == true {
+		wg.Wait()
+		fmt.Println("")
+	}
+
 	outputSummary(failed, succeeded)
 	if len(failed) != 0 {
 		return 1
@@ -98,7 +104,7 @@ func (s *Suite) Run() int {
 }
 
 func outputSummary(failed []*TestReport, succeeded []*TestReport) {
-	fmt.Printf("\nSUMMARY:\n%d tests succeeded\n%d tests failed\n",
+	fmt.Printf("SUMMARY:\n%d tests succeeded\n%d tests failed\n",
 		len(succeeded),
 		len(failed))
 }
@@ -110,14 +116,14 @@ func (s *Suite) initializeSystem() error {
 	}
 
 	if s.options.SkipPull != true {
-		fmt.Printf("Pulling images for system %s\n", s.config.Suite.Name)
+		fmt.Printf("\nPulling images for system %s...\n", s.config.Suite.Name)
 		err = dc.Pull()
 		if err != nil {
 			return fmt.Errorf(fmt.Sprintf("Error pulling images\n%s\n", err))
 		}
 	}
 
-	fmt.Printf("Builing images for system %s\n", s.config.Suite.Name)
+	fmt.Printf("\nBuiling images for system %s...\n", s.config.Suite.Name)
 	if s.options.OnlyBuildTask {
 		err = dc.Build(s.config.Suite.TaskService)
 	} else {
@@ -126,6 +132,8 @@ func (s *Suite) initializeSystem() error {
 	if err != nil {
 		return fmt.Errorf("Could not build system\n%s", err)
 	}
+
+	fmt.Println("")
 
 	return nil
 }
