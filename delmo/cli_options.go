@@ -25,10 +25,12 @@ func ParseOptions(args []string) CLIOptions {
 
 OPTIONS:
   -f                    path to the spec file (default: "delmo.yml").
-  -m                    docker-machine to run the tests on.
-  --only-build-task     only build the task_image. All other images must be available via docker pull.
+  -m                    docker-machine to run the tests on. DOCKER_HOST_IP will
+                        be set to the ip of the docker-machine.
+  --only-build-task     only build the task_image. All other images must be
+                        available via docker pull.
   --skip-pull           don't pull the images before building.
-  --localhost           IP that will be set to DOCKER_HOST_IP environment variable when not running in a docker-machine.
+  --localhost           an IP that DOCKER_HOST_IP will be set to when not using -m.
   --parallel            execute tests in parallel.
 `)
 	}
