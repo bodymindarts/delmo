@@ -44,7 +44,7 @@ type StepConfig struct {
 	Start   []string      `yaml:"start"`
 	Stop    []string      `yaml:"stop"`
 	Destroy []string      `yaml:"destroy"`
-	Wait    []string      `yaml:"wait"`
+	Wait    string        `yaml:"wait"`
 	Exec    []string      `yaml:"exec"`
 	Assert  []string      `yaml:"assert"`
 	Fail    []string      `yaml:"fail"`

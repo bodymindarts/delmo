@@ -96,10 +96,8 @@ func initSteps(stepConfigs []StepConfig, tasks Tasks, env TaskEnvironment) []Ste
 		if len(stepConfig.Start) != 0 {
 			steps = append(steps, NewStartStep(stepConfig))
 		}
-		if len(stepConfig.Wait) != 0 {
-			for _, taskName := range stepConfig.Wait {
-				steps = append(steps, NewWaitStep(stepConfig.Timeout, tasks[taskName], env))
-			}
+		if stepConfig.Wait != "" {
+			steps = append(steps, NewWaitStep(stepConfig.Timeout, tasks[stepConfig.Wait], env))
 		}
 		if len(stepConfig.Exec) != 0 {
 			for _, taskName := range stepConfig.Exec {

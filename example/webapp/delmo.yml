@@ -8,7 +8,7 @@ tests:
 - name: webapp_is_proxied
   before_startup: [hello_world]
   spec:
-  - wait: [webapp_is_available]
+  - wait: webapp_is_available
   - assert:
     - webapp_is_available
     - webapp_is_available
@@ -32,7 +32,7 @@ tests:
 - name: webapp_fails
   before_startup: [hello_world]
   spec:
-  - wait: [webapp_is_available]
+  - wait: webapp_is_available
   - assert:
     - webapp_is_available
     - webapp_is_available
