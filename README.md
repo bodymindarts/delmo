@@ -25,7 +25,7 @@ OPTIONS:
   --skip-pull           don't pull the images before building.
 ```
 
-Omtting `[test...]` will result in all tests being run.
+Omitting `[test...]` will result in all tests being run.
 
 ## Files
 
