@@ -1,5 +1,7 @@
 # delmo
-DelMo is a framework to test node failure in distributed systems.
+DelMo is a tool to test systems running within multiple docker containers.
+
+In perticular it is possible to start and stop individual services to test how the system behaves when faicing outages. It was written and is still being used to test automatic failover capabilities of a clustered postgresql deployment.
 
 It is configured via a `delmo.yml` file which starts any number of containers defined in a `docker-compose.yml` file.
 After starting containers via [docker-compose](https://docs.docker.com/compose/overview/)  _tasks_ can be executed to assert the state of the running containers.
@@ -30,6 +32,8 @@ OPTIONS:
                         available via 'docker pull'.
   --skip-pull           don't pull the images before building.
 ```
+
+Omtting `[test...]` will result in all tests being run.
 
 ## Files
 
