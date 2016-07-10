@@ -21,4 +21,4 @@ echo "Testing example/webapp"
 ${BINARY} -f example/webapp/delmo.yml -m ${machine_name}
 
 echo "Executing example/webapp in parralel"
-${BINARY} -f example/webapp/delmo.yml -m ${machine_name} --parrallel
+${BINARY} -f example/webapp/delmo.yml -m ${machine_name} --parallel
