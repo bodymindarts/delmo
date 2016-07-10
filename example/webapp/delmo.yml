@@ -39,6 +39,9 @@ tests:
   - stop: [proxy]
   - fail:
     - webapp_is_available
+  - start: [proxy]
+  - assert:
+    - webapp_is_available
 
 tasks:
 - name: webapp_is_available
