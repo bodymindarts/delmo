@@ -1,21 +1,14 @@
 # delmo
 DelMo is a tool to test systems running within multiple docker containers.
 
-In perticular it is possible to start and stop individual services to test how the system behaves when faicing outages. It was written and is still being used to test automatic failover capabilities of a clustered postgresql deployment.
+In perticular it is possible to start and stop individual services to test how the system behaves when facing outages. It was written and is still being used to test automatic failover capabilities of a clustered postgresql deployment. It is well suited to run integration tests of any system that runs as collaborating docker containers.
 
 It is configured via a `delmo.yml` file which starts any number of containers defined in a `docker-compose.yml` file.
-After starting containers via [docker-compose](https://docs.docker.com/compose/overview/)  _tasks_ can be executed to assert the state of the running containers.
+After starting containers via [docker-compose](https://docs.docker.com/compose/overview/)  `tasks` can be executed to assert the state of the running system.
 
 ## Installation
 Find the [latest release](https://github.com/bodymindarts/delmo/releases) and download the binary for your environment.
 Alternatively you can follow the [instructions below](#building-delmo) to build it yourself.
-
-## Example
-
-An example test suite is configured in `example/webapp/delmo.yml` and can be executed from the repo root via:
-```
-delmo -f example/webapp/delmo.yml
-```
 
 ## Usage
 ```
@@ -94,7 +87,10 @@ The type of step is determined by which keys are present.
 
 ### Examples
 
-Investigate the [example](./example/webapp) in this repository for a complete example.
+An [example](./example/webapp) test suite is configured in `example/webapp/delmo.yml` and can be executed from the repo root via:
+```
+delmo -f example/webapp/delmo.yml
+```
 
 Delmo was originally written to test clustering and automatic failover of postgresql nodes. It is still being used and you can [look here](https://github.com/dingotiles/dingo-postgresql-release/tree/master/images) to see real-world usage of delmo.
 
