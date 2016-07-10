@@ -45,7 +45,7 @@ func TestTestRunner_RunTest_WithSteps(t *testing.T) {
 				Destroy: []string{"service"},
 			},
 			StepConfig{
-				Wait:    []string{"fake_task"},
+				Wait:    "fake_task",
 				Timeout: 60 * time.Second,
 			},
 			StepConfig{

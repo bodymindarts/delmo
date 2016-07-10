@@ -47,7 +47,7 @@ tasks:
 tests:
 - name: simple
   spec:
-  - {wait: [echo]}
+  - {wait: echo}
   - {stop: [redis]}
   - {start: [redis]}`
 
