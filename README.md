@@ -80,7 +80,7 @@ The type of step is determined by which keys are present.
 | ---- | ---- |
 | `- assert: [<task>...]` | Array of tasks to run. The test will fail if a task returns a non-0 exit status |
 | `- exec: [<task>...]` |  Same as `assert`. Provided for differentiating steps that are preparatory in nature. |
-| `- {wait: <task>, timeout: 120}` | A Task to repeat as long as the exit status is non-0. The test fails if the <task> doesn't return '0' withing <timeout> seconds. `timeout:` key is optional, default is 60. |
+| `- {wait: <task>, timeout: 120}` | A Task to repeat as long as the exit status is non-0. The test fails if the `<task>` doesn't return '0' within `<timeout>` seconds. `timeout:` key is optional, default is 60. |
 | `- fail: [<task>...]` | Opposite of assert. These tasks are expected to return non-0. The test fails if a '0' exit status is returned. |
 | `- stop: [<service>...]` | An array of service names. The services must be defined in the docker-compose.yml and will be stopped via `docker-compose stop [<service>...]` |
 | `- start: [<service>...]` | An array of service names. The services must be defined in the docker-compose.yml and will be started via `docker-compose up [<service>...]` |
