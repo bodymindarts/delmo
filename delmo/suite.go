@@ -35,6 +35,7 @@ func (s *Suite) Run() int {
 		executing += t.Name + ", "
 	}
 	fmt.Printf(executing + "\n")
+
 	err := s.initializeSystem()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -54,6 +55,7 @@ func (s *Suite) Run() int {
 			fmt.Fprintf(os.Stderr, "Error creating runtime for '%s'\n%s\n", test.Name, err)
 			continue
 		}
+
 		go func() {
 			defer wg.Done()
 
