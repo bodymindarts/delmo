@@ -84,7 +84,7 @@ func (s *WaitStep) Execute(runtime Runtime, output TestOutput) error {
 	for {
 		select {
 		case <-timeout:
-			return fmt.Errorf("Task never completed successfully")
+			return fmt.Errorf("Task '%s' never completed successfully", s.task.Name)
 		default:
 			i++
 			if err := runtime.ExecuteTask(fmt.Sprintf("(%d) %s", i, s.task.Name), s.task, s.env, output); err == nil {
