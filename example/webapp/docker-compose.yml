@@ -2,7 +2,7 @@ version: '2'
 
 services:
   proxy:
-    build: nginx
+    build: haproxy
     image: webapp-proxy
     networks:
     - az1
@@ -16,8 +16,9 @@ services:
     image: webapp
     networks:
     - az1
+
   tests:
-    build: tests
+    build: ./tests
     image: webapp-tests
     networks:
     - az1
