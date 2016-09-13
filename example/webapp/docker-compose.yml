@@ -2,17 +2,17 @@ version: '2'
 
 services:
   proxy:
-    build: haproxy
+    build: ./haproxy
     image: webapp-proxy
     networks:
     - az1
   webapp:
-    build: sinatra
+    build: ./sinatra
     image: webapp
     networks:
     - az1
   webapp1:
-    build: sinatra
+    build: ./sinatra
     image: webapp
     networks:
     - az1

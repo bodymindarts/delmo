@@ -1,7 +1,7 @@
 ---
 suite:
   name: Webapp
-  system: docker-compose.yml
+  system: ./docker-compose.yml
   task_service: tests
 
 tests:
