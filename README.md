@@ -1,5 +1,5 @@
-# delmo
-DelMo is a tool to test systems running within multiple docker containers.
+# Delmo
+Delmo is a tool to test systems running within multiple docker containers.
 
 In perticular it is possible to start and stop individual services to test how the system behaves when facing outages. It was written and is still being used to test automatic failover capabilities of a clustered postgresql deployment. It is well suited to run integration tests of any system that runs as collaborating docker containers.
 
