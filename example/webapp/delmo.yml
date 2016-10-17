@@ -9,34 +9,25 @@ tests:
   before_startup: [hello_world]
   spec:
   - wait: webapp_is_available
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
   - stop: [webapp]
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
   - start: [webapp]
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
   - stop: [webapp1]
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
   - start: [webapp1]
-  - assert:
-    - webapp_is_available
-    - webapp_is_available
+  - assert: [webapp_is_available]
 
 - name: webapp_fails
   before_startup: [hello_world]
   spec:
   - wait: webapp_is_available
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
   - stop: [proxy]
-  - fail:
-    - webapp_is_available
+  - fail: [webapp_is_available]
   - start: [proxy]
-  - assert:
-    - webapp_is_available
+  - assert: [webapp_is_available]
 
 tasks:
 - name: webapp_is_available
