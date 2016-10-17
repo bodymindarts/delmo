@@ -1,7 +1,8 @@
 FROM debian:wheezy
 
 ENV DOCKER_MACHNE_VERSION=0.8.2 \
-  DOCKER_COMPOSE_VERSION=1.8.1
+  DOCKER_COMPOSE_VERSION=1.8.1 \
+  GO_VERSION=1.7.1
 
 RUN apt-get update && \
     apt-get install -y git unzip curl python-pip && \
@@ -10,7 +11,7 @@ RUN apt-get update && \
 # Install Go
 RUN \
   mkdir -p /goroot && \
-  curl https://storage.googleapis.com/golang/go1.6.2.linux-amd64.tar.gz | tar xvzf - -C /goroot --strip-components=1
+  curl https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | tar xvzf - -C /goroot --strip-components=1
 
 # Set environment variables.
 ENV GOROOT /goroot
