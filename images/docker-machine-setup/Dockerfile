@@ -1,9 +1,11 @@
 FROM alpine:3.4
 
+ENV DOCKER_MACHNE_VERSION=0.8.2
+
 RUN apk add --update curl nodejs py-pip \
       && rm -rf /var/cache/apk/*
 
-RUN curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine \
+RUN curl -L https://github.com/docker/machine/releases/download/v${DOCKER_MACHNE_VERSION}/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine \
     && chmod +x /usr/local/bin/docker-machine \
     && mkdir -p /root/.docker/machine/machines \
     && mkdir -p /root/.docker/machine/certs
