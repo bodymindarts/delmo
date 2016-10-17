@@ -1,5 +1,8 @@
 FROM debian:wheezy
 
+ENV DOCKER_MACHNE_VERSION=0.8.2 \
+  DOCKER_COMPOSE_VERSION=1.8.1
+
 RUN apt-get update && \
     apt-get install -y git unzip curl python-pip && \
     apt-get clean
@@ -17,13 +20,13 @@ RUN go get github.com/mitchellh/gox \
         && go get github.com/maxbrunsfeld/counterfeiter
 
 # Install docker-machine
-RUN curl -L https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine && \
+RUN curl -L https://github.com/docker/machine/releases/download/v${DOCKER_MACHNE_VERSION}/docker-machine-`uname -s`-`uname -m` > /usr/local/bin/docker-machine && \
     chmod +x /usr/local/bin/docker-machine \
     && mkdir -p /root/.docker/machine/machines \
     && mkdir -p /root/.docker/machine/certs
 
 # Install docker-compose
-RUN curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
+RUN curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
      && chmod +x /usr/local/bin/docker-compose
 
 # Install machine-share
