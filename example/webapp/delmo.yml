@@ -24,7 +24,7 @@ tests:
   spec:
   - wait: webapp_is_available
   - assert: [webapp_is_available]
-  - stop: [proxy]
+  - destroy: [proxy]
   - fail: [webapp_is_available]
   - start: [proxy]
   - assert: [webapp_is_available]
