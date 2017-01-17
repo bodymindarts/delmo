@@ -38,7 +38,7 @@ docker-machine create \
     --amazonec2-security-group ${AWS_SECURITY_GROUP} \
     ${MACHINE_NAME}
 
-if [ $? != 0]; then
+if [ $? -ne 0 ]; then
   echo "Creating docker-machine ${MACHINE_NAME} FAILED"
   exit 1
 fi
