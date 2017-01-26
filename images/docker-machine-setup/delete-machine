@@ -2,33 +2,8 @@
 
 set -e
 
-if [ -z ${MACHINE_NAME} ]; then
-  echo "Please set MACHINE_NAME"
-  exit 1
-fi
-
-if [ -z ${AWS_ACCESS_KEY_ID} ]; then
-  echo "Please set AWS_ACCESS_KEY_ID"
-  exit 1
-fi
-
-if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
-  echo "Please set AWS_SECRET_ACCESS_KEY"
-  exit 1
-fi
-
-if [ -z ${AWS_DEFAULT_REGION} ]; then
-  echo "Please set AWS_DEFAULT_REGION"
-  exit 1
-fi
-
-if [ -z ${AWS_BUCKET} ]; then
-  echo "Please set AWS_BUCKET"
-  exit 1
-fi
-
 echo "Downloading pre existing configuration"
-aws --region ${AWS_DEFAULT_REGION} s3 cp s3://${AWS_BUCKET}/${MACHINE_NAME}.zip ./ > /dev/nul 2>&1 || exit 0
+aws --region ${AWS_DEFAULT_REGION:?required} s3 cp s3://${AWS_BUCKET:?required}/${MACHINE_NAME:?required}.zip ./ > /dev/null 2>&1 || exit 0
 
 echo "Pre-existing configuration found"
 echo "Importing ${MACHINE_NAME}"
