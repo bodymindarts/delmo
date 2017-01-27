@@ -5,27 +5,17 @@
 echo "Deleting key pair ${MACHINE_NAME:?required}, if exists..."
 aws ec2 delete-key-pair --key-name ${MACHINE_NAME} --region ${AWS_DEFAULT_REGION:?required}
 
+# For supported configuration see https://docs.docker.com/machine/drivers/aws/
+
+: ${AWS_ACCESS_KEY_ID:?required}
+: ${AWS_SECRET_ACCESS_KEY:?required}
+
 echo "Creating docker-machine ${MACHINE_NAME:?required}"
-echo docker-machine create \
-    -d amazonec2 \
-    --amazonec2-access-key ${AWS_ACCESS_KEY_ID:?required} \
-    --amazonec2-secret-key [REDACTED] \
-    --amazonec2-region ${AWS_DEFAULT_REGION:?required} \
-    --amazonec2-vpc-id ${AWS_VPC_ID:?required} \
-    --amazonec2-subnet-id ${AWS_SUBNET_ID:?required} \
-    --amazonec2-zone ${AWS_AZ_ZONE:-a} \
-    --amazonec2-security-group ${AWS_SECURITY_GROUP:-$MACHINE_NAME} \
-    ${MACHINE_NAME}
-docker-machine create \
-    -d amazonec2 \
-    --amazonec2-access-key ${AWS_ACCESS_KEY_ID:?required} \
-    --amazonec2-secret-key ${AWS_SECRET_ACCESS_KEY:?required} \
-    --amazonec2-region ${AWS_DEFAULT_REGION:?required} \
-    --amazonec2-vpc-id ${AWS_VPC_ID:?required} \
-    --amazonec2-subnet-id ${AWS_SUBNET_ID:?required} \
-    --amazonec2-zone ${AWS_AZ_ZONE:-a} \
-    --amazonec2-security-group ${AWS_SECURITY_GROUP:-$MACHINE_NAME} \
-    ${MACHINE_NAME}
+echo docker-machine create -d amazonec2 ${MACHINE_NAME}
+echo with env vars:
+env | grep AWS | grep -v SECRET | sort
+
+docker-machine create -d amazonec2 ${MACHINE_NAME}
 
 if [ $? -ne 0 ]; then
   echo "Creating docker-machine ${MACHINE_NAME} FAILED"
@@ -36,7 +26,7 @@ echo "Exporting connection info to ${MACHINE_NAME}"
 machine-export ${MACHINE_NAME}
 
 echo "Uploading info to bucket"
-aws --region ${AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
+aws --region ${AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET:?required}
 
 if [ ! -z ${OPEN_TCP_PORTS} ]; then
   echo "Opening access to docker machine on tcp ports ${OPEN_TCP_PORTS}"
