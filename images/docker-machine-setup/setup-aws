@@ -1,6 +1,8 @@
 #!/bin/sh
 
-/delete-machine || exit 1
+set -e
+
+/delete-machine
 
 echo "Deleting key pair ${MACHINE_NAME:?required}, if exists..."
 aws ec2 delete-key-pair --key-name ${MACHINE_NAME} --region ${AWS_DEFAULT_REGION:?required}
@@ -16,11 +18,6 @@ echo with env vars:
 env | grep AWS | grep -v SECRET | sort
 
 docker-machine create -d amazonec2 ${MACHINE_NAME}
-
-if [ $? -ne 0 ]; then
-  echo "Creating docker-machine ${MACHINE_NAME} FAILED"
-  exit 1
-fi
 
 echo "Exporting connection info to ${MACHINE_NAME}"
 machine-export ${MACHINE_NAME}
