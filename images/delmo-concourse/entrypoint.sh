@@ -17,6 +17,10 @@ if [ ! -z ${MACHINE_NAME} ] && [ ! -z ${MACHINE_EXPORT_AWS_ACCESS_KEY_ID} ] \
     chmod 0600 /root/.docker/machine/machines/${MACHINE_NAME}/id_rsa
 
     echo "Machine ${MACHINE_NAME} imported!"
+
+    echo "Deleting all existing containers..."
+    eval $(docker-machine env --shell sh ${MACHINE_NAME})
+    docker ps -a | grep -v CONTAINER | awk '{print $1}' | xargs docker rm -f
 fi
 
 echo "Running '$@'"
