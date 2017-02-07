@@ -1,41 +1,11 @@
 #!/bin/sh
 
-if [ -z ${MACHINE_NAME} ]; then
-  echo "Please set MACHINE_NAME"
-  exit 1
-fi
-
-if [ -z ${DIGITALOCEAN_ACCESS_TOKEN} ]; then
-  echo "Please set DIGITALOCEAN_ACCESS_TOKEN"
-  exit 1
-fi
-
-if [ -z ${AWS_ACCESS_KEY_ID} ]; then
-  echo "Please set AWS_ACCESS_KEY_ID"
-  exit 1
-fi
-
-if [ -z ${AWS_SECRET_ACCESS_KEY} ]; then
-  echo "Please set AWS_SECRET_ACCESS_KEY"
-  exit 1
-fi
-
-if [ -z ${AWS_DEFAULT_REGION} ]; then
-  echo "Please set AWS_DEFAULT_REGION"
-  exit 1
-fi
-
-if [ -z ${AWS_BUCKET} ]; then
-  echo "Please set AWS_BUCKET"
-  exit 1
-fi
-
 /delete-machine || exit 1
 
-echo "Creating docker-machine ${MACHINE_NAME}"
+echo "Creating docker-machine ${MACHINE_NAME:?required}"
 docker-machine create \
     -d digitalocean \
-    --digitalocean-access-token=${DIGITALOCEAN_ACCESS_TOKEN} \
+    --digitalocean-access-token=${DIGITALOCEAN_ACCESS_TOKEN:?required} \
     ${MACHINE_NAME}
 
 if [ $? == 0 ]; then
@@ -43,5 +13,5 @@ if [ $? == 0 ]; then
   machine-export ${MACHINE_NAME}
 
   echo "Uploading info to bucket"
-  aws --region ${AWS_DEFAULT_REGION} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET}
+  aws --region ${AWS_DEFAULT_REGION:?required} s3 cp ${MACHINE_NAME}.zip s3://${AWS_BUCKET:?required}
 fi
