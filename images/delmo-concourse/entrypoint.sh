@@ -21,6 +21,9 @@ if [ ! -z ${MACHINE_NAME} ] && [ ! -z ${MACHINE_EXPORT_AWS_ACCESS_KEY_ID} ] \
     echo "Deleting all existing containers..."
     eval $(docker-machine env --shell sh ${MACHINE_NAME})
     docker ps -a | grep -v CONTAINER | awk '{print $1}' | xargs docker rm -f
+
+    echo "Pruning unused volumes..."
+    docker volume prune -f
 fi
 
 echo "Running '$@'"
