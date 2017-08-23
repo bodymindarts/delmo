@@ -1,6 +1,6 @@
 FROM alpine:3.4
 
-ENV DOCKER_MACHNE_VERSION=0.8.2
+ENV DOCKER_MACHNE_VERSION=0.12.2
 
 RUN apk add --update curl nodejs py-pip \
       && rm -rf /var/cache/apk/*
